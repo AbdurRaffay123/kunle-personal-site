@@ -20,14 +20,14 @@ const createOrUpdateProfile = async (userId, profileData, imagePath = null) => {
       ...profileData
     };
     
-    // Add image path if provided
+    // Add image path if provided (from your existing multer config)
     if (imagePath) {
       updateData.image = imagePath;
       
       // If updating existing profile and it has an old image, delete it
       if (existingProfile && existingProfile.image && existingProfile.image !== imagePath) {
         try {
-          const oldImagePath = path.join(__dirname, '../../uploads/profile_images', path.basename(existingProfile.image));
+          const oldImagePath = path.join(__dirname, '../stored-files/avatars', path.basename(existingProfile.image));
           await fs.unlink(oldImagePath);
         } catch (error) {
           console.warn('Could not delete old profile image:', error.message);
@@ -69,7 +69,7 @@ const getProfile = async (userId) => {
     const profile = await UserProfile.findOne({ user: userId })
       .populate('user', 'email');
     
-    return profile; // Return null if not found instead of throwing error
+    return profile;
   } catch (error) {
     throw error;
   }
@@ -99,7 +99,7 @@ const updateProfileImage = async (userId, imagePath) => {
     // Delete old image if exists
     if (existingProfile.image && existingProfile.image !== imagePath) {
       try {
-        const oldImagePath = path.join(__dirname, '../../uploads/profile_images', path.basename(existingProfile.image));
+        const oldImagePath = path.join(__dirname, '../stored-files/avatars', path.basename(existingProfile.image));
         await fs.unlink(oldImagePath);
       } catch (error) {
         console.warn('Could not delete old profile image:', error.message);
@@ -129,7 +129,7 @@ const getImageUrl = (imagePath) => {
   
   const baseUrl = process.env.BASE_URL || 'http://localhost:4000';
   const filename = path.basename(imagePath);
-  return `${baseUrl}/uploads/profile_images/${filename}`;
+  return `${baseUrl}/stored-files/avatars/${filename}`;
 };
 
 module.exports = {

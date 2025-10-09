@@ -8,7 +8,6 @@ require('dotenv').config();
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const noteRoutes = require('./routes/noteRoutes');
-const uploadRoutes = require('./routes/uploadRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const uploadErrorHandler = require('./middleware/uploadErrorHandler');
 
@@ -29,12 +28,10 @@ app.use(cookieParser());
 
 // Serve static files
 app.use('/stored-files', express.static(path.join(__dirname, 'stored-files')));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads'))); // Profile images
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
-app.use('/api/upload', uploadRoutes);
 app.use('/api/profile', profileRoutes);
 
 // Health check route
@@ -62,7 +59,7 @@ app.use((err, req, res, next) => {
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: 'Route not found'

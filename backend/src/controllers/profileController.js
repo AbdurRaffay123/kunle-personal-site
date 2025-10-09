@@ -25,8 +25,8 @@ const createOrUpdateProfile = async (req, res) => {
       socialLinks: parsedSocialLinks || {}
     };
     
-    // Get image path from multer if file was uploaded
-    const imagePath = req.file ? `/uploads/profile_images/${req.file.filename}` : null;
+    // Get image path from your existing multer config
+    const imagePath = req.file ? `/stored-files/avatars/${req.file.filename}` : null;
     
     const { profile, isNewProfile } = await profileService.createOrUpdateProfile(userId, profileData, imagePath);
     
@@ -112,7 +112,7 @@ const updateProfileImage = async (req, res) => {
       });
     }
     
-    const imagePath = `/uploads/profile_images/${req.file.filename}`;
+    const imagePath = `/stored-files/avatars/${req.file.filename}`;
     const { profile, isNewProfile } = await profileService.updateProfileImage(userId, imagePath);
     
     // Add full image URL to response

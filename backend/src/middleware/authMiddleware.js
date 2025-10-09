@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { verifyToken } = require('../config/jwt');
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -17,11 +17,11 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify token using JWT service
+    const decoded = verifyToken(token);
     
     // Get user from database
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -34,17 +34,17 @@ const authMiddleware = async (req, res, next) => {
     next();
 
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
+    if (error.message.includes('expired')) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token'
+        message: 'Token expired. Please login again.'
       });
     }
     
-    if (error.name === 'TokenExpiredError') {
+    if (error.message.includes('Invalid token')) {
       return res.status(401).json({
         success: false,
-        message: 'Token expired'
+        message: 'Invalid token'
       });
     }
 

@@ -16,11 +16,11 @@ connectDB();
 app.use(morgan('combined'));
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
+  credentials: true // Important: allows cookies to be sent
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser()); // Important: parses cookies
 
 // Routes
 app.use('/api/auth', authRoutes);

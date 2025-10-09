@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
+const noteRoutes = require('./routes/noteRoutes');
 
 const app = express();
 
@@ -24,10 +25,18 @@ app.use(cookieParser()); // Important: parses cookies
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/notes', noteRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
-  res.status(200).json({ message: 'Server is running!' });
+  res.status(200).json({ 
+    success: true,
+    message: 'Server is running!',
+    data: {
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV
+    }
+  });
 });
 
 // Error handling middleware
@@ -40,7 +49,7 @@ app.use((err, req, res, next) => {
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     message: 'Route not found'

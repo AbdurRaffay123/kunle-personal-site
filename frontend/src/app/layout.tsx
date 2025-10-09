@@ -1,63 +1,67 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Header from "@/components/ui/Header";
-import Footer from "@/components/ui/Footer";
+import { Inter, Lora } from "next/font/google";
+import ThemeProvider from "@/providers/ThemeProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  display: "swap", // Better font loading performance
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Kunle's Portfolio | Full-Stack Developer & Researcher",
-    template: "%s | Kunle's Portfolio",
+    default: "Olukunle Owolabi | Lead AI Engineer & Applied Scientist",
+    template: "%s | Olukunle Owolabi",
   },
   description:
-    "Welcome to Kunle's personal portfolio. Explore my projects in web development, research work, and professional highlights. Full-stack developer specializing in React, Next.js, and modern web technologies.",
+    "Lead AI Engineer & Applied Scientist with 7+ years of End-to-End AI & ML experience. Ex Meta Engineer, PhD at Tufts. Specializing in LLMs, Recommender Systems, Anomaly Detection, and more.",
   keywords: [
-    "Kunle",
-    "Portfolio",
-    "Full-Stack Developer",
-    "React",
-    "Next.js",
-    "Web Development",
-    "Research",
-    "Projects",
+    "AI Engineer",
+    "Machine Learning",
+    "LLM",
+    "Recommender Systems",
+    "Applied Science",
+    "PhD",
+    "Meta",
+    "Tufts",
+    "End-to-End ML",
   ],
-  authors: [{ name: "Kunle" }],
-  creator: "Kunle",
+  authors: [{ name: "Olukunle Owolabi" }],
+  creator: "Olukunle Owolabi",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://your-domain.com",
-    title: "Kunle's Portfolio | Full-Stack Developer & Researcher",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    title: "Olukunle Owolabi | Lead AI Engineer & Applied Scientist",
     description:
-      "Welcome to Kunle's personal portfolio. Explore my projects in web development, research work, and professional highlights.",
-    siteName: "Kunle's Portfolio",
+      "Lead AI Engineer & Applied Scientist with 7+ years of End-to-End AI & ML experience.",
+    siteName: "Olukunle Owolabi",
     images: [
       {
-        url: "/og-image.jpg", // Add your Open Graph image
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Kunle's Portfolio",
+        alt: "Olukunle Owolabi",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kunle's Portfolio | Full-Stack Developer & Researcher",
+    title: "Olukunle Owolabi | Lead AI Engineer & Applied Scientist",
     description:
-      "Welcome to Kunle's personal portfolio. Explore my projects in web development, research work, and professional highlights.",
-    images: ["/og-image.jpg"],
+      "Lead AI Engineer & Applied Scientist with 7+ years of End-to-End AI & ML experience.",
+    images: ["/og-image.png"],
+    creator: "@olukunle",
   },
   robots: {
     index: true,
@@ -70,12 +74,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "your-google-site-verification-code", // Add your Google Search Console verification
-  },
-  alternates: {
-    canonical: "https://your-domain.com",
-  },
 };
 
 export default function RootLayout({
@@ -84,23 +82,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Additional SEO meta tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#2563eb" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.json" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
+        className={`${inter.variable} ${lora.variable} bg-white font-sans text-gray-900 antialiased dark:bg-gray-900 dark:text-white`}
       >
-        <div id="root" className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
+        <ThemeProvider>
+          <AuthProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </AuthProvider>
+        </ThemeProvider>
+
         {/* Schema.org structured data */}
         <script
           type="application/ld+json"
@@ -108,21 +108,27 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Person",
-              name: "Kunle",
-              jobTitle: "Full-Stack Developer",
-              url: "https://your-domain.com",
-              sameAs: [
-                "https://github.com/your-github",
-                "https://linkedin.com/in/your-linkedin",
-                "https://twitter.com/your-twitter",
-              ],
+              name: "Olukunle Owolabi",
+              jobTitle: "Lead AI Engineer & Applied Scientist",
+              description:
+                "Lead AI Engineer & Applied Scientist with 7+ years of End-to-End AI & ML experience.",
+              url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+              alumniOf: {
+                "@type": "Organization",
+                name: "Tufts University",
+              },
+              worksFor: {
+                "@type": "Organization",
+                name: "Meta (Former)",
+              },
               knowsAbout: [
-                "Web Development",
-                "React",
-                "Next.js",
-                "Research",
-                "JavaScript",
-                "TypeScript",
+                "Machine Learning",
+                "Large Language Models",
+                "Recommender Systems",
+                "Anomaly Detection",
+                "Fraud Detection",
+                "Forecasting",
+                "Optimization",
               ],
             }),
           }}

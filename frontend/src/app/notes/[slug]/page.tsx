@@ -1,0 +1,190 @@
+/**
+ * Note detail page
+ */
+
+import { notFound } from "next/navigation";
+import Container from "@/components/UI/Container";
+import TwoColumn from "@/components/Layout/TwoColumn";
+import MarkdownRenderer from "@/components/Markdown/MarkdownRenderer";
+import Tag from "@/components/UI/Tag";
+import NoteCard from "@/components/Card/NoteCard";
+import { getNoteBySlug, getNotes } from "@/lib/api";
+import { formatDate, extractHeadings } from "@/lib/utils";
+import { generateMetadata as genMeta } from "@/components/SEO/SEO";
+import Link from "next/link";
+
+interface NotePageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: NotePageProps) {
+  const { slug } = await params;
+  try {
+    const note = await getNoteBySlug(slug);
+    return genMeta({
+      title: note.title,
+      description: note.excerpt,
+      path: `/notes/${slug}`,
+      date: note.updatedAt,
+      tags: note.tags,
+      type: "article",
+    });
+  } catch {
+    return genMeta({
+      title: "Note Not Found",
+      description: "The requested note could not be found.",
+    });
+  }
+}
+
+export default async function NotePage({ params }: NotePageProps) {
+  const { slug } = await params;
+
+  let note;
+  try {
+    note = await getNoteBySlug(slug);
+  } catch {
+    notFound();
+  }
+
+  // Get related notes by tags
+  const allNotes = await getNotes().catch(() => []);
+  const relatedNotes = allNotes
+    .filter(
+      (n) =>
+        n.slug !== slug &&
+        n.tags?.some((tag) => note.tags?.includes(tag)),
+    )
+    .slice(0, 3);
+
+  // Extract headings for table of contents
+  const headings = extractHeadings(note.content);
+
+  // Sidebar content
+  const sidebar = (
+    <div className="space-y-8">
+      {/* Metadata */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+          Metadata
+        </h3>
+        <dl className="space-y-2 text-sm">
+          <div>
+            <dt className="font-medium text-gray-700 dark:text-gray-300">
+              Updated
+            </dt>
+            <dd className="text-gray-600 dark:text-gray-400">
+              {formatDate(note.updatedAt)}
+            </dd>
+          </div>
+          {note.readingTime && (
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">
+                Reading Time
+              </dt>
+              <dd className="text-gray-600 dark:text-gray-400">
+                {note.readingTime} min
+              </dd>
+            </div>
+          )}
+          {note.topic && (
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">
+                Topic
+              </dt>
+              <dd className="text-gray-600 dark:text-gray-400">{note.topic}</dd>
+            </div>
+          )}
+        </dl>
+      </div>
+
+      {/* Table of Contents */}
+      {headings.length > 0 && (
+        <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            Table of Contents
+          </h3>
+          <nav>
+            <ul className="space-y-2 text-sm">
+              {headings.map((heading) => (
+                <li
+                  key={heading.id}
+                  style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
+                >
+                  <a
+                    href={`#${heading.id}`}
+                    className="text-gray-600 transition-colors hover:text-primary dark:text-gray-400 dark:hover:text-primary-400"
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      )}
+
+      {/* Related notes */}
+      {relatedNotes.length > 0 && (
+        <div>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            Related Notes
+          </h3>
+          <div className="space-y-4">
+            {relatedNotes.map((relatedNote) => (
+              <NoteCard key={relatedNote.slug} note={relatedNote} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // Main content
+  const main = (
+    <article>
+      {/* Breadcrumb */}
+      <nav className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+        <Link href="/notes" className="hover:text-primary">
+          Notes
+        </Link>
+        {note.topic && (
+          <>
+            {" / "}
+            <span>{note.topic}</span>
+          </>
+        )}
+        {" / "}
+        <span className="text-gray-900 dark:text-white">{note.title}</span>
+      </nav>
+
+      {/* Title */}
+      <h1 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl">
+        {note.title}
+      </h1>
+
+      {/* Tags */}
+      {note.tags && note.tags.length > 0 && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          {note.tags.map((tag) => (
+            <Tag key={tag} variant="primary">
+              {tag}
+            </Tag>
+          ))}
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="mt-8">
+        <MarkdownRenderer content={note.content} />
+      </div>
+    </article>
+  );
+
+  return (
+    <div className="py-8">
+      <TwoColumn main={main} sidebar={sidebar} />
+    </div>
+  );
+}
+

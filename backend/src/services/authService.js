@@ -1,14 +1,5 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
-// Generate JWT token
-const generateToken = (userId) => {
-  return jwt.sign(
-    { id: userId },
-    process.env.JWT_SECRET,
-    { expiresIn: '1d' }
-  );
-};
+const { generateAccessToken } = require('../config/jwt');
 
 const login = async (email, password) => {
   try {
@@ -24,17 +15,32 @@ const login = async (email, password) => {
       throw new Error('Invalid credentials');
     }
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Generate token using JWT service
+    const token = generateAccessToken(user._id);
 
-    // Return user data without password
-    const userResponse = {
-      id: user._id,
-      email: user.email,
-      createdAt: user.createdAt
+    // Return user data without password (using toJSON method from model)
+    return { 
+      token, 
+      user: user.toJSON() 
     };
+  } catch (error) {
+    throw error;
+  }
+};
 
-    return { token, user: userResponse };
+const logout = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Update user's last logout time
+    await User.findByIdAndUpdate(userId, { 
+      lastLogout: new Date() 
+    });
+
+    return { message: 'Logout successful' };
   } catch (error) {
     throw error;
   }
@@ -42,5 +48,5 @@ const login = async (email, password) => {
 
 module.exports = {
   login,
-  generateToken
+  logout
 };

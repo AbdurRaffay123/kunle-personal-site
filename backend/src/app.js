@@ -9,6 +9,9 @@ const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const noteRoutes = require('./routes/noteRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const blogRoutes = require('./routes/blogRoutes');
+const projectRoutes = require('./routes/projectRoutes');
+const articleRoutes = require('./routes/articleRoutes');
 const uploadErrorHandler = require('./middleware/uploadErrorHandler');
 
 const app = express();
@@ -33,6 +36,9 @@ app.use('/stored-files', express.static(path.join(__dirname, 'stored-files')));
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/articles', articleRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

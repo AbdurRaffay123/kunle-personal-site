@@ -6,7 +6,6 @@ export interface CreateResearchRequest {
   description: string;
   category: string;
   researchLink: string;
-  authors: string[];
   tags: string[];
 }
 
@@ -20,7 +19,6 @@ export interface Research {
   description: string;
   category: string;
   researchLink: string;
-  authors: string[];
   tags: string[];
   isPublished: boolean;
   createdBy: string;
@@ -107,7 +105,7 @@ export const getResearchById = async (id: string): Promise<ResearchResponse> => 
 
 export const updateResearch = async (id: string, researchData: Partial<CreateResearchRequest>): Promise<ResearchResponse> => {
   try {
-    const response = await instance.put(`/api/research/${id}`, researchData);
+    const response = await instance.put(`/api/research/update/${id}`, researchData);
     return response.data;
   } catch (error: any) {
     console.error('Update research error:', error);
@@ -121,7 +119,7 @@ export const updateResearch = async (id: string, researchData: Partial<CreateRes
 
 export const deleteResearch = async (id: string): Promise<{ success: boolean; message: string }> => {
   try {
-    const response = await instance.delete(`/api/research/${id}`);
+    const response = await instance.delete(`/api/research/delete/${id}`);
     return response.data;
   } catch (error: any) {
     console.error('Delete research error:', error);

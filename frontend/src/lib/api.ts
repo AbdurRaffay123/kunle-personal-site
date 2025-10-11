@@ -283,4 +283,121 @@ This mock content demonstrates all the features of our markdown renderer includi
 `;
 }
 
+// Dashboard API functions
+export const getDashboardStats = async (): Promise<{
+  totalBlogs: number;
+  totalNotes: number;
+  totalProjects: number;
+  totalResearch: number;
+  totalComments: number;
+}> => {
+  try {
+    const response = await fetchAPI<{
+      success: boolean;
+      data: {
+        totalBlogs: number;
+        totalNotes: number;
+        totalProjects: number;
+        totalResearch: number;
+        totalComments: number;
+      };
+    }>('/api/dashboard/stats', {
+      method: 'GET',
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    // Return mock data as fallback
+    return {
+      totalBlogs: 12,
+      totalNotes: 8,
+      totalProjects: 15,
+      totalResearch: 6,
+      totalComments: 24,
+    };
+  }
+};
 
+export const getRecentActivity = async (limit: number = 10): Promise<Array<{
+  id: string;
+  type: string;
+  action: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  user: string;
+  postId?: string;
+  postType?: string;
+}>> => {
+  try {
+    const response = await fetchAPI<{
+      success: boolean;
+      data: {
+        activities: Array<{
+          id: string;
+          type: string;
+          action: string;
+          title: string;
+          createdAt: string;
+          updatedAt: string;
+          user: string;
+          postId?: string;
+          postType?: string;
+        }>;
+      };
+    }>(`/api/dashboard/activity?limit=${limit}`, {
+      method: 'GET',
+    });
+    return response.data.activities;
+  } catch (error) {
+    console.error('Error fetching recent activity:', error);
+    // Return mock data as fallback
+    return [
+      { 
+        id: '1',
+        action: "New blog post published", 
+        title: "Getting Started with Next.js",
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        type: "blog",
+        user: "You"
+      },
+      { 
+        id: '2',
+        action: "Comment approved", 
+        title: "Great article on React hooks!",
+        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        type: "comment",
+        user: "John Doe"
+      },
+      { 
+        id: '3',
+        action: "Project updated", 
+        title: "Personal Portfolio Website",
+        createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        type: "project",
+        user: "You"
+      },
+      { 
+        id: '4',
+        action: "Note created", 
+        title: "Meeting notes from client call",
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        type: "note",
+        user: "You"
+      },
+      { 
+        id: '5',
+        action: "Research item added", 
+        title: "AI in Web Development",
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        type: "research",
+        user: "You"
+      },
+    ];
+  }
+};

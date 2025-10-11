@@ -42,7 +42,7 @@ export function NotepadEditor({
       StarterKit,
       Image.configure({
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg',
+          class: 'max-w-md h-auto rounded-lg mx-auto block',
         },
       }),
       Link.configure({
@@ -138,6 +138,42 @@ export function NotepadEditor({
     }
   }, [editor, content]);
 
+  // Apply list styles after editor is created
+  useEffect(() => {
+    if (editor) {
+      const applyListStyles = () => {
+        const editorElement = document.querySelector('.ProseMirror');
+        if (editorElement) {
+          const lists = editorElement.querySelectorAll('ul, ol');
+          lists.forEach(list => {
+            (list as HTMLElement).style.listStyleType = list.tagName === 'UL' ? 'disc' : 'decimal';
+            (list as HTMLElement).style.paddingLeft = '1.5rem';
+            (list as HTMLElement).style.margin = '1rem 0';
+            
+            const items = list.querySelectorAll('li');
+            items.forEach(li => {
+              (li as HTMLElement).style.margin = '0.25rem 0';
+              (li as HTMLElement).style.lineHeight = '1.6';
+              (li as HTMLElement).style.color = 'rgb(51 65 85)';
+            });
+          });
+        }
+      };
+
+      // Apply styles immediately
+      applyListStyles();
+
+      // Apply styles on update
+      editor.on('update', applyListStyles);
+      editor.on('selectionUpdate', applyListStyles);
+
+      return () => {
+        editor.off('update', applyListStyles);
+        editor.off('selectionUpdate', applyListStyles);
+      };
+    }
+  }, [editor]);
+
   if (!editor) {
     return (
       <div className="border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800">
@@ -153,6 +189,28 @@ export function NotepadEditor({
 
   return (
     <div className="border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm">
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .ProseMirror ul {
+            list-style-type: disc !important;
+            padding-left: 1.5rem !important;
+            margin: 1rem 0 !important;
+          }
+          .ProseMirror ol {
+            list-style-type: decimal !important;
+            padding-left: 1.5rem !important;
+            margin: 1rem 0 !important;
+          }
+          .ProseMirror li {
+            margin: 0.25rem 0 !important;
+            line-height: 1.6 !important;
+            color: rgb(51 65 85) !important;
+          }
+          .dark .ProseMirror li {
+            color: rgb(203 213 225) !important;
+          }
+        `
+      }} />
       <NotepadToolbar editor={editor} />
       <div className="relative">
         <EditorContent 

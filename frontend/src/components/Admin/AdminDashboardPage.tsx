@@ -4,53 +4,140 @@
 
 "use client";
 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminCard from "@/components/Admin/AdminCard";
+import { getDashboardStats, getRecentActivity } from "@/lib/api";
 import {
   DocumentTextIcon,
   BookOpenIcon,
   FolderIcon,
   AcademicCapIcon,
   ChatBubbleLeftRightIcon,
+  ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 
-export default function AdminDashboardPage() {
-  const { user } = useAuth(); // Only get user for display
+interface DashboardStats {
+  totalBlogs: number;
+  totalNotes: number;
+  totalProjects: number;
+  totalResearch: number;
+  totalComments: number;
+}
 
-  // Mock data for dashboard cards
-  const stats = [
+interface ActivityItem {
+  id: string;
+  type: string;
+  action: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  user: string;
+  postId?: string;
+  postType?: string;
+}
+
+export default function AdminDashboardPage() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalBlogs: 0,
+    totalNotes: 0,
+    totalProjects: 0,
+    totalResearch: 0,
+    totalComments: 0,
+  });
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const [statsData, activityData] = await Promise.all([
+          getDashboardStats(),
+          getRecentActivity(5)
+        ]);
+        setStats(statsData);
+        setActivities(activityData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // Format stats for display
+  const statsCards = [
     {
       title: "Total Blogs",
-      value: "12",
+      value: stats.totalBlogs.toString(),
       icon: <DocumentTextIcon className="h-6 w-6 text-white" />,
       color: "blue" as const,
     },
     {
       title: "Total Notes",
-      value: "8",
+      value: stats.totalNotes.toString(),
       icon: <BookOpenIcon className="h-6 w-6 text-white" />,
       color: "green" as const,
     },
     {
       title: "Total Projects",
-      value: "15",
+      value: stats.totalProjects.toString(),
       icon: <FolderIcon className="h-6 w-6 text-white" />,
       color: "yellow" as const,
     },
     {
       title: "Research Items",
-      value: "6",
+      value: stats.totalResearch.toString(),
       icon: <AcademicCapIcon className="h-6 w-6 text-white" />,
       color: "purple" as const,
     },
     {
       title: "Total Comments",
-      value: "24",
+      value: stats.totalComments.toString(),
       icon: <ChatBubbleLeftRightIcon className="h-6 w-6 text-white" />,
       color: "red" as const,
     },
   ];
+
+  // Quick action handlers
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'blog':
+        router.push('/admin/dashboard/blogs');
+        break;
+      case 'note':
+        router.push('/admin/dashboard/notes');
+        break;
+      case 'project':
+        router.push('/admin/dashboard/projects');
+        break;
+      case 'research':
+        router.push('/admin/dashboard/research');
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Format time ago
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  };
 
   return (
     <AdminLayout title="Dashboard">
@@ -79,212 +166,163 @@ export default function AdminDashboardPage() {
           <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">
             Content Overview
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {stats.map((stat, index) => (
-              <AdminCard
-                key={index}
-                title={stat.title}
-                value={stat.value}
-                icon={stat.icon}
-                color={stat.color}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {[...Array(5)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-slate-200 dark:bg-slate-700 rounded-lg h-24"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {statsCards.map((stat, index) => (
+                <AdminCard
+                  key={index}
+                  title={stat.title}
+                  value={stat.value}
+                  icon={stat.icon}
+                  color={stat.color}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
           <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">
             Quick Actions
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-colors group">
-              <DocumentTextIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 mr-3" />
-              <div className="text-left">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+            <button 
+              onClick={() => handleQuickAction('blog')}
+              className="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+            >
+              <DocumentTextIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
+              <div className="text-left flex-1">
+                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                   New Blog Post
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
                   Create a new article
                 </p>
               </div>
+              <ArrowRightIcon className="h-5 w-5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
             </button>
 
-            <button className="flex items-center p-4 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 rounded-lg transition-colors group">
-              <BookOpenIcon className="h-8 w-8 text-green-600 dark:text-green-400 mr-3" />
-              <div className="text-left">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">
+            <button 
+              onClick={() => handleQuickAction('note')}
+              className="flex items-center p-4 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+            >
+              <BookOpenIcon className="h-8 w-8 text-green-600 dark:text-green-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
+              <div className="text-left flex-1">
+                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-200">
                   Add Note
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
                   Write a quick note
                 </p>
               </div>
+              <ArrowRightIcon className="h-5 w-5 text-slate-400 group-hover:text-green-600 dark:group-hover:text-green-400 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
             </button>
 
-            <button className="flex items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/40 rounded-lg transition-colors group">
-              <FolderIcon className="h-8 w-8 text-yellow-600 dark:text-yellow-400 mr-3" />
-              <div className="text-left">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
+            <button 
+              onClick={() => handleQuickAction('project')}
+              className="flex items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+            >
+              <FolderIcon className="h-8 w-8 text-yellow-600 dark:text-yellow-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
+              <div className="text-left flex-1">
+                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors duration-200">
                   New Project
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
                   Add a project
                 </p>
               </div>
+              <ArrowRightIcon className="h-5 w-5 text-slate-400 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
             </button>
 
-            <button className="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-lg transition-colors group">
-              <AcademicCapIcon className="h-8 w-8 text-purple-600 dark:text-purple-400 mr-3" />
-              <div className="text-left">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">
+            <button 
+              onClick={() => handleQuickAction('research')}
+              className="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+            >
+              <AcademicCapIcon className="h-8 w-8 text-purple-600 dark:text-purple-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
+              <div className="text-left flex-1">
+                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200">
                   Research
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
                   Add research item
                 </p>
               </div>
+              <ArrowRightIcon className="h-5 w-5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
             </button>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+          <div className="mb-6">
             <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">
               Recent Activity
             </h3>
-            <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
-              View All
-            </button>
           </div>
-          <div className="space-y-4">
-            {[
-              { 
-                action: "New blog post published", 
-                title: "Getting Started with Next.js",
-                time: "2 hours ago", 
-                type: "blog",
-                user: "You"
-              },
-              { 
-                action: "Comment approved", 
-                title: "Great article on React hooks!",
-                time: "4 hours ago", 
-                type: "comment",
-                user: "John Doe"
-              },
-              { 
-                action: "Project updated", 
-                title: "Personal Portfolio Website",
-                time: "6 hours ago", 
-                type: "project",
-                user: "You"
-              },
-              { 
-                action: "Note created", 
-                title: "Meeting notes from client call",
-                time: "1 day ago", 
-                type: "note",
-                user: "You"
-              },
-              { 
-                action: "Research item added", 
-                title: "AI in Web Development",
-                time: "2 days ago", 
-                type: "research",
-                user: "You"
-              },
-            ].map((activity, index) => (
-              <div key={index} className="flex items-start justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium text-slate-900 dark:text-white">
-                      {activity.action}
-                    </p>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      activity.type === "blog" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200" :
-                      activity.type === "comment" ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200" :
-                      activity.type === "project" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200" :
-                      activity.type === "note" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200" :
-                      "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-200"
-                    }`}>
-                      {activity.type}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                    "{activity.title}"
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
-                    <span>by {activity.user}</span>
-                    <span>•</span>
-                    <span>{activity.time}</span>
-                  </div>
-                </div>
-                <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* System Status */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              System Status
-            </h3>
+          {loading ? (
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600 dark:text-slate-400">Server Status</span>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-sm font-medium text-green-600 dark:text-green-400">Online</span>
+              {[...Array(5)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="flex items-start justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <div className="flex-1">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-1/2 mb-1"></div>
+                      <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-1/4"></div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600 dark:text-slate-400">Database</span>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-sm font-medium text-green-600 dark:text-green-400">Connected</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600 dark:text-slate-400">Last Backup</span>
-                <span className="text-sm font-medium text-slate-900 dark:text-white">2 hours ago</span>
-              </div>
+              ))}
             </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Storage Usage
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-600 dark:text-slate-400">Images</span>
-                  <span className="font-medium text-slate-900 dark:text-white">2.1 GB / 5 GB</span>
+          ) : activities.length > 0 ? (
+            <div className="space-y-3">
+              {activities.map((activity, index) => (
+                <div key={activity.id || index} className="flex items-start justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 hover:shadow-md transition-all duration-300 group cursor-pointer">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                        {activity.action}
+                      </p>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 group-hover:scale-105 ${
+                        activity.type === "blog" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/70" :
+                        activity.type === "comment" ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 group-hover:bg-green-200 dark:group-hover:bg-green-900/70" :
+                        activity.type === "project" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-900/70" :
+                        activity.type === "note" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200 group-hover:bg-purple-200 dark:group-hover:bg-purple-900/70" :
+                        "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-200 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/70"
+                      }`}>
+                        {activity.type}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-1 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
+                      "{activity.title}"
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors duration-200">
+                      <span>by {activity.user}</span>
+                      <span>•</span>
+                      <span>{formatTimeAgo(activity.updatedAt)}</span>
+                    </div>
+                  </div>
+                  <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200">
+                    <ArrowRightIcon className="h-5 w-5" />
+                  </button>
                 </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '42%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-600 dark:text-slate-400">Documents</span>
-                  <span className="font-medium text-slate-900 dark:text-white">850 MB / 2 GB</span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: '42.5%' }}></div>
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-slate-500 dark:text-slate-400">No recent activity found</p>
+            </div>
+          )}
         </div>
+
       </div>
     </AdminLayout>
   );

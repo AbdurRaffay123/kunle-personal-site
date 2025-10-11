@@ -13,6 +13,7 @@ import { getNoteBySlug, getNotes } from "@/lib/api";
 import { formatDate, extractHeadings } from "@/lib/utils";
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
 import Link from "next/link";
+import BackButton from "@/components/UI/BackButton";
 
 interface NotePageProps {
   params: Promise<{ id: string }>;
@@ -188,7 +189,12 @@ export default async function NotePage({ params }: NotePageProps) {
   );
 
   return (
-    <div className="py-8">
+    <div>
+      <Container>
+        <div className="flex justify-start mb-6 pt-8">
+          <BackButton />
+        </div>
+      </Container>
       <TwoColumn main={main} sidebar={sidebar} />
     </div>
   );

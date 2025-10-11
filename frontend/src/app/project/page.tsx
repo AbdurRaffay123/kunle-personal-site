@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import ProjectCard from "@/components/Card/ProjectCard";
 import Container from "@/components/UI/Container";
@@ -13,27 +13,29 @@ import EmptyState from "@/components/UI/EmptyState";
 import ErrorState from "@/components/UI/ErrorState";
 import { debounce } from "@/lib/utils";
 import { useFetch } from "@/hooks/useFetch";
-import { getProjects } from "@/lib/api";
-import type { Project } from "@/types";
+import { getProjects } from "@/apis/Project/api";
+import type { Project } from "@/apis/Project/api";
 
 export default function ProjectsPage() {
-  const { data: projects, loading, error, refetch } = useFetch<Project[]>(getProjects);
+  // Use a stable fetcher function for useFetch
+  const fetchProjects = useCallback(() => getProjects().then(res => res.data), []);
+  const { data: projects, loading, error, refetch } = useFetch<Project[]>(fetchProjects);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
   // Filter projects
   const filteredProjects = useMemo(() => {
     if (!projects) return [];
     return projects.filter((project) => {
-      const matchesSearch =
-        !searchTerm ||
-        project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.tech?.some((tech) => tech.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesFeatured = !showFeaturedOnly || project.featured;
-      return matchesSearch && matchesFeatured;
+      return (
+        (!searchTerm ||
+          project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.technologies?.some((tech) => tech.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
+      );
     });
-  }, [projects, searchTerm, showFeaturedOnly]);
+  }, [projects, searchTerm]);
 
   const handleSearch = debounce((value: string) => {
     setSearchTerm(value);
@@ -60,14 +62,14 @@ export default function ProjectsPage() {
           className="mb-12 text-center"
         >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-700 dark:text-blue-400 mb-4">
-            Projects & Research
+            Projects
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Showcasing my work in AI/ML, from LLMs to recommender systems and beyond.
           </p>
         </motion.div>
 
-        {/* Search and Filter Bar */}
+        {/* Search Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -99,18 +101,6 @@ export default function ProjectsPage() {
                 aria-label="Search projects"
               />
             </div>
-
-            {/* Featured filter */}
-            <button
-              onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
-              className={`rounded-full px-6 py-3 text-sm font-semibold transition-all whitespace-nowrap ${
-                showFeaturedOnly
-                  ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md"
-                  : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
-              }`}
-            >
-              {showFeaturedOnly ? "✨ Featured Only" : "Show Featured"}
-            </button>
           </div>
         </motion.div>
 
@@ -136,7 +126,7 @@ export default function ProjectsPage() {
         {!loading && filteredProjects.length > 0 && (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {filteredProjects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} index={index} />
+              <ProjectCard key={project._id || index} project={project} index={index} />
             ))}
           </div>
         )}

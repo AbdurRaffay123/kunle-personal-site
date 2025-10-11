@@ -11,7 +11,7 @@ import {
   deleteProject,
   Project,
 } from "@/apis/Project/api";
-import { toast } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -19,6 +19,10 @@ export default function AdminProjectsPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
 
   // Fetch projects from API
   const fetchProjects = async () => {
@@ -94,22 +98,10 @@ export default function AdminProjectsPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (project: Project) => {
-    if (!project._id) return;
-    setIsLoading(true);
-    try {
-      const response = await deleteProject(project._id);
-      if (response.success) {
-        toast.success("Project deleted successfully!");
-        fetchProjects();
-      } else {
-        toast.error(response.message || "Failed to delete project.");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete project.");
-    } finally {
-      setIsLoading(false);
-    }
+  // Open delete modal
+  const handleDelete = (project: Project) => {
+    setProjectToDelete(project);
+    setDeleteModalOpen(true);
   };
 
   const handleSave = async (projectData: Partial<Project>) => {
@@ -118,8 +110,10 @@ export default function AdminProjectsPage() {
       if (editingProject && editingProject._id) {
         // Update
         const response = await updateProject(editingProject._id, projectData);
+        console.log(response);
         if (response.success) {
           toast.success("Project updated successfully!");
+
           fetchProjects();
         } else {
           toast.error(response.message || "Failed to update project.");
@@ -148,8 +142,35 @@ export default function AdminProjectsPage() {
     }
   };
 
+  // Confirm delete
+  const confirmDelete = async () => {
+    if (!projectToDelete?._id) return;
+    setIsLoading(true);
+    try {
+      const response = await deleteProject(projectToDelete._id);
+      if (response.success) {
+        toast.success("Project deleted successfully!");
+        fetchProjects();
+      } else {
+        toast.error(response.message || "Failed to delete project.");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete project.");
+    } finally {
+      setIsLoading(false);
+      setDeleteModalOpen(false);
+      setProjectToDelete(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setEditingProject(null);
+  };
+
   return (
     <AdminLayout title="Manage Projects">
+      <Toaster position="top-right" />
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -190,24 +211,54 @@ export default function AdminProjectsPage() {
           onDelete={handleDelete}
         />
 
-        {/* Modal */}
+        {/* Modal for create/update */}
         <AdminModal
           isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingProject(null);
-          }}
+          onClose={handleCancel}
           title={editingProject ? "Edit Project" : "Add New Project"}
         >
           <ProjectForm
             project={editingProject}
             onSave={handleSave}
-            onCancel={() => {
-              setIsModalOpen(false);
-              setEditingProject(null);
-            }}
+            onCancel={handleCancel}
             isLoading={isLoading}
           />
+        </AdminModal>
+
+        {/* Delete Confirmation Modal */}
+        <AdminModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setProjectToDelete(null);
+          }}
+          title="Delete Project"
+        >
+          <div className="space-y-4">
+            <p>
+              Are you sure you want to delete{" "}
+              <span className="font-semibold">{projectToDelete?.title}</span>?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setProjectToDelete(null);
+                }}
+                className="rounded bg-slate-200 px-4 py-2 text-slate-800 dark:bg-slate-700 dark:text-slate-200"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                disabled={isLoading}
+              >
+                {isLoading ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
         </AdminModal>
       </div>
     </AdminLayout>

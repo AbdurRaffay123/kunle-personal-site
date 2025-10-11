@@ -6,6 +6,7 @@ import { NoteMeta, BlogMeta, Project } from "@/types";
 
 export const mockNotes: NoteMeta[] = [
   {
+    _id: "mock-1",
     slug: "intro-to-transformers",
     title: "Introduction to Transformer Architecture",
     excerpt:
@@ -18,6 +19,7 @@ export const mockNotes: NoteMeta[] = [
     thumbnail: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800",
   },
   {
+    _id: "mock-2",
     slug: "recommender-systems-deep-dive",
     title: "Building Scalable Recommender Systems",
     excerpt:
@@ -30,6 +32,7 @@ export const mockNotes: NoteMeta[] = [
     thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800",
   },
   {
+    _id: "mock-3",
     slug: "anomaly-detection-techniques",
     title: "Advanced Anomaly Detection Techniques",
     excerpt:
@@ -41,6 +44,7 @@ export const mockNotes: NoteMeta[] = [
     readingTime: 10,
   },
   {
+    _id: "mock-4",
     slug: "python-async-patterns",
     title: "Async Programming Patterns in Python",
     excerpt:
@@ -52,6 +56,7 @@ export const mockNotes: NoteMeta[] = [
     readingTime: 8,
   },
   {
+    _id: "mock-5",
     slug: "optimization-algorithms",
     title: "Optimization Algorithms for ML",
     excerpt:
@@ -63,6 +68,7 @@ export const mockNotes: NoteMeta[] = [
     readingTime: 14,
   },
   {
+    _id: "mock-6",
     slug: "docker-kubernetes-guide",
     title: "Containerization with Docker & Kubernetes",
     excerpt:

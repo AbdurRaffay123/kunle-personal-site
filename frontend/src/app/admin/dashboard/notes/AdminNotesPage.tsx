@@ -4,72 +4,70 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
 import AdminModal from "@/components/Admin/AdminModal";
+import DeleteConfirmModal from "@/components/Admin/DeleteConfirmModal";
+import { NotepadEditor } from "@/components/Notepad/NotepadEditor";
+import { createNote, updateNote, deleteNote, getAdminNotes } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
+import toast from "react-hot-toast";
 
 interface Note {
-  id: number;
+  _id: string;
   title: string;
-  slug: string;
   topic: string;
-  status: "published" | "draft";
   createdAt: string;
+  updatedAt: string;
   tags: string[];
+  content?: string; // Rich text content from NotepadEditor
+  user?: {
+    _id: string;
+    email: string;
+  };
 }
 
 export default function AdminNotesPage() {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: 1,
-      title: "Introduction to Transformers",
-      slug: "intro-to-transformers",
-      topic: "Machine Learning",
-      status: "published",
-      createdAt: "2024-01-10",
-      tags: ["AI", "NLP", "Transformers"],
-    },
-    {
-      id: 2,
-      title: "Advanced Python Techniques",
-      slug: "advanced-python",
-      topic: "Programming",
-      status: "draft",
-      createdAt: "2024-01-18",
-      tags: ["Python", "Programming"],
-    },
-    {
-      id: 3,
-      title: "Data Visualization Best Practices",
-      slug: "data-visualization",
-      topic: "Data Science",
-      status: "published",
-      createdAt: "2024-01-22",
-      tags: ["Data Science", "Visualization"],
-    },
-  ]);
+  const { isAuthenticated } = useAuth();
+  const [isEditorMode, setIsEditorMode] = useState(false);
+  const [currentNote, setCurrentNote] = useState<Note | null>(null);
+  const [editorContent, setEditorContent] = useState<string>('');
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Load notes from backend
+  useEffect(() => {
+    const loadNotes = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        setLoading(true);
+        const fetchedNotes = await getAdminNotes();
+        setNotes(fetchedNotes);
+      } catch (error) {
+        console.error('Error loading notes:', error);
+        toast.error('Failed to load notes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNotes();
+  }, [isAuthenticated]);
 
   const columns = [
     { key: "title", label: "Title" },
     { key: "topic", label: "Topic" },
-    { 
-      key: "status", 
-      label: "Status",
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === "published" 
-            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-            : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-        }`}>
-          {value}
-        </span>
-      )
-    },
     { 
       key: "tags", 
       label: "Tags",
@@ -102,32 +100,226 @@ export default function AdminNotesPage() {
     setIsModalOpen(true);
   };
 
+  const handleEditContent = (note: Note) => {
+    setCurrentNote(note);
+    setEditorContent(note.content || '');
+    setIsEditorMode(true);
+  };
+
   const handleDelete = (note: Note) => {
-    if (confirm(`Are you sure you want to delete "${note.title}"?`)) {
-      setNotes(notes.filter(n => n.id !== note.id));
+    setNoteToDelete(note);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!isAuthenticated || !noteToDelete) {
+      toast.error('Authentication required');
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await deleteNote(noteToDelete._id);
+      setNotes(notes.filter(n => n._id !== noteToDelete._id));
+      toast.success('Note deleted successfully');
+      setIsDeleteModalOpen(false);
+      setNoteToDelete(null);
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      toast.error('Failed to delete note');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handleSave = (noteData: Partial<Note>) => {
+  const cancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setNoteToDelete(null);
+  };
+
+  const handleSave = async (noteData: Partial<Note>) => {
+    if (!isAuthenticated) {
+      toast.error('Authentication required');
+      return;
+    }
+
     if (editingNote) {
-      setNotes(notes.map(note => 
-        note.id === editingNote.id ? { ...note, ...noteData } : note
-      ));
+      // For editing existing notes, save directly
+      try {
+        const updatedNote = await updateNote(editingNote._id, noteData);
+        setNotes(notes.map(note => 
+          note._id === editingNote._id ? updatedNote : note
+        ));
+        setIsModalOpen(false);
+        setEditingNote(null);
+        toast.success('Note updated successfully');
+      } catch (error) {
+        console.error('Error updating note:', error);
+        toast.error('Failed to update note');
+      }
     } else {
+      // For new notes, create the note and show editor
       const newNote: Note = {
-        id: Math.max(...notes.map(n => n.id)) + 1,
+        _id: 'temp-' + Date.now(), // Temporary ID
         title: noteData.title || "",
-        slug: noteData.slug || "",
         topic: noteData.topic || "",
-        status: noteData.status || "draft",
-        createdAt: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         tags: noteData.tags || [],
       };
-      setNotes([...notes, newNote]);
+      setCurrentNote(newNote);
+      setIsModalOpen(false);
+      setIsEditorMode(true);
     }
-    setIsModalOpen(false);
-    setEditingNote(null);
   };
+
+  const handleEditorSave = async () => {
+    if (!currentNote || !isAuthenticated) return;
+
+    try {
+      if (currentNote._id.startsWith('temp-')) {
+        // Create new note
+        const newNote = await createNote({
+          title: currentNote.title,
+          content: editorContent,
+          topic: currentNote.topic,
+          tags: currentNote.tags
+        });
+        
+        setNotes([newNote, ...notes]);
+        toast.success('Note created successfully');
+      } else {
+        // Update existing note
+        const updatedNote = await updateNote(currentNote._id, {
+          content: editorContent
+        });
+        
+        setNotes(notes.map(note => 
+          note._id === currentNote._id ? updatedNote : note
+        ));
+        toast.success('Note updated successfully');
+      }
+      
+      setIsEditorMode(false);
+      setCurrentNote(null);
+      setEditorContent('');
+    } catch (error) {
+      console.error('Error saving note:', error);
+      toast.error('Failed to save note');
+    }
+  };
+
+  const handleEditorCancel = () => {
+    setIsEditorMode(false);
+    setCurrentNote(null);
+    setEditorContent('');
+  };
+
+  // Auto-save functionality
+  const autoSave = async (content: string) => {
+    if (!currentNote || !content.trim() || currentNote._id.startsWith('temp-')) return;
+    
+    setIsAutoSaving(true);
+    try {
+      // Actually save to backend
+      await updateNote(currentNote._id, { content });
+      console.log('Auto-saved content for note:', currentNote.title);
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+    } finally {
+      setIsAutoSaving(false);
+    }
+  };
+
+  // Debounced auto-save effect
+  useEffect(() => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    if (editorContent && isEditorMode) {
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        autoSave(editorContent);
+      }, 2000); // Auto-save after 2 seconds of inactivity
+    }
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [editorContent, isEditorMode]);
+
+  // Show editor mode if active
+  if (isEditorMode && currentNote) {
+    const isEditingExisting = !currentNote._id.startsWith('temp-');
+    return (
+      <AdminLayout title={isEditingExisting ? "Edit Note Content" : "Create New Note"}>
+        <div className="space-y-6">
+          {/* Editor Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {currentNote.title}
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 mt-1">
+                Topic: {currentNote.topic} • {currentNote.tags.length > 0 && `Tags: ${currentNote.tags.join(', ')}`}
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              {/* Auto-save indicator */}
+              {isAutoSaving && (
+                <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                  Auto-saving...
+                </div>
+              )}
+              {!isAutoSaving && editorContent && (
+                <div className="text-sm text-green-600 dark:text-green-400">
+                  ✓ Auto-saved
+                </div>
+              )}
+              
+              <button
+                onClick={handleEditorCancel}
+                className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditorSave}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors font-medium"
+              >
+                Save & Finish
+              </button>
+            </div>
+          </div>
+
+          {/* Notepad Editor */}
+          <NotepadEditor 
+            content={editorContent}
+            placeholder="Start writing your note content..."
+            onChange={(content) => {
+              setEditorContent(content);
+            }}
+          />
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (loading) {
+    return (
+      <AdminLayout title="Manage Notes">
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-slate-600 dark:text-slate-400">Loading notes...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout title="Manage Notes">
@@ -170,6 +362,13 @@ export default function AdminNotesPage() {
           data={filteredNotes}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          customActions={[
+            {
+              label: "Edit Content",
+              onClick: handleEditContent,
+              className: "text-purple-600 hover:underline hover:text-purple-700 dark:hover:text-purple-400 transition-colors duration-200 cursor-pointer"
+            }
+          ]}
         />
 
         {/* Modal */}
@@ -190,6 +389,17 @@ export default function AdminNotesPage() {
             }}
           />
         </AdminModal>
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={cancelDelete}
+          onConfirm={confirmDelete}
+          title="Delete Note"
+          message="Are you sure you want to delete this note?"
+          itemName={noteToDelete?.title}
+          isDeleting={isDeleting}
+        />
       </div>
     </AdminLayout>
   );
@@ -207,9 +417,7 @@ function NoteForm({
 }) {
   const [formData, setFormData] = useState({
     title: note?.title || "",
-    slug: note?.slug || "",
     topic: note?.topic || "",
-    status: note?.status || "draft",
     tags: note?.tags || [],
   });
 
@@ -252,18 +460,6 @@ function NoteForm({
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Slug
-        </label>
-        <input
-          type="text"
-          value={formData.slug}
-          onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          required
-        />
-      </div>
 
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -318,19 +514,6 @@ function NoteForm({
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Status
-        </label>
-        <select
-          value={formData.status}
-          onChange={(e) => setFormData({ ...formData, status: e.target.value as "published" | "draft" })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-        </select>
-      </div>
 
       <div className="flex justify-end space-x-3 pt-4">
         <button

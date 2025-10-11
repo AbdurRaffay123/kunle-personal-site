@@ -37,6 +37,7 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
   try {
     const response = await fetch(url, {
+      credentials: 'include', // Include cookies for authentication
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
@@ -73,21 +74,21 @@ export async function getNotes(): Promise<NoteMeta[]> {
   }
   
   try {
-    const response = await fetchAPI<APIResponse<NoteMeta[]>>("/api/v1/notes", {
+    const response = await fetchAPI<{ success: boolean; data: { notes: NoteMeta[] } }>("/api/notes/public", {
       cache: "no-store",
     });
-    return response.data;
+    return response.data.notes;
   } catch (error) {
     // Silent fallback to mock data
     return mockNotes;
   }
 }
 
-export async function getNoteBySlug(slug: string): Promise<Note> {
+export async function getNoteBySlug(id: string): Promise<Note> {
   logMockDataStatus();
   
   if (USE_MOCK_DATA) {
-    const note = mockNotes.find((n) => n.slug === slug);
+    const note = mockNotes.find((n) => n._id === id);
     if (!note) throw new Error("Note not found");
     return {
       ...note,
@@ -96,13 +97,13 @@ export async function getNoteBySlug(slug: string): Promise<Note> {
   }
   
   try {
-    const response = await fetchAPI<APIResponse<Note>>(`/api/v1/notes/${slug}`, {
+    const response = await fetchAPI<{ success: boolean; data: { note: Note } }>(`/api/notes/public/${id}`, {
       cache: "no-store",
     });
-    return response.data;
+    return response.data.note;
   } catch (error) {
     // Silent fallback to mock data
-    const note = mockNotes.find((n) => n.slug === slug);
+    const note = mockNotes.find((n) => n._id === id);
     if (!note) throw error;
     return {
       ...note,
@@ -175,6 +176,37 @@ export async function getProjects(): Promise<Project[]> {
     // Silent fallback to mock data
     return mockProjects;
   }
+}
+
+// Admin Notes API (requires authentication via cookies)
+export async function createNote(data: { title: string; content: string; topic: string; tags?: string[] }): Promise<Note> {
+  const response = await fetchAPI<{ success: boolean; data: { note: Note } }>("/api/notes", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return response.data.note;
+}
+
+export async function updateNote(id: string, data: Partial<{ title: string; content: string; topic: string; tags: string[] }>): Promise<Note> {
+  const response = await fetchAPI<{ success: boolean; data: { note: Note } }>(`/api/notes/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  return response.data.note;
+}
+
+export async function deleteNote(id: string): Promise<{ message: string }> {
+  const response = await fetchAPI<{ success: boolean; data: { deletedNote: any } }>(`/api/notes/${id}`, {
+    method: "DELETE",
+  });
+  return { message: response.data.deletedNote ? "Note deleted successfully" : "Note deleted" };
+}
+
+export async function getAdminNotes(): Promise<Note[]> {
+  const response = await fetchAPI<{ success: boolean; data: { notes: Note[] } }>("/api/notes", {
+    cache: "no-store",
+  });
+  return response.data.notes;
 }
 
 // Contact API

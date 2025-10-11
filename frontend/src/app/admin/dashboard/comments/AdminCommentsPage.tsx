@@ -4,74 +4,108 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
-import AdminModal from "@/components/Admin/AdminModal";
+import { useAuth } from "@/contexts/AuthContext";
+import toast from "react-hot-toast";
+import DeleteConfirmModal from "@/components/Admin/DeleteConfirmModal";
 
 interface Comment {
-  id: number;
-  author: string;
+  _id: string;
   email: string;
-  post: string;
+  postId: string;
+  postType: "blog" | "note" | "project";
   content: string;
   createdAt: string;
-  postType: "blog" | "note" | "project";
+  parentCommentId?: string | null;
+  postTitle?: string; // Will be populated
 }
 
 export default function AdminCommentsPage() {
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: 1,
-      author: "John Doe",
-      email: "john@example.com",
-      post: "Introduction to Machine Learning",
-      content: "Great article! Very informative and well-written.",
-      createdAt: "2024-01-15",
-      postType: "blog",
-    },
-    {
-      id: 2,
-      author: "Sarah Smith",
-      email: "sarah@example.com",
-      post: "Advanced Python Techniques",
-      content: "This helped me understand the concepts better. Thanks!",
-      createdAt: "2024-01-18",
-      postType: "note",
-    },
-    {
-      id: 3,
-      author: "Mike Johnson",
-      email: "mike@example.com",
-      post: "AI Recommendation System",
-      content: "Interesting project. Would love to see more details.",
-      createdAt: "2024-01-20",
-      postType: "project",
-    },
-    {
-      id: 4,
-      author: "Emily Brown",
-      email: "emily@example.com",
-      post: "Building Recommender Systems",
-      content: "Excellent work! The implementation looks solid.",
-      createdAt: "2024-01-22",
-      postType: "blog",
-    },
-  ]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingComment, setEditingComment] = useState<Comment | null>(null);
+  const { isAuthenticated } = useAuth();
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<Comment | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Helper function to fetch post title
+  const fetchPostTitle = async (postId: string, postType: string, apiUrl: string): Promise<string> => {
+    try {
+      let endpoint = '';
+      if (postType === 'note') {
+        endpoint = `/api/notes/public/${postId}`;
+      } else if (postType === 'blog') {
+        endpoint = `/api/blogs/${postId}`;
+      } else if (postType === 'project') {
+        endpoint = `/api/projects/${postId}`;
+      }
+
+      const response = await fetch(`${apiUrl}${endpoint}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        return data.data?.note?.title || data.data?.blog?.title || data.data?.project?.title || postId;
+      }
+      return postId;
+    } catch (error) {
+      console.error(`Error fetching ${postType} title:`, error);
+      return postId;
+    }
+  };
+
+  // Fetch all comments from backend
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        setLoading(true);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+        const response = await fetch(`${API_URL}/api/comments/_admin`, {
+          credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const commentsData = data.data.comments;
+          
+          // Fetch post titles for all comments
+          const enrichedComments = await Promise.all(
+            commentsData.map(async (comment: Comment) => {
+              const postTitle = await fetchPostTitle(comment.postId, comment.postType, API_URL);
+              return { ...comment, postTitle };
+            })
+          );
+          
+          setComments(enrichedComments);
+        } else {
+          toast.error('Failed to load comments');
+        }
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        toast.error('Failed to load comments');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, [isAuthenticated]);
 
   const columns = [
-    { key: "author", label: "Author" },
     { key: "email", label: "Email" },
     { 
-      key: "post", 
+      key: "postTitle", 
       label: "Post",
       render: (value: string, item: Comment) => (
-        <div>
-          <div className="font-medium">{value}</div>
+        <div className="max-w-[250px]">
+          <div className="font-medium text-slate-900 dark:text-white truncate">
+            {item.postTitle || item.postId}
+          </div>
           <div className="text-xs text-slate-500 dark:text-slate-400">
             {item.postType}
           </div>
@@ -87,51 +121,85 @@ export default function AdminCommentsPage() {
         </div>
       )
     },
-    { key: "createdAt", label: "Created" },
+    {
+      key: "parentCommentId",
+      label: "Type",
+      render: (value: string | null | undefined) => (
+        <span className={`px-2 py-1 text-xs rounded-full ${
+          value ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+        }`}>
+          {value ? 'Reply' : 'Comment'}
+        </span>
+      )
+    },
+    { 
+      key: "createdAt", 
+      label: "Created",
+      render: (value: string) => new Date(value).toLocaleDateString()
+    },
   ];
 
   const filteredComments = comments.filter(comment => {
     const matchesSearch = 
-      comment.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comment.post.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.postId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comment.content.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesSearch;
   });
 
-  const handleEdit = (comment: Comment) => {
-    setEditingComment(comment);
-    setIsModalOpen(true);
-  };
-
   const handleDelete = (comment: Comment) => {
-    if (confirm(`Are you sure you want to delete this comment by ${comment.author}?`)) {
-      setComments(comments.filter(c => c.id !== comment.id));
+    setCommentToDelete(comment);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!isAuthenticated || !commentToDelete) {
+      toast.error('Authentication required');
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+      const response = await fetch(`${API_URL}/api/comments/_admin/${commentToDelete._id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setComments(comments.filter(c => c._id !== commentToDelete._id));
+        toast.success('Comment deleted successfully');
+        setIsDeleteModalOpen(false);
+        setCommentToDelete(null);
+      } else {
+        toast.error(data.error || 'Failed to delete comment');
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast.error('Failed to delete comment');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-
-  const handleSave = (commentData: Partial<Comment>) => {
-    if (editingComment) {
-      setComments(comments.map(comment => 
-        comment.id === editingComment.id ? { ...comment, ...commentData } : comment
-      ));
-    } else {
-      const newComment: Comment = {
-        id: Math.max(...comments.map(c => c.id)) + 1,
-        author: commentData.author || "",
-        email: commentData.email || "",
-        post: commentData.post || "",
-        content: commentData.content || "",
-        createdAt: new Date().toISOString().split('T')[0],
-        postType: commentData.postType || "blog",
-      };
-      setComments([...comments, newComment]);
-    }
-    setIsModalOpen(false);
-    setEditingComment(null);
+  const cancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setCommentToDelete(null);
   };
 
+
+  if (loading) {
+    return (
+      <AdminLayout title="Manage Comments">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout title="Manage Comments">
@@ -140,23 +208,13 @@ export default function AdminCommentsPage() {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
-              Comments
+              Comments ({comments.length})
             </h2>
             <p className="text-slate-600 dark:text-slate-400">
-              Manage comments on your content
+              View and manage comments on your content
             </p>
           </div>
-          <button
-            onClick={() => {
-              setEditingComment(null);
-              setIsModalOpen(true);
-            }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors font-medium cursor-pointer hover:scale-105"
-          >
-            Add New Comment
-          </button>
         </div>
-
 
         {/* Filters */}
         <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md">
@@ -172,145 +230,32 @@ export default function AdminCommentsPage() {
         </div>
 
         {/* Table */}
-        <AdminTable
-          columns={columns}
-          data={filteredComments}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          showActions={true}
-        />
-
-        {/* Modal */}
-        <AdminModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingComment(null);
-          }}
-          title={editingComment ? "Edit Comment" : "Add New Comment"}
-        >
-          <CommentForm
-            comment={editingComment}
-            onSave={handleSave}
-            onCancel={() => {
-              setIsModalOpen(false);
-              setEditingComment(null);
-            }}
+        {filteredComments.length === 0 ? (
+          <div className="bg-white dark:bg-slate-800 p-12 rounded-lg shadow-md text-center">
+            <p className="text-slate-600 dark:text-slate-400">
+              {searchTerm ? 'No comments found matching your search.' : 'No comments yet.'}
+            </p>
+          </div>
+        ) : (
+          <AdminTable
+            columns={columns}
+            data={filteredComments}
+            onDelete={handleDelete}
+            showActions={true}
           />
-        </AdminModal>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={cancelDelete}
+          onConfirm={confirmDelete}
+          title="Delete Comment"
+          message="Are you sure you want to delete this comment?"
+          itemName={commentToDelete?.content.substring(0, 50)}
+          isDeleting={isDeleting}
+        />
       </div>
     </AdminLayout>
-  );
-}
-
-// Comment Form Component
-function CommentForm({ 
-  comment, 
-  onSave, 
-  onCancel 
-}: { 
-  comment: Comment | null; 
-  onSave: (data: Partial<Comment>) => void; 
-  onCancel: () => void; 
-}) {
-  const [formData, setFormData] = useState({
-    author: comment?.author || "",
-    email: comment?.email || "",
-    post: comment?.post || "",
-    content: comment?.content || "",
-    postType: comment?.postType || "blog",
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Author
-        </label>
-        <input
-          type="text"
-          value={formData.author}
-          onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Email
-        </label>
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Post
-        </label>
-        <input
-          type="text"
-          value={formData.post}
-          onChange={(e) => setFormData({ ...formData, post: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Post Type
-        </label>
-        <select
-          value={formData.postType}
-          onChange={(e) => setFormData({ ...formData, postType: e.target.value as "blog" | "note" | "project" })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="blog">Blog</option>
-          <option value="note">Note</option>
-          <option value="project">Project</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Content
-        </label>
-        <textarea
-          value={formData.content}
-          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-          rows={4}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          required
-        />
-      </div>
-
-
-      <div className="flex justify-end space-x-3 pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
-        >
-          {comment ? "Update" : "Create"}
-        </button>
-      </div>
-    </form>
   );
 }

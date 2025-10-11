@@ -15,6 +15,11 @@ interface AdminTableProps {
   onDelete?: (item: any) => void;
   onApprove?: (item: any) => void;
   showActions?: boolean;
+  customActions?: Array<{
+    label: string;
+    onClick: (item: any) => void;
+    className?: string;
+  }>;
 }
 
 export default function AdminTable({
@@ -24,6 +29,7 @@ export default function AdminTable({
   onDelete,
   onApprove,
   showActions = true,
+  customActions = [],
 }: AdminTableProps) {
   return (
     <div className="w-full bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
@@ -64,6 +70,15 @@ export default function AdminTable({
                         Edit
                       </button>
                     )}
+                    {customActions.map((action, index) => (
+                      <button
+                        key={index}
+                        onClick={() => action.onClick(item)}
+                        className={action.className || "text-purple-600 hover:underline hover:text-purple-700 dark:hover:text-purple-400 transition-colors duration-200 cursor-pointer"}
+                      >
+                        {action.label}
+                      </button>
+                    ))}
                     {onApprove && (
                       <button
                         onClick={() => onApprove(item)}

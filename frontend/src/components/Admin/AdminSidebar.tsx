@@ -1,5 +1,6 @@
 /**
  * Admin Sidebar - Navigation menu
+ * Updated to include Notepad link
  */
 
 "use client";
@@ -25,7 +26,7 @@ const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
   { name: "Blogs", href: "/admin/dashboard/blogs", icon: DocumentTextIcon },
   { name: "Notes", href: "/admin/dashboard/notes", icon: BookOpenIcon },
-  { name: "Projects", href: "/admin/dashboard/projects", icon: FolderIcon }, // Fixed: changed 'folder' to 'href'
+  { name: "Projects", href: "/admin/dashboard/projects", icon: FolderIcon },
   { name: "Research", href: "/admin/dashboard/research", icon: AcademicCapIcon },
   { name: "Comments", href: "/admin/dashboard/comments", icon: ChatBubbleLeftRightIcon },
   { name: "About", href: "/admin/dashboard/about", icon: UserIcon },

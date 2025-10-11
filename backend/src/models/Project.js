@@ -13,13 +13,18 @@ const projectSchema = new mongoose.Schema({
     maxlength: [1000, 'Description cannot exceed 1000 characters'],
     default: ''
   },
-  status: {
+  link: {
     type: String,
-    enum: {
-      values: ['active', 'completed', 'archived'],
-      message: 'Status must be either "active", "completed", or "archived"'
-    },
-    default: 'active'
+    required: [true, 'Project link is required'],
+    trim: true,
+    validate: {
+      validator: function(url) {
+        // Basic URL validation
+        const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+        return urlPattern.test(url);
+      },
+      message: 'Please provide a valid URL'
+    }
   },
   technologies: {
     type: [String],
@@ -32,18 +37,13 @@ const projectSchema = new mongoose.Schema({
       },
       message: 'Each technology must be a non-empty string'
     }
-  },
-  featured: {
-    type: Boolean,
-    default: false
   }
 }, {
   timestamps: true
 });
 
 // Index for better query performance
-projectSchema.index({ status: 1, createdAt: -1 });
-projectSchema.index({ featured: 1, status: 1 });
+projectSchema.index({ createdAt: -1 });
 
 // Clean up technologies array before saving
 projectSchema.pre('save', function(next) {

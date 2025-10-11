@@ -1,41 +1,44 @@
-/**
- * Projects page with premium layout and filtering
- */
-
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
-import ProjectCard from "@/components/Card/ProjectCard";
 import Container from "@/components/UI/Container";
 import Spinner from "@/components/UI/Spinner";
 import EmptyState from "@/components/UI/EmptyState";
 import ErrorState from "@/components/UI/ErrorState";
 import { debounce } from "@/lib/utils";
 import { useFetch } from "@/hooks/useFetch";
-import { getProjects } from "@/apis/Project/api";
-import type { Project } from "@/apis/Project/api";
+import { getAllResearch } from "@/apis/Research/api";
+import type { Research } from "@/apis/Research/api";
+import ResearchCard from "@/components/Card/ResearchCard"; // You should create this similar to ProjectCard
 
-export default function ProjectsPage() {
-  // Use a stable fetcher function for useFetch
-  const fetchProjects = useCallback(() => getProjects().then(res => res.data), []);
-  const { data: projects, loading, error, refetch } = useFetch<Project[]>(fetchProjects);
+export default function ResearchPage() {
+  const fetchResearchList = useCallback(
+    async () => {
+      const res = await getAllResearch();
+      return res.data;
+    },
+    [] // No dependencies, so it's stable
+  );
 
+  const { data: researchList, loading, error, refetch } = useFetch<Research[]>(fetchResearchList);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
-  // Filter projects
-  const filteredProjects = useMemo(() => {
-    if (!projects) return [];
-    return projects.filter((project) => {
-      return (
-        (!searchTerm ||
-          project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          project.technologies?.some((tech) => tech.toLowerCase().includes(searchTerm.toLowerCase()))
-        )
-      );
+  // Filter researches
+  const filteredResearch = useMemo(() => {
+    if (!researchList) return [];
+    return researchList.filter((research) => {
+      const matchesSearch =
+        !searchTerm ||
+        research.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        research.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        research.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        research.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      // If you have a featured property, use it; otherwise, remove featured filter
+      return matchesSearch;
     });
-  }, [projects, searchTerm]);
+  }, [researchList, searchTerm, showFeaturedOnly]);
 
   const handleSearch = debounce((value: string) => {
     setSearchTerm(value);
@@ -62,10 +65,10 @@ export default function ProjectsPage() {
           className="mb-12 text-center"
         >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-700 dark:text-blue-400 mb-4">
-            Projects
+            Researches
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Showcasing my work in AI/ML, from LLMs to recommender systems and beyond.
+            Explore my published and ongoing research in AI, ML, and more.
           </p>
         </motion.div>
 
@@ -95,23 +98,23 @@ export default function ProjectsPage() {
               </svg>
               <input
                 type="search"
-                placeholder="Search projects by title, description, or technology..."
+                placeholder="Search research by title, description, category, or tag..."
                 onChange={(e) => handleSearch(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 py-3 pl-12 pr-4 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-                aria-label="Search projects"
+                aria-label="Search research"
               />
             </div>
           </div>
         </motion.div>
 
         {/* Results count */}
-        {!loading && projects && (
+        {!loading && researchList && (
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="mb-6 text-slate-600 dark:text-slate-400"
           >
-            {filteredProjects.length} {filteredProjects.length === 1 ? "project" : "projects"} found
+            {filteredResearch.length} {filteredResearch.length === 1 ? "research" : "researches"} found
           </motion.p>
         )}
 
@@ -122,27 +125,27 @@ export default function ProjectsPage() {
           </div>
         )}
 
-        {/* Projects grid */}
-        {!loading && filteredProjects.length > 0 && (
+        {/* Researches grid */}
+        {!loading && filteredResearch.length > 0 && (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-            {filteredProjects.map((project, index) => (
-              <ProjectCard key={project._id || index} project={project} index={index} />
+            {filteredResearch.map((research, index) => (
+              <ResearchCard key={research._id || index} research={research} index={index} />
             ))}
           </div>
         )}
 
         {/* Empty state */}
-        {!loading && filteredProjects.length === 0 && projects && projects.length > 0 && (
+        {!loading && filteredResearch.length === 0 && researchList && researchList.length > 0 && (
           <EmptyState
-            title="No projects found"
+            title="No Research found"
             description="Try adjusting your search or filter criteria"
           />
         )}
 
-        {!loading && (!projects || projects.length === 0) && (
+        {!loading && (!researchList || researchList.length === 0) && (
           <EmptyState
-            title="No projects available yet"
-            description="Check back soon for project showcases"
+            title="No Research found"
+            description="Check back soon for new research publications"
           />
         )}
       </div>

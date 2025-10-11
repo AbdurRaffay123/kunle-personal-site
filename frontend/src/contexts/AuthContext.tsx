@@ -2,7 +2,13 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser, logoutUser, getCurrentUser, type LoginRequest, type ApiError } from "@/apis/Auth/api";
+import {
+  loginUser,
+  logoutUser,
+  getCurrentUser,
+  type LoginRequest,
+  type ApiError,
+} from "@/apis/Auth/api";
 
 interface User {
   id: string;
@@ -31,10 +37,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginRequest): Promise<boolean> => {
     setIsLoading(true);
     setError("");
-    
+
     try {
       const response = await loginUser(credentials);
-      
+
       if (response.success) {
         setUser(response.data.user);
         return true;
@@ -44,9 +50,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: unknown) {
       const apiError = error as ApiError & { response?: { status?: number } };
-      
+
       let errorMessage = "An unexpected error occurred. Please try again.";
-      
+
       if (apiError.message) {
         if (apiError.message.includes("Invalid") || apiError.message.includes("credentials")) {
           errorMessage = "Invalid email or password. Please check your credentials and try again.";
@@ -56,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           errorMessage = apiError.message;
         }
       }
-      
+
       setError(errorMessage);
       return false;
     } finally {
@@ -66,32 +72,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async (): Promise<void> => {
     setIsLoading(true);
-    
+
     try {
-      // Clear user state first
       setUser(null);
-      
-      // Call logout API to clear server-side cookie
       await logoutUser();
-      
     } catch (error: unknown) {
       console.error("Logout error:", error);
-      // Even if API fails, ensure user is cleared locally
       setUser(null);
     } finally {
       setIsLoading(false);
-      // Navigate to login page
-      router.replace("/admin/login");
+      // Navigate to home page instead of admin login
+      router.replace("/");
     }
   };
 
   // New function to check authentication - called manually from dashboard
   const checkAuth = async (): Promise<boolean> => {
     setIsLoading(true);
-    
+
     try {
       const response = await getCurrentUser();
-      
+
       if (response.success && response.data) {
         setUser(response.data);
         return true;
@@ -101,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: unknown) {
       const apiError = error as ApiError & { response?: { status?: number } };
-      
+
       // Only log non-401 errors
       if (apiError.response?.status !== 401) {
         console.error("Auth check error:", {
@@ -109,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           status: apiError.response?.status,
         });
       }
-      
+
       setUser(null);
       return false;
     } finally {

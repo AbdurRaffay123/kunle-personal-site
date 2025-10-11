@@ -1,88 +1,48 @@
-/**
- * Admin Research Management Page
- */
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Toaster, toast } from "react-hot-toast";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
 import AdminModal from "@/components/Admin/AdminModal";
+import { createResearch, getAllResearch, updateResearch, deleteResearch } from "@/apis/Research/api";
+import type { CreateResearchRequest } from "@/apis/Research/api";
 
 interface Research {
-  id: number;
+  id: string; // Use string, not number
   title: string;
   description: string;
   category: string;
-  status: "ongoing" | "completed" | "published";
-  authors: string[];
+  link: string;
   createdAt: string;
   tags: string[];
 }
 
 export default function AdminResearchPage() {
-  const [research, setResearch] = useState<Research[]>([
-    {
-      id: 1,
-      title: "Advanced Neural Network Architectures",
-      description: "Research on novel neural network architectures for improved performance",
-      category: "Machine Learning",
-      status: "ongoing",
-      authors: ["Olukunle O.", "Dr. Smith"],
-      createdAt: "2024-01-08",
-      tags: ["Deep Learning", "Neural Networks", "AI"],
-    },
-    {
-      id: 2,
-      title: "Quantum Computing Applications in ML",
-      description: "Exploring quantum computing applications in machine learning algorithms",
-      category: "Quantum Computing",
-      status: "completed",
-      authors: ["Olukunle O.", "Dr. Johnson"],
-      createdAt: "2024-01-15",
-      tags: ["Quantum Computing", "Machine Learning", "Algorithms"],
-    },
-    {
-      id: 3,
-      title: "Ethical AI in Healthcare",
-      description: "Research on ethical considerations in AI applications for healthcare",
-      category: "Ethics",
-      status: "published",
-      authors: ["Olukunle O.", "Dr. Brown"],
-      createdAt: "2024-01-28",
-      tags: ["Ethics", "Healthcare", "AI"],
-    },
-  ]);
-
+  // Start with an empty array
+  const [research, setResearch] = useState<Research[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingResearch, setEditingResearch] = useState<Research | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [researchToDelete, setResearchToDelete] = useState<Research | null>(null);
 
   const columns = [
     { key: "title", label: "Title" },
     { key: "category", label: "Category" },
     { 
-      key: "status", 
-      label: "Status",
+      key: "link", 
+      label: "Link",
       render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === "published" 
-            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-            : value === "completed"
-            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-            : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-        }`}>
-          {value}
-        </span>
-      )
-    },
-    { 
-      key: "authors", 
-      label: "Authors",
-      render: (authors: string[]) => (
-        <div className="text-sm">
-          {authors.join(", ")}
-        </div>
+        <a 
+          href={value} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm underline"
+        >
+          View Research
+        </a>
       )
     },
     { 
@@ -112,41 +72,116 @@ export default function AdminResearchPage() {
     item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  // Fetch all research on mount
+  useEffect(() => {
+    fetchResearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchResearch = async () => {
+    setIsLoading(true);
+    try {
+      const response = await getAllResearch();
+      if (response.success) {
+        const fetchedResearch: Research[] = response.data.map((item: any) => ({
+          id: item._id, // Use string, not parseInt
+          title: item.title,
+          description: item.description,
+          category: item.category,
+          link: item.researchLink,
+          createdAt: item.createdAt.split('T')[0],
+          tags: item.tags,
+        }));
+        setResearch(fetchedResearch);
+      }
+    } catch (error) {
+      console.error('Error fetching research:', error);
+      toast.error('Failed to fetch research. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleEdit = (item: Research) => {
     setEditingResearch(item);
     setIsModalOpen(true);
   };
 
   const handleDelete = (item: Research) => {
-    if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
-      setResearch(research.filter(r => r.id !== item.id));
+    setResearchToDelete(item);
+    setDeleteModalOpen(true);
+  };
+
+  const handleSave = async (researchData: Partial<Research>) => {
+    setIsLoading(true);
+    try {
+      if (editingResearch) {
+        // Update existing research
+        const updateData = {
+          title: researchData.title || "",
+          description: researchData.description || "",
+          category: researchData.category || "",
+          researchLink: researchData.link || "",
+          tags: researchData.tags || [],
+        };
+        const response = await updateResearch(editingResearch.id.toString(), updateData);
+        if (response.success) {
+          toast.success('Research updated successfully!');
+          fetchResearch();
+        } else {
+          toast.error(response.message || 'Failed to update research.');
+        }
+        setIsModalOpen(false);
+        setEditingResearch(null);
+      } else {
+        // Create new research
+        const newResearchData: CreateResearchRequest = {
+          title: researchData.title || "",
+          description: researchData.description || "",
+          category: researchData.category || "",
+          researchLink: researchData.link || "",
+          tags: researchData.tags || [],
+        };
+        const response = await createResearch(newResearchData);
+        if (response.success) {
+          toast.success('Research created successfully!');
+          fetchResearch();
+        } else {
+          toast.error(response.message || 'Failed to create research.');
+        }
+        setIsModalOpen(false);
+        setEditingResearch(null);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to save research. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSave = (researchData: Partial<Research>) => {
-    if (editingResearch) {
-      setResearch(research.map(item => 
-        item.id === editingResearch.id ? { ...item, ...researchData } : item
-      ));
-    } else {
-      const newResearch: Research = {
-        id: Math.max(...research.map(r => r.id)) + 1,
-        title: researchData.title || "",
-        description: researchData.description || "",
-        category: researchData.category || "",
-        status: researchData.status || "ongoing",
-        authors: researchData.authors || [],
-        createdAt: new Date().toISOString().split('T')[0],
-        tags: researchData.tags || [],
-      };
-      setResearch([...research, newResearch]);
+  const confirmDelete = async () => {
+    if (!researchToDelete) return;
+    setIsLoading(true);
+    try {
+      const response = await deleteResearch(researchToDelete.id);
+      if (response.success) {
+        toast.success('Research deleted successfully!');
+        fetchResearch();
+      } else {
+        toast.error(response.message || 'Failed to delete research.');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete research.');
+    } finally {
+      setIsLoading(false);
+      setDeleteModalOpen(false);
+      setResearchToDelete(null);
     }
-    setIsModalOpen(false);
-    setEditingResearch(null);
   };
 
   return (
     <AdminLayout title="Manage Research">
+      <Toaster position="top-right" />
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -163,9 +198,10 @@ export default function AdminResearchPage() {
               setEditingResearch(null);
               setIsModalOpen(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors font-medium cursor-pointer hover:scale-105"
+            disabled={isLoading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md transition-colors font-medium cursor-pointer hover:scale-105"
           >
-            Add New Research
+            {isLoading ? 'Creating...' : 'Add New Research'}
           </button>
         </div>
 
@@ -204,7 +240,43 @@ export default function AdminResearchPage() {
               setIsModalOpen(false);
               setEditingResearch(null);
             }}
+            isLoading={isLoading}
           />
+        </AdminModal>
+
+        {/* Delete Confirmation Modal */}
+        <AdminModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setResearchToDelete(null);
+          }}
+          title="Delete Research"
+        >
+          <div className="space-y-4">
+            <p>
+              Are you sure you want to delete <span className="font-semibold">{researchToDelete?.title}</span>?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setResearchToDelete(null);
+                }}
+                className="px-4 py-2 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                disabled={isLoading}
+              >
+                {isLoading ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
         </AdminModal>
       </div>
     </AdminLayout>
@@ -215,44 +287,28 @@ export default function AdminResearchPage() {
 function ResearchForm({ 
   research, 
   onSave, 
-  onCancel 
+  onCancel,
+  isLoading = false
 }: { 
   research: Research | null; 
   onSave: (data: Partial<Research>) => void; 
-  onCancel: () => void; 
+  onCancel: () => void;
+  isLoading?: boolean;
 }) {
   const [formData, setFormData] = useState({
     title: research?.title || "",
     description: research?.description || "",
     category: research?.category || "",
-    status: research?.status || "ongoing",
-    authors: research?.authors || [],
+    link: research?.link || "",
     tags: research?.tags || [],
   });
 
-  const [authorInput, setAuthorInput] = useState("");
   const [tagInput, setTagInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     onSave(formData);
-  };
-
-  const addAuthor = () => {
-    if (authorInput.trim() && !formData.authors.includes(authorInput.trim())) {
-      setFormData({
-        ...formData,
-        authors: [...formData.authors, authorInput.trim()]
-      });
-      setAuthorInput("");
-    }
-  };
-
-  const removeAuthor = (authorToRemove: string) => {
-    setFormData({
-      ...formData,
-      authors: formData.authors.filter(author => author !== authorToRemove)
-    });
   };
 
   const addTag = () => {
@@ -282,7 +338,8 @@ function ResearchForm({
           type="text"
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          disabled={isLoading}
+          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
           required
         />
       </div>
@@ -294,8 +351,9 @@ function ResearchForm({
         <textarea
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          disabled={isLoading}
           rows={3}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
           required
         />
       </div>
@@ -308,64 +366,28 @@ function ResearchForm({
           type="text"
           value={formData.category}
           onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          disabled={isLoading}
+          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
           required
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Status
+          Research Link
         </label>
-        <select
-          value={formData.status}
-          onChange={(e) => setFormData({ ...formData, status: e.target.value as "ongoing" | "completed" | "published" })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="ongoing">Ongoing</option>
-          <option value="completed">Completed</option>
-          <option value="published">Published</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Authors
-        </label>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {formData.authors.map((author, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-sm rounded-full"
-            >
-              {author}
-              <button
-                type="button"
-                onClick={() => removeAuthor(author)}
-                className="ml-2 text-green-600 hover:text-green-800 dark:text-green-200 dark:hover:text-green-100"
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={authorInput}
-            onChange={(e) => setAuthorInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addAuthor())}
-            placeholder="Add an author..."
-            className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button
-            type="button"
-            onClick={addAuthor}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          >
-            Add
-          </button>
-        </div>
+        <input
+          type="url"
+          value={formData.link}
+          onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+          disabled={isLoading}
+          placeholder="https://example.com/research-paper"
+          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+          required
+        />
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          Enter the URL to your research paper, publication, or project repository
+        </p>
       </div>
 
       <div>
@@ -382,7 +404,8 @@ function ResearchForm({
               <button
                 type="button"
                 onClick={() => removeTag(tag)}
-                className="ml-2 text-purple-600 hover:text-purple-800 dark:text-purple-200 dark:hover:text-purple-100"
+                disabled={isLoading}
+                className="ml-2 text-purple-600 hover:text-purple-800 dark:text-purple-200 dark:hover:text-purple-100 disabled:cursor-not-allowed"
               >
                 ×
               </button>
@@ -395,13 +418,15 @@ function ResearchForm({
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+            disabled={isLoading}
             placeholder="Add a tag..."
-            className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
           />
           <button
             type="button"
             onClick={addTag}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+            disabled={isLoading}
+            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors disabled:bg-purple-400 disabled:cursor-not-allowed"
           >
             Add
           </button>
@@ -412,15 +437,20 @@ function ResearchForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+          disabled={isLoading}
+          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+          disabled={isLoading}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          {research ? "Update" : "Create"}
+          {isLoading && (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          )}
+          {research ? "Update" : isLoading ? "Creating..." : "Create"}
         </button>
       </div>
     </form>

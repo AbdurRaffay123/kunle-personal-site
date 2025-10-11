@@ -52,7 +52,7 @@ export default function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
           <div className="hidden sm:flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 px-5">
             <span>Welcome,</span>
             <span className="font-medium text-slate-900 dark:text-slate-200">
-              {user.name}
+              {user.user.email}
             </span>
           </div>
         )}

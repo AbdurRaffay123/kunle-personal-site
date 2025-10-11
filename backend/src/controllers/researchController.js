@@ -12,7 +12,7 @@ const {
 // Create new research
 const createResearchController = async (req, res) => {
   try {
-    const { title, description, category, researchLink, authors, tags } = req.body;
+    const { title, description, category, researchLink, tags } = req.body;
     
     // Simple validation
     if (!title || !description || !category || !researchLink) {
@@ -27,7 +27,6 @@ const createResearchController = async (req, res) => {
       description: description.trim(),
       category: category.trim(),
       researchLink: researchLink.trim(),
-      authors: authors || [],
       tags: tags || []
     };
 
@@ -106,7 +105,7 @@ const getResearchByIdController = async (req, res) => {
 // Update research
 const updateResearchController = async (req, res) => {
   try {
-    const { title, description, category, researchLink, authors, tags } = req.body;
+    const { title, description, category, researchLink, tags } = req.body;
     
     const updateData = {};
     
@@ -114,7 +113,6 @@ const updateResearchController = async (req, res) => {
     if (description) updateData.description = description.trim();
     if (category) updateData.category = category.trim();
     if (researchLink) updateData.researchLink = researchLink.trim();
-    if (authors) updateData.authors = authors;
     if (tags) updateData.tags = tags;
 
     const research = await updateResearch(req.params.id, updateData, req.user.id);

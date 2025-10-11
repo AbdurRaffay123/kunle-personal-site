@@ -31,11 +31,6 @@ const researchSchema = new mongoose.Schema({
       message: 'Please provide a valid URL'
     }
   },
-  authors: [{
-    type: String,
-    trim: true,
-    maxLength: [100, 'Author name cannot exceed 100 characters']
-  }],
   tags: [{
     type: String,
     trim: true,

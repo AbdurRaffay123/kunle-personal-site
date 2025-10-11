@@ -12,18 +12,20 @@ const validateProject = [
     .isLength({ max: 200 })
     .withMessage('Title cannot exceed 200 characters')
     .trim(),
-  
+
   body('description')
     .optional()
     .isLength({ max: 1000 })
     .withMessage('Description cannot exceed 1000 characters')
     .trim(),
-  
-  body('status')
-    .optional()
-    .isIn(['active', 'completed', 'archived'])
-    .withMessage('Status must be either "active", "completed", or "archived"'),
-    
+
+  body('link')
+    .notEmpty()
+    .withMessage('Project link is required')
+    .isURL()
+    .withMessage('Please provide a valid URL')
+    .trim(),
+
   body('technologies')
     .optional()
     .isArray()
@@ -34,11 +36,6 @@ const validateProject = [
       }
       return true;
     }),
-    
-  body('featured')
-    .optional()
-    .isBoolean()
-    .withMessage('Featured must be a boolean value')
 ];
 
 const validateProjectUpdate = [
@@ -49,18 +46,21 @@ const validateProjectUpdate = [
     .isLength({ max: 200 })
     .withMessage('Title cannot exceed 200 characters')
     .trim(),
-  
+
   body('description')
     .optional()
     .isLength({ max: 1000 })
     .withMessage('Description cannot exceed 1000 characters')
     .trim(),
-  
-  body('status')
+
+  body('link')
     .optional()
-    .isIn(['active', 'completed', 'archived'])
-    .withMessage('Status must be either "active", "completed", or "archived"'),
-    
+    .notEmpty()
+    .withMessage('Project link cannot be empty')
+    .isURL()
+    .withMessage('Please provide a valid URL')
+    .trim(),
+
   body('technologies')
     .optional()
     .isArray()
@@ -71,23 +71,13 @@ const validateProjectUpdate = [
       }
       return true;
     }),
-    
-  body('featured')
-    .optional()
-    .isBoolean()
-    .withMessage('Featured must be a boolean value')
 ];
 
 // Project CRUD routes
 router.post('/', validateProject, projectController.createProject);                // POST /api/projects
 router.get('/', projectController.getProjects);                                    // GET /api/projects
-router.get('/stats', projectController.getProjectStats);                          // GET /api/projects/stats
-router.get('/featured', projectController.getFeaturedProjects);                   // GET /api/projects/featured
 router.get('/:id', projectController.getProjectById);                             // GET /api/projects/:id
 router.put('/:id', validateProjectUpdate, projectController.updateProject);       // PUT /api/projects/:id
 router.delete('/:id', projectController.deleteProject);                           // DELETE /api/projects/:id
-
-// Additional routes
-router.patch('/:id/toggle-featured', projectController.toggleProjectFeatured);    // PATCH /api/projects/:id/toggle-featured
 
 module.exports = router;

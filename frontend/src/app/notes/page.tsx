@@ -6,6 +6,7 @@
 
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import NoteCard from "@/components/Card/NoteCard";
 import Container from "@/components/UI/Container";
 import Spinner from "@/components/UI/Spinner";
@@ -69,9 +70,18 @@ export default function NotesPage() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-700 dark:text-blue-400 mb-4">
             Technical Notes
           </h1>
-          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
             A collection of technical notes, guides, and learning resources on AI, ML, and software engineering.
           </p>
+          <Link
+            href="/notepad"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-sky-500 text-white rounded-lg hover:from-blue-700 hover:to-sky-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Create New Note
+          </Link>
         </motion.div>
 
         {/* Search and Filter Bar */}

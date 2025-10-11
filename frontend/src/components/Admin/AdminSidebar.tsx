@@ -14,6 +14,7 @@ import {
   AcademicCapIcon,
   ChatBubbleLeftRightIcon,
   UserIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 
 interface AdminSidebarProps {
@@ -25,6 +26,7 @@ const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
   { name: "Blogs", href: "/admin/blogs", icon: DocumentTextIcon },
   { name: "Notes", href: "/admin/notes", icon: BookOpenIcon },
+  { name: "Notepad", href: "/notepad", icon: PencilSquareIcon },
   { name: "Projects", href: "/admin/projects", icon: FolderIcon },
   { name: "Research", href: "/admin/research", icon: AcademicCapIcon },
   { name: "Comments", href: "/admin/comments", icon: ChatBubbleLeftRightIcon },

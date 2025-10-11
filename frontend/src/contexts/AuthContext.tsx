@@ -1,92 +1,135 @@
-/**
- * Authentication Context for Admin Panel
- * Manages login/logout state and user session
- */
-
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { loginUser, logoutUser, getCurrentUser, type LoginRequest, type ApiError } from "@/apis/Auth/api";
 
 interface User {
   id: string;
   email: string;
-  name: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  error: string;
+  login: (credentials: LoginRequest) => Promise<boolean>;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<boolean>; // Add checkAuth function
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  // Check for existing session on mount
-  useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const storedUser = localStorage.getItem("admin_user");
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error("Error checking auth:", error);
-        localStorage.removeItem("admin_user");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (credentials: LoginRequest): Promise<boolean> => {
     setIsLoading(true);
+    setError("");
     
     try {
-      // Mock authentication - replace with real API call
-      if (email === "admin@example.com" && password === "admin123") {
-        const userData: User = {
-          id: "1",
-          email: email,
-          name: "Admin User"
-        };
-        
-        setUser(userData);
-        localStorage.setItem("admin_user", JSON.stringify(userData));
+      const response = await loginUser(credentials);
+      
+      if (response.success) {
+        setUser(response.data.user);
         return true;
       } else {
+        setError(response.message || "Login failed. Please try again.");
         return false;
       }
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch (error: unknown) {
+      const apiError = error as ApiError & { response?: { status?: number } };
+      
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      
+      if (apiError.message) {
+        if (apiError.message.includes("Invalid") || apiError.message.includes("credentials")) {
+          errorMessage = "Invalid email or password. Please check your credentials and try again.";
+        } else if (apiError.message.includes("Network")) {
+          errorMessage = "Unable to connect to the server. Please check your internet connection.";
+        } else {
+          errorMessage = apiError.message;
+        }
+      }
+      
+      setError(errorMessage);
       return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("admin_user");
-    router.push("/");
+  const logout = async (): Promise<void> => {
+    setIsLoading(true);
+    
+    try {
+      // Clear user state first
+      setUser(null);
+      
+      // Call logout API to clear server-side cookie
+      await logoutUser();
+      
+    } catch (error: unknown) {
+      console.error("Logout error:", error);
+      // Even if API fails, ensure user is cleared locally
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+      // Navigate to login page
+      router.replace("/admin/login");
+    }
+  };
+
+  // New function to check authentication - called manually from dashboard
+  const checkAuth = async (): Promise<boolean> => {
+    setIsLoading(true);
+    
+    try {
+      const response = await getCurrentUser();
+      
+      if (response.success && response.data) {
+        setUser(response.data);
+        return true;
+      } else {
+        setUser(null);
+        return false;
+      }
+    } catch (error: unknown) {
+      const apiError = error as ApiError & { response?: { status?: number } };
+      
+      // Only log non-401 errors
+      if (apiError.response?.status !== 401) {
+        console.error("Auth check error:", {
+          message: apiError.message || "Unknown error",
+          status: apiError.response?.status,
+        });
+      }
+      
+      setUser(null);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const clearError = () => {
+    setError("");
   };
 
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
     isLoading,
+    error,
     login,
     logout,
+    checkAuth, // Expose checkAuth function
+    clearError,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

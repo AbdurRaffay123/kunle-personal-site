@@ -19,13 +19,11 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { Highlight } from '@tiptap/extension-highlight';
 import { TextAlign } from '@tiptap/extension-text-align';
-import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
 import { Placeholder } from '@tiptap/extension-placeholder';
-import { createLowlight } from 'lowlight';
 import { NotepadToolbar } from './NotepadToolbar';
 import { notepadService } from '@/services/notepadService';
 import toast from 'react-hot-toast';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 interface NotepadEditorProps {
   content?: string;
@@ -41,9 +39,7 @@ export function NotepadEditor({
   
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        codeBlock: false, // We'll use CodeBlockLowlight instead
-      }),
+      StarterKit,
       Image.configure({
         HTMLAttributes: {
           class: 'max-w-full h-auto rounded-lg',
@@ -69,12 +65,6 @@ export function NotepadEditor({
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
-      }),
-      CodeBlockLowlight.configure({
-        lowlight: createLowlight(),
-        HTMLAttributes: {
-          class: 'bg-slate-100 dark:bg-slate-800 rounded-md p-4 font-mono text-sm',
-        },
       }),
       Placeholder.configure({
         placeholder,
@@ -136,6 +126,17 @@ export function NotepadEditor({
       toast.error('Failed to process image');
     }
   }, [editor]);
+
+  // Update editor content when content prop changes
+  useEffect(() => {
+    if (editor && content !== undefined) {
+      const currentContent = editor.getHTML();
+      // Only update if content is different to avoid unnecessary re-renders
+      if (currentContent !== content) {
+        editor.commands.setContent(content);
+      }
+    }
+  }, [editor, content]);
 
   if (!editor) {
     return (

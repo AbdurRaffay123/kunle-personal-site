@@ -4,51 +4,47 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
+import type { LoginRequest } from "@/apis/Auth/api";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { login, isAuthenticated, isLoading } = useAuth();
-  const [formData, setFormData] = useState({
+  const { login, error, clearError } = useAuth(); // Remove isAuthenticated and isLoading
+  
+  const [formData, setFormData] = useState<LoginRequest>({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/admin/dashboard");
-    }
-  }, [isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError(""); // Clear error when user types
+    if (error) clearError();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setIsSubmitting(true);
 
-    const success = await login(formData.email, formData.password);
-    
-    if (success) {
-      router.push("/admin/dashboard");
-    } else {
-      setError("Invalid email or password");
+    try {
+      const success = await login(formData);
+      
+      if (success) {
+        // Redirect to dashboard after successful login
+        router.replace("/admin/dashboard");
+      }
+    } catch (error) {
+      console.error("Login submission error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
   };
 
   return (
@@ -82,7 +78,7 @@ export default function AdminLoginPage() {
               onChange={handleChange}
               required
               className="w-full px-4 py-3 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="admin@example.com"
+              placeholder="Enter your email"
             />
           </div>
 
@@ -135,13 +131,6 @@ export default function AdminLoginPage() {
             {isSubmitting ? "Signing in..." : "Sign In"}
           </button>
         </form>
-
-        {/* Demo Credentials */}
-        <div className="text-center text-sm text-slate-500 dark:text-slate-400">
-          <p>Demo credentials:</p>
-          <p>Email: admin@example.com</p>
-          <p>Password: admin123</p>
-        </div>
       </div>
     </div>
   );

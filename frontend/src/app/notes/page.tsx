@@ -24,14 +24,14 @@ export default function NotesPage() {
 
   // Extract unique topics
   const topics = useMemo(() => {
-    if (!notes) return [];
+    if (!notes || !Array.isArray(notes)) return [];
     const uniqueTopics = Array.from(new Set(notes.map((note) => note.topic).filter(Boolean)));
     return uniqueTopics;
   }, [notes]);
 
   // Filter notes
   const filteredNotes = useMemo(() => {
-    if (!notes) return [];
+    if (!notes || !Array.isArray(notes)) return [];
     return notes.filter((note) => {
       const matchesSearch =
         !searchTerm ||
@@ -70,18 +70,9 @@ export default function NotesPage() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-700 dark:text-blue-400 mb-4">
             Technical Notes
           </h1>
-          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             A collection of technical notes, guides, and learning resources on AI, ML, and software engineering.
           </p>
-          <Link
-            href="/notepad"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-sky-500 text-white rounded-lg hover:from-blue-700 hover:to-sky-600 transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Create New Note
-          </Link>
         </motion.div>
 
         {/* Search and Filter Bar */}
@@ -170,7 +161,7 @@ export default function NotesPage() {
         {!loading && filteredNotes.length > 0 && (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {filteredNotes.map((note, index) => (
-              <NoteCard key={note.slug} note={note} index={index} />
+              <NoteCard key={note._id} note={note} index={index} />
             ))}
           </div>
         )}

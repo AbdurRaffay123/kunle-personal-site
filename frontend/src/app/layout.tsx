@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import ThemeProvider from "@/providers/ThemeProvider";
-import { AuthProvider } from "@/contexts/AuthContext";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
+import ConditionalLayout from "@/components/Layout/ConditionalLayout";
 import "./globals.css";
 
 const inter = Inter({
@@ -92,13 +90,7 @@ export default function RootLayout({
         className={`${inter.variable} ${lora.variable} bg-white font-sans text-gray-900 antialiased dark:bg-gray-900 dark:text-white`}
       >
         <ThemeProvider>
-          <AuthProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </AuthProvider>
+          <ConditionalLayout>{children}</ConditionalLayout>
         </ThemeProvider>
 
         {/* Schema.org structured data */}

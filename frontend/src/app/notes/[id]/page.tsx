@@ -5,26 +5,27 @@
 import { notFound } from "next/navigation";
 import Container from "@/components/UI/Container";
 import TwoColumn from "@/components/Layout/TwoColumn";
-import MarkdownRenderer from "@/components/Markdown/MarkdownRenderer";
+import HtmlRenderer from "@/components/Markdown/HtmlRenderer";
 import Tag from "@/components/UI/Tag";
 import NoteCard from "@/components/Card/NoteCard";
+import CommentsSection from "@/components/Comments/CommentsSection";
 import { getNoteBySlug, getNotes } from "@/lib/api";
 import { formatDate, extractHeadings } from "@/lib/utils";
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
 import Link from "next/link";
 
 interface NotePageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: NotePageProps) {
-  const { slug } = await params;
+  const { id } = await params;
   try {
-    const note = await getNoteBySlug(slug);
+    const note = await getNoteBySlug(id);
     return genMeta({
       title: note.title,
-      description: note.excerpt,
-      path: `/notes/${slug}`,
+      description: note.excerpt || note.title,
+      path: `/notes/${id}`,
       date: note.updatedAt,
       tags: note.tags,
       type: "article",
@@ -38,11 +39,11 @@ export async function generateMetadata({ params }: NotePageProps) {
 }
 
 export default async function NotePage({ params }: NotePageProps) {
-  const { slug } = await params;
+  const { id } = await params;
 
   let note;
   try {
-    note = await getNoteBySlug(slug);
+    note = await getNoteBySlug(id);
   } catch {
     notFound();
   }
@@ -52,7 +53,7 @@ export default async function NotePage({ params }: NotePageProps) {
   const relatedNotes = allNotes
     .filter(
       (n) =>
-        n.slug !== slug &&
+        n._id !== id &&
         n.tags?.some((tag) => note.tags?.includes(tag)),
     )
     .slice(0, 3);
@@ -132,7 +133,7 @@ export default async function NotePage({ params }: NotePageProps) {
           </h3>
           <div className="space-y-4">
             {relatedNotes.map((relatedNote) => (
-              <NoteCard key={relatedNote.slug} note={relatedNote} />
+              <NoteCard key={relatedNote._id} note={relatedNote} />
             ))}
           </div>
         </div>
@@ -176,7 +177,12 @@ export default async function NotePage({ params }: NotePageProps) {
 
       {/* Content */}
       <div className="mt-8">
-        <MarkdownRenderer content={note.content} />
+        <HtmlRenderer content={note.content} />
+      </div>
+
+      {/* Comments */}
+      <div className="mt-16">
+        <CommentsSection postId={id} postType="note" />
       </div>
     </article>
   );

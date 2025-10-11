@@ -221,5 +221,21 @@ module.exports = {
   deleteResearch: deleteResearchController,
   getResearchByCategory: getResearchByCategoryController,
   getCategories: getCategoriesController,
-  getTags: getTagsController
+  getTags: getTagsController,
+  getResearchByTag: async (req, res) => {
+    try {
+      const research = await require('../services/researchService').getResearchByTag(req.params.tag);
+      res.status(200).json({
+        success: true,
+        message: 'Research fetched successfully',
+        data: research
+      });
+    } catch (error) {
+      console.error('Get research by tag error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch research by tag'
+      });
+    }
+  }
 };

@@ -10,6 +10,7 @@ router.get('/', researchController.getAllResearch);
 router.get('/categories', researchController.getCategories);
 router.get('/tags', researchController.getTags);
 router.get('/category/:category', researchController.getResearchByCategory);
+router.get('/tag/:tag', researchController.getResearchByTag); // GET /api/research/tag/:tag
 router.get('/:id', researchController.getResearchById);
 
 // Protected routes (authentication required)

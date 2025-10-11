@@ -141,6 +141,17 @@ const getTags = async () => {
   return tags.sort();
 };
 
+// Get research by tag
+const getResearchByTag = async (tag) => {
+  const research = await Research.find({
+    tags: new RegExp(tag, 'i'),
+    isPublished: true
+  })
+    .populate('createdBy', 'email')
+    .sort({ createdAt: -1 });
+  return research;
+};
+
 module.exports = {
   createResearch,
   getAllResearch,
@@ -149,5 +160,6 @@ module.exports = {
   deleteResearch,
   getResearchByCategory,
   getCategories,
-  getTags
+  getTags,
+  getResearchByTag
 };

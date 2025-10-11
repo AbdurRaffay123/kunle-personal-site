@@ -15,7 +15,27 @@ interface NoteCardProps {
   index?: number;
 }
 
+// Helper function to extract text preview from HTML content
+function getTextPreview(html: string, maxLength: number = 150): string {
+  if (!html) return '';
+  
+  // Remove HTML tags
+  const text = html.replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  
+  if (text.length <= maxLength) return text;
+  
+  // Cut at word boundary
+  return text.substring(0, maxLength).split(' ').slice(0, -1).join(' ') + '...';
+}
+
 export default function NoteCard({ note, index = 0 }: NoteCardProps) {
+  // Get content preview from the note content if no excerpt is provided
+  const preview = note.excerpt || (note as any).content 
+    ? getTextPreview((note as any).content || note.excerpt || '', 150)
+    : '';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -29,7 +49,7 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
       }}
     >
       <Link
-        href={`/notes/${note.slug}`}
+        href={`/notes/${note._id}`}
         className="group block h-full overflow-hidden rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 p-6 shadow-lg hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
         aria-label={`Read note: ${note.title}`}
       >
@@ -47,10 +67,10 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
           </div>
         </div>
 
-        {/* Excerpt */}
-        {note.excerpt && (
-          <p className="mb-4 text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
-            {note.excerpt}
+        {/* Content Preview */}
+        {preview && (
+          <p className="mb-4 text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+            {preview}
           </p>
         )}
 

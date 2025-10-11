@@ -3,15 +3,22 @@
  */
 
 export interface NoteMeta {
-  slug: string;
+  _id: string;
   title: string;
-  excerpt: string;
+  topic: string;
   tags: string[];
   updatedAt: string;
-  createdAt?: string;
+  createdAt: string;
+  content?: string; // Optional content for previews
+  user?: {
+    _id: string;
+    email: string;
+  };
+  // For backward compatibility with frontend
+  slug?: string;
+  excerpt?: string;
   readingTime?: number;
   thumbnail?: string;
-  topic?: string;
 }
 
 export interface Note extends NoteMeta {

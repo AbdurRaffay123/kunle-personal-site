@@ -10,7 +10,7 @@ import TwoColumn from "@/components/Layout/TwoColumn";
 import MarkdownRenderer from "@/components/Markdown/MarkdownRenderer";
 import Tag from "@/components/UI/Tag";
 import BlogCard from "@/components/Card/BlogCard";
-import GiscusComments from "@/components/Comments/GiscusComments";
+import CommentsSection from "@/components/Comments/CommentsSection";
 import ShareButtons from "@/components/ShareButtons/ShareButtons";
 import { getBlogBySlug, getBlogs } from "@/lib/api";
 import { formatDate, extractHeadings } from "@/lib/utils";
@@ -197,11 +197,8 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
       </div>
 
       {/* Comments */}
-      <div className="mt-16 border-t border-gray-200 pt-8 dark:border-gray-700">
-        <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
-          Comments
-        </h2>
-        <GiscusComments term={blog.title} />
+      <div className="mt-16">
+        <CommentsSection postId={blog.slug} postType="blog" />
       </div>
     </article>
   );

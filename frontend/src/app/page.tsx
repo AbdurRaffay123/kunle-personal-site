@@ -155,7 +155,7 @@ export default async function Home() {
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {latestNotes.map((note, index) => (
-                <NoteCard key={note.slug} note={note} index={index} />
+                <NoteCard key={note._id} note={note} index={index} />
               ))}
             </div>
           </div>

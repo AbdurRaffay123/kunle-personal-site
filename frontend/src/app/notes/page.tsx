@@ -6,6 +6,7 @@
 
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import NoteCard from "@/components/Card/NoteCard";
 import Container from "@/components/UI/Container";
 import Spinner from "@/components/UI/Spinner";
@@ -23,14 +24,14 @@ export default function NotesPage() {
 
   // Extract unique topics
   const topics = useMemo(() => {
-    if (!notes) return [];
+    if (!notes || !Array.isArray(notes)) return [];
     const uniqueTopics = Array.from(new Set(notes.map((note) => note.topic).filter(Boolean)));
     return uniqueTopics;
   }, [notes]);
 
   // Filter notes
   const filteredNotes = useMemo(() => {
-    if (!notes) return [];
+    if (!notes || !Array.isArray(notes)) return [];
     return notes.filter((note) => {
       const matchesSearch =
         !searchTerm ||
@@ -160,7 +161,7 @@ export default function NotesPage() {
         {!loading && filteredNotes.length > 0 && (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {filteredNotes.map((note, index) => (
-              <NoteCard key={note.slug} note={note} index={index} />
+              <NoteCard key={note._id} note={note} index={index} />
             ))}
           </div>
         )}

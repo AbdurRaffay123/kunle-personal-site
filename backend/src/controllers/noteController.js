@@ -5,18 +5,18 @@ const noteService = require('../services/noteService');
  */
 const createNote = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, topic, tags } = req.body;
     const userId = req.user.id;
 
     // Validate input
-    if (!title || !content) {
+    if (!title || !content || !topic) {
       return res.status(400).json({
         success: false,
-        message: 'Title and content are required'
+        message: 'Title, content, and topic are required'
       });
     }
 
-    const note = await noteService.createNote({ title, content }, userId);
+    const note = await noteService.createNote({ title, content, topic, tags }, userId);
 
     res.status(201).json({
       success: true,
@@ -104,20 +104,22 @@ const getNoteById = async (req, res) => {
 const updateNote = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content } = req.body;
+    const { title, content, topic, tags } = req.body;
     const userId = req.user.id;
 
     // Validate input
-    if (!title && !content) {
+    if (!title && !content && !topic && !tags) {
       return res.status(400).json({
         success: false,
-        message: 'At least title or content is required for update'
+        message: 'At least one field is required for update'
       });
     }
 
     const updateData = {};
     if (title) updateData.title = title;
     if (content) updateData.content = content;
+    if (topic) updateData.topic = topic;
+    if (tags) updateData.tags = tags;
 
     const note = await noteService.updateNote(id, updateData, userId);
 
@@ -182,10 +184,68 @@ const deleteNote = async (req, res) => {
   }
 };
 
+/**
+ * Get all public notes (for public display)
+ */
+const getPublicNotes = async (req, res) => {
+  try {
+    const { topic, tag, search } = req.query;
+    const notes = await noteService.getPublicNotes({ topic, tag, search });
+
+    res.status(200).json({
+      success: true,
+      message: 'Public notes retrieved successfully',
+      data: { 
+        notes,
+        count: notes.length
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching public notes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Get a single public note by ID
+ */
+const getPublicNoteById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const note = await noteService.getPublicNoteById(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Public note retrieved successfully',
+      data: { note }
+    });
+
+  } catch (error) {
+    if (error.message === 'Note not found') {
+      return res.status(404).json({
+        success: false,
+        message: 'Note not found'
+      });
+    }
+
+    console.error('Error fetching public note:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   createNote,
   getAllNotes,
   getNoteById,
   updateNote,
-  deleteNote
+  deleteNote,
+  getPublicNotes,
+  getPublicNoteById
 };

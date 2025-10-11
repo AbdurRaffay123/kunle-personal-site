@@ -4,10 +4,14 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Apply auth middleware to all note routes (Laravel-style route group)
+// Public routes (no authentication required)
+router.get('/public', noteController.getPublicNotes);           // GET /api/notes/public
+router.get('/public/:id', noteController.getPublicNoteById);    // GET /api/notes/public/:id
+
+// Protected routes (authentication required)
 router.use(authMiddleware);
 
-// Note routes
+// Admin/User note routes
 router.post('/', noteController.createNote);           // POST /api/notes
 router.get('/', noteController.getAllNotes);           // GET /api/notes
 router.get('/:id', noteController.getNoteById);        // GET /api/notes/:id

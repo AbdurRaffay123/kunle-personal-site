@@ -111,10 +111,71 @@ const deleteNote = async (noteId, userId) => {
   }
 };
 
+/**
+ * Get all public notes (for public display)
+ * @param {Object} filters - Filter options (topic, tag, search)
+ * @returns {Array} - Array of public notes
+ */
+const getPublicNotes = async (filters = {}) => {
+  try {
+    let query = {};
+    
+    // Apply filters
+    if (filters.topic) {
+      query.topic = new RegExp(filters.topic, 'i');
+    }
+    
+    if (filters.tag) {
+      query.tags = { $in: [new RegExp(filters.tag, 'i')] };
+    }
+    
+    if (filters.search) {
+      query.$or = [
+        { title: new RegExp(filters.search, 'i') },
+        { content: new RegExp(filters.search, 'i') },
+        { topic: new RegExp(filters.search, 'i') },
+        { tags: { $in: [new RegExp(filters.search, 'i')] } }
+      ];
+    }
+
+    const notes = await Note.find(query)
+      .populate('user', 'email')
+      .select('title content topic tags createdAt updatedAt') // Include content for previews
+      .sort({ createdAt: -1 }); // Latest first
+    
+    return notes;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Get a single public note by ID
+ * @param {string} noteId - Note ID
+ * @returns {Object} - Note object
+ */
+const getPublicNoteById = async (noteId) => {
+  try {
+    const note = await Note.findById(noteId)
+      .populate('user', 'email')
+      .select('title content topic tags createdAt updatedAt'); // Only return public fields
+    
+    if (!note) {
+      throw new Error('Note not found');
+    }
+    
+    return note;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createNote,
   getAllNotes,
   getNoteById,
   updateNote,
-  deleteNote
+  deleteNote,
+  getPublicNotes,
+  getPublicNoteById
 };

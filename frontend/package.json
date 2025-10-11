@@ -23,6 +23,7 @@
   "dependencies": {
     "@giscus/react": "^3.0.0",
     "@heroicons/react": "^2.2.0",
+    "axios": "^1.12.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.0.0",

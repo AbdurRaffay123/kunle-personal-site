@@ -10,8 +10,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
-import LogoutModal from "@/components/Admin/LogoutModal";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -25,13 +23,8 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { isAuthenticated, logout } = useAuth();
   const pathname = usePathname();
-  
-  // Check if we're in admin panel
-  const isAdminRoute = pathname.startsWith('/admin');
 
   useEffect(() => {
     setMounted(true);
@@ -46,15 +39,6 @@ export default function Header() {
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
-  };
-
-  const handleLogout = () => {
-    setShowLogoutModal(true);
-  };
-
-  const confirmLogout = () => {
-    logout();
-    setShowLogoutModal(false);
   };
 
   return (
@@ -74,10 +58,7 @@ export default function Header() {
           className="flex items-center space-x-3"
         >
           <Link href="/">
-            <h1 
-              className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 dark:from-blue-400 dark:via-blue-500 dark:to-sky-400 bg-clip-text text-transparent hover:from-blue-800 hover:to-sky-600 dark:hover:from-blue-300 dark:hover:to-sky-300 transition-all duration-300 cursor-pointer"
-              style={{ paddingLeft: isAdminRoute ? '50px' : '0px' }}
-            >
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 dark:from-blue-400 dark:via-blue-500 dark:to-sky-400 bg-clip-text text-transparent hover:from-blue-800 hover:to-sky-600 dark:hover:from-blue-300 dark:hover:to-sky-300 transition-all duration-300 cursor-pointer">
               Olukunle O.
             </h1>
           </Link>
@@ -185,34 +166,25 @@ export default function Header() {
             </motion.button>
           )}
 
-          {/* Login/Logout Button */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="hidden md:block"
-          >
-            {isAuthenticated ? (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
-              >
-                Logout
-              </motion.button>
-            ) : (
+          {/* Admin Login Link - Only show on public routes */}
+          {mounted && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="hidden md:block"
+            >
               <Link href="/admin/login">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
                 >
-                  Login
+                  Admin
                 </motion.button>
               </Link>
-            )}
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* Mobile Menu Button */}
           <motion.button
@@ -247,7 +219,7 @@ export default function Header() {
         </motion.div>
       </nav>
 
-      {/* Mobile Navigation Overlay */}
+      {/* Mobile Navigation */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -285,44 +257,27 @@ export default function Header() {
                 );
               })}
               
-              {/* Mobile Login/Logout Button */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: navigation.length * 0.1 }}
-                className="pt-4 border-t border-slate-200 dark:border-slate-700"
-              >
-                {isAuthenticated ? (
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="block w-full text-center text-lg font-medium py-3 px-4 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 cursor-pointer"
-                  >
-                    Logout
-                  </button>
-                ) : (
+              {/* Mobile Admin Link */}
+              {mounted && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: navigation.length * 0.1 }}
+                  className="pt-4 border-t border-slate-200 dark:border-slate-700"
+                >
                   <Link
                     href="/admin/login"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block w-full text-center text-lg font-medium py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md hover:from-blue-700 hover:to-sky-600 transition-all duration-300 cursor-pointer"
                   >
-                    Login
+                    Admin
                   </Link>
-                )}
-              </motion.div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Logout Confirmation Modal */}
-      <LogoutModal
-        isOpen={showLogoutModal}
-        onClose={() => setShowLogoutModal(false)}
-        onConfirm={confirmLogout}
-      />
     </header>
   );
 }

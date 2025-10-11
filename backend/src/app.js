@@ -13,6 +13,7 @@ const blogRoutes = require('./routes/blogRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const articleRoutes = require('./routes/articleRoutes');
 const uploadErrorHandler = require('./middleware/uploadErrorHandler');
+const researchRoutes = require('./routes/researchRoutes');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/articles', articleRoutes);
+app.use('/api/research', researchRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

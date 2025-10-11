@@ -23,12 +23,12 @@ interface AdminSidebarProps {
 
 const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
-  { name: "Blogs", href: "/admin/blogs", icon: DocumentTextIcon },
-  { name: "Notes", href: "/admin/notes", icon: BookOpenIcon },
-  { name: "Projects", href: "/admin/projects", icon: FolderIcon },
-  { name: "Research", href: "/admin/research", icon: AcademicCapIcon },
-  { name: "Comments", href: "/admin/comments", icon: ChatBubbleLeftRightIcon },
-  { name: "About", href: "/admin/about", icon: UserIcon },
+  { name: "Blogs", href: "/admin/dashboard/blogs", icon: DocumentTextIcon },
+  { name: "Notes", href: "/admin/dashboard/notes", icon: BookOpenIcon },
+  { name: "Projects", href: "/admin/dashboard/projects", icon: FolderIcon }, // Fixed: changed 'folder' to 'href'
+  { name: "Research", href: "/admin/dashboard/research", icon: AcademicCapIcon },
+  { name: "Comments", href: "/admin/dashboard/comments", icon: ChatBubbleLeftRightIcon },
+  { name: "About", href: "/admin/dashboard/about", icon: UserIcon },
 ];
 
 export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
@@ -53,13 +53,18 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-center h-16 px-6 border-b border-slate-700">
-            <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 dark:from-blue-400 dark:via-blue-500 dark:to-sky-400 bg-clip-text text-transparent hover:from-blue-800 hover:to-sky-600 dark:hover:from-blue-300 dark:hover:to-sky-300 transition-all duration-300 cursor-pointer">Admin Panel</h2>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">
+              Admin Panel
+            </h2>
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 px-6 py-6 space-y-2">
             {navigation.map((item) => {
-              const isActive = pathname === item.href;
+              // Check if current path matches exactly or starts with the href for nested routes
+              const isActive = pathname === item.href || 
+                              (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+              
               return (
                 <Link
                   key={item.name}
@@ -68,7 +73,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                   className={`flex items-center px-4 py-3 rounded-md text-base font-medium transition-all ${
                     isActive
                       ? "bg-blue-700 text-white shadow-md"
-                      : "hover:bg-blue-600 hover:text-white"
+                      : "hover:bg-slate-700 hover:text-white"
                   }`}
                 >
                   <item.icon className="h-5 w-5 mr-3" />

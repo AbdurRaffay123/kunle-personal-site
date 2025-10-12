@@ -213,6 +213,24 @@ const getTagsController = async (req, res) => {
   }
 };
 
+// Controller function
+const getResearchByTagController = async (req, res) => {
+  try {
+    const research = await require('../services/researchService').getResearchByTag(req.params.tag);
+    res.status(200).json({
+      success: true,
+      message: 'Research fetched successfully',
+      data: research
+    });
+  } catch (error) {
+    console.error('Get research by tag error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch research by tag'
+    });
+  }
+};
+
 module.exports = {
   createResearch: createResearchController,
   getAllResearch: getAllResearchController,
@@ -222,20 +240,5 @@ module.exports = {
   getResearchByCategory: getResearchByCategoryController,
   getCategories: getCategoriesController,
   getTags: getTagsController,
-  getResearchByTag: async (req, res) => {
-    try {
-      const research = await require('../services/researchService').getResearchByTag(req.params.tag);
-      res.status(200).json({
-        success: true,
-        message: 'Research fetched successfully',
-        data: research
-      });
-    } catch (error) {
-      console.error('Get research by tag error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to fetch research by tag'
-      });
-    }
-  }
+  getResearchByTag: getResearchByTagController
 };

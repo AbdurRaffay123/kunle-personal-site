@@ -12,6 +12,7 @@ import Tag from "@/components/UI/Tag";
 import BlogCard from "@/components/Card/BlogCard";
 import CommentsSection from "@/components/Comments/CommentsSection";
 import ShareButtons from "@/components/ShareButtons/ShareButtons";
+import BackButton from "@/components/UI/BackButton";
 import { getBlogBySlug, getBlogs } from "@/lib/api";
 import { formatDate, extractHeadings } from "@/lib/utils";
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
@@ -204,7 +205,12 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
   );
 
   return (
-    <div className="py-8">
+    <div>
+      <Container>
+        <div className="flex justify-start mb-6 pt-8">
+          <BackButton />
+        </div>
+      </Container>
       <TwoColumn main={main} sidebar={sidebar} />
     </div>
   );

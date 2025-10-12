@@ -131,7 +131,12 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
         {/* Lists */}
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          onClick={() => {
+            console.log('Bullet list clicked');
+            console.log('Current HTML:', editor.getHTML());
+            editor.chain().focus().toggleBulletList().run();
+            console.log('After bullet list HTML:', editor.getHTML());
+          }}
           isActive={editor.isActive('bulletList')}
           title="Bullet List"
         >
@@ -139,7 +144,12 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         </ToolbarButton>
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          onClick={() => {
+            console.log('Ordered list clicked');
+            console.log('Current HTML:', editor.getHTML());
+            editor.chain().focus().toggleOrderedList().run();
+            console.log('After ordered list HTML:', editor.getHTML());
+          }}
           isActive={editor.isActive('orderedList')}
           title="Numbered List"
         >

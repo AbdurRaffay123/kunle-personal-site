@@ -5,6 +5,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
 import AdminModal from "@/components/Admin/AdminModal";
@@ -29,6 +31,7 @@ interface Note {
 }
 
 export default function AdminNotesPage() {
+  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [isEditorMode, setIsEditorMode] = useState(false);
   const [currentNote, setCurrentNote] = useState<Note | null>(null);
@@ -256,6 +259,17 @@ export default function AdminNotesPage() {
     return (
       <AdminLayout title={isEditingExisting ? "Edit Note Content" : "Create New Note"}>
         <div className="space-y-6">
+          {/* Back Button */}
+          <div className="flex justify-start">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
+            >
+              <ArrowLeftIcon className="w-4 h-4 mr-2" />
+              Back
+            </button>
+          </div>
+          
           {/* Editor Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -311,10 +325,23 @@ export default function AdminNotesPage() {
   if (loading) {
     return (
       <AdminLayout title="Manage Notes">
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading notes...</p>
+        <div className="space-y-6">
+          {/* Back Button */}
+          <div className="flex justify-start">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
+            >
+              <ArrowLeftIcon className="w-4 h-4 mr-2" />
+              Back
+            </button>
+          </div>
+          
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-slate-600 dark:text-slate-400">Loading notes...</p>
+            </div>
           </div>
         </div>
       </AdminLayout>
@@ -324,6 +351,17 @@ export default function AdminNotesPage() {
   return (
     <AdminLayout title="Manage Notes">
       <div className="space-y-6">
+        {/* Back Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
+          >
+            <ArrowLeftIcon className="w-4 h-4 mr-2" />
+            Back
+          </button>
+        </div>
+        
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>

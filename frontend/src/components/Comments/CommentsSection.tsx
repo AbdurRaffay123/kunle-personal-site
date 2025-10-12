@@ -158,9 +158,8 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
 
     // Listen for deleted comments
     socket.on('delete-comment', ({ commentId }: { commentId: string }) => {
-      setComments(prevComments => 
-        prevComments.filter(comment => comment._id !== commentId)
-      );
+      // Refresh comments to handle cascade deletion properly
+      fetchComments();
     });
 
     // Cleanup

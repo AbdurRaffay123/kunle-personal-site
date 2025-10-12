@@ -1,20 +1,17 @@
 "use client";
 import { useProfile } from "@/contexts/ProfileContext";
 
-/**
- * Clean footer with social icons
- */
-
 const currentYear = new Date().getFullYear();
 
 export default function Footer() {
-  const profile = useProfile();
+  const mainData = useProfile();
+  const profile = mainData?.profile;
 
   return (
     <footer className="w-full bg-white dark:bg-slate-900 text-center py-16 px-8 sm:px-12 lg:px-16 xl:px-24 border-t border-slate-300/20 dark:border-slate-700/20 ">
       <div className="max-w-screen-2xl mx-auto py-8">
         <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
-          © {currentYear} Olukunle O. — All rights reserved.
+          © {currentYear} {profile?.name || "Your Name"} — All rights reserved.
         </p>
 
         {/* Social Icons */}
@@ -27,6 +24,7 @@ export default function Footer() {
               aria-label="LinkedIn"
               className="text-2xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
             >
+              {/* LinkedIn SVG */}
               <svg
                 className="w-7 h-7"
                 fill="currentColor"
@@ -46,6 +44,7 @@ export default function Footer() {
               aria-label="GitHub"
               className="text-2xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
             >
+              {/* GitHub SVG */}
               <svg
                 className="w-7 h-7"
                 fill="currentColor"
@@ -67,6 +66,7 @@ export default function Footer() {
               aria-label="Email"
               className="text-2xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
             >
+              {/* Email SVG */}
               <svg
                 className="w-7 h-7"
                 fill="none"
@@ -92,6 +92,7 @@ export default function Footer() {
               aria-label="Twitter"
               className="text-2xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
             >
+              {/* Twitter SVG */}
               <svg
                 className="w-7 h-7"
                 fill="currentColor"

@@ -5,6 +5,8 @@ const { uploadProfileImage } = require('../middleware/uploadMiddleware');
 
 const router = express.Router();
 
+router
+
 // Apply auth middleware to all profile routes
 router.use(authMiddleware);
 

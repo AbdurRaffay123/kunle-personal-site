@@ -13,18 +13,24 @@ export interface Profile {
   };
 }
 
-const ProfileContext = createContext<Profile | null>(null);
+export interface MainPageData {
+  profile: Profile | null;
+  research: any[];
+  projects: any[];
+}
+
+const ProfileContext = createContext<MainPageData | null>(null);
 
 export const useProfile = () => useContext(ProfileContext);
 
 export function ProfileProvider({
-  profile,
+  mainData,
   children,
 }: {
-  profile: Profile;
+  mainData: MainPageData;
   children: React.ReactNode;
 }) {
   return (
-    <ProfileContext.Provider value={profile}>{children}</ProfileContext.Provider>
+    <ProfileContext.Provider value={mainData}>{children}</ProfileContext.Provider>
   );
 }

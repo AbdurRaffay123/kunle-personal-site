@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import ThemeProvider from "@/providers/ThemeProvider";
-import { getProfile } from "@/apis/About/api";
+import { getMainPageData } from "@/apis/About/api";
 import { ProfileProvider } from "@/contexts/ProfileContext";
 import ConditionalLayout from "@/components/Layout/ConditionalLayout";
 import "./globals.css";
@@ -81,12 +81,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let profile: any = null;
+  let mainData = { profile: null, research: [], projects: [] };
   try {
-    const res = await getProfile();
-    profile = res?.data || null;
+    const res = await getMainPageData();
+    mainData = res?.data || mainData;
   } catch {
-    profile = null;
+    // fallback to empty data
   }
 
   return (
@@ -100,7 +100,7 @@ export default async function RootLayout({
         className={`${inter.variable} ${lora.variable} bg-white font-sans text-gray-900 antialiased dark:bg-gray-900 dark:text-white`}
       >
         <ThemeProvider>
-          <ProfileProvider profile={profile}>
+          <ProfileProvider mainData={mainData}>
             <ConditionalLayout>{children}</ConditionalLayout>
           </ProfileProvider>
         </ThemeProvider>

@@ -21,3 +21,14 @@ export const createOrUpdateProfile = async (formData: FormData) => {
     throw error.response?.data || { success: false, message: "Failed to save profile" };
   }
 };
+
+// Get main page data (profile, research, projects)
+export const getMainPageData = async () => {
+  try {
+    const response = await instance.get("/api/main");
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch main page data" };
+  }
+};
+

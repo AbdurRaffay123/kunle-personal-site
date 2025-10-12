@@ -143,8 +143,14 @@ const getTags = async () => {
 
 // Get research by tag
 const getResearchByTag = async (tag) => {
+  // Split the tag string into keywords
+  const keywords = tag.split('&').map(k => k.trim()).filter(Boolean);
+
+  // Build an array of regex for each keyword
+  const regexArr = keywords.map(k => new RegExp(k, 'i'));
+
   const research = await Research.find({
-    tags: new RegExp(tag, 'i'),
+    tags: { $in: regexArr },
     isPublished: true
   })
     .populate('createdBy', 'email')

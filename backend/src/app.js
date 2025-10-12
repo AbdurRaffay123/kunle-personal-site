@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Serve static files
-app.use('/stored-files', express.static(path.join(__dirname, 'stored-files')));
+app.use('/stored-files', express.static(path.join(__dirname, '../stored-files')));
 
 // Routes
 app.use('/api/auth', authRoutes);

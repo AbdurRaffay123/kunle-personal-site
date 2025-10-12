@@ -89,10 +89,9 @@ export default function AdminAboutPage() {
       fd.append("name", formData.name);
       fd.append("designation", formData.designation);
       fd.append("bio", formData.bio);
-      fd.append("linkedin", formData.socialLinks.linkedin);
-      fd.append("github", formData.socialLinks.github);
-      fd.append("twitter", formData.socialLinks.twitter);
-      fd.append("email", formData.socialLinks.email);
+
+      // Always send socialLinks as a JSON string
+      fd.append("socialLinks", JSON.stringify(formData.socialLinks));
 
       if (formData.image && formData.image instanceof File) {
         fd.append("image", formData.image);
@@ -275,6 +274,10 @@ function EditForm({
   onCancel: () => void;
   onSave: () => void;
 }) {
+  const filteredSocialLinks = Object.fromEntries(
+    Object.entries(formData.socialLinks).filter(([_, v]) => v && v.trim() !== "")
+  );
+
   return (
     <form className="space-y-6" onSubmit={e => { e.preventDefault(); onSave(); }}>
       {/* Profile Image */}
@@ -372,11 +375,15 @@ function EditForm({
                 {platform}
               </label>
               <input
-                type="url"
+                type={platform === "email" ? "email" : "url"}
                 value={url}
                 onChange={(e) => onChange(`socialLinks.${platform}`, e.target.value)}
                 className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={`https://${platform}.com/username`}
+                placeholder={
+                  platform === "email"
+                    ? "your@email.com"
+                    : `https://${platform}.com/username`
+                }
               />
             </div>
           ))}

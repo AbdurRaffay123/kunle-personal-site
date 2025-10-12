@@ -16,6 +16,9 @@ const commentRoutes = require('./routes/commentRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const uploadErrorHandler = require('./middleware/uploadErrorHandler');
 const researchRoutes = require('./routes/researchRoutes');
+// In app.js or index.js
+const mainPageRoutes = require('./routes/mainPageRoutes');
+
 
 const app = express();
 
@@ -45,6 +48,7 @@ app.use('/api/articles', articleRoutes);
 app.use('/api/research', researchRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/main', mainPageRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

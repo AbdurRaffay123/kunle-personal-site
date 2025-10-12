@@ -11,20 +11,34 @@ const path = require('path');
  */
 const createOrUpdateProfile = async (userId, profileData, imagePath = null) => {
   try {
+    // Parse socialLinks if sent as JSON string (from FormData)
+    if (typeof profileData.socialLinks === "string") {
+      profileData.socialLinks = JSON.parse(profileData.socialLinks);
+    }
+
     // Check if profile already exists
     let existingProfile = await UserProfile.findOne({ user: userId });
-    
+
     // Prepare profile data
-    const updateData = {
+    let updateData = {
       user: userId,
       ...profileData
     };
-    
-    // Add image path if provided (from your existing multer config)
+
+    // Merge socialLinks if updating
+    if (profileData.socialLinks && existingProfile) {
+      const filteredLinks = Object.fromEntries(
+        Object.entries(profileData.socialLinks).filter(([_, v]) => v && v.trim() !== "")
+      );
+      updateData.socialLinks = {
+        ...(existingProfile.socialLinks || { linkedin: '', github: '', twitter: '', email: '' }),
+        ...filteredLinks
+      };
+    }
+
+    // Add image path if provided
     if (imagePath) {
       updateData.image = imagePath;
-      
-      // If updating existing profile and it has an old image, delete it
       if (existingProfile && existingProfile.image && existingProfile.image !== imagePath) {
         try {
           const oldImagePath = path.join(__dirname, '../stored-files/avatars', path.basename(existingProfile.image));
@@ -34,15 +48,15 @@ const createOrUpdateProfile = async (userId, profileData, imagePath = null) => {
         }
       }
     }
-    
+
     let profile;
     let isNewProfile = false;
-    
+
     if (existingProfile) {
       // Update existing profile
       profile = await UserProfile.findOneAndUpdate(
         { user: userId },
-        updateData,
+        { $set: updateData },
         { new: true, runValidators: true }
       ).populate('user', 'email');
     } else {
@@ -52,7 +66,7 @@ const createOrUpdateProfile = async (userId, profileData, imagePath = null) => {
       await profile.populate('user', 'email');
       isNewProfile = true;
     }
-    
+
     return { profile, isNewProfile };
   } catch (error) {
     throw error;

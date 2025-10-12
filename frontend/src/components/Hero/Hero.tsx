@@ -5,9 +5,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Button from "@/components/UI/Button";
 import Link from "next/link";
 import Image from "next/image";
+import { useProfile } from "@/contexts/ProfileContext";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,6 +35,11 @@ const itemVariants = {
 };
 
 export default function Hero() {
+  const mainData = useProfile();
+  const profile = mainData?.profile;
+  const projects = mainData?.projects || [];
+  const research = mainData?.research || [];
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 dark:from-slate-900 dark:via-blue-900 dark:to-slate-950">
       {/* Animated background elements */}
@@ -80,26 +87,39 @@ export default function Hero() {
             >
               Hi, I&apos;m
               <br />
-              <span className="text-white">Olukunle O., PhD</span>
+              <span className="text-white">{profile?.name || "Your Name"}</span>
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
               className="text-xl md:text-2xl leading-relaxed text-slate-200 dark:text-slate-300 max-w-3xl mb-8"
             >
-              Lead AI Engineer & Applied Scientist with{" "}
-              <span className="text-sky-400 font-semibold">7+ years</span> of
-              End-to-End AI & ML experience. Ex Meta Engineer, PhD at Tufts.
+              {profile?.bio || "Your bio goes here."}
             </motion.p>
 
-            <motion.p
-              variants={itemVariants}
-              className="text-lg leading-relaxed text-slate-300 dark:text-slate-400 max-w-2xl mb-10"
-            >
-              I specialize in building and deploying large-scale end-to-end ML
-              systems including LLMs, Recommender Systems, Anomaly/Fraud
-              Detection, Forecasting, and Optimization.
-            </motion.p>
+            {/* Optionally show latest research/project titles */}
+            <motion.div variants={itemVariants} className="mb-6">
+              {research.length > 0 && (
+                <div className="mb-2">
+                  <span className="font-semibold text-blue-300">Latest Research:</span>
+                  <ul className="list-disc ml-6 text-slate-200">
+                    {research.map((item: any) => (
+                      <li key={item.title}>{item.title}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {projects.length > 0 && (
+                <div>
+                  <span className="font-semibold text-blue-300">Latest Projects:</span>
+                  <ul className="list-disc ml-6 text-slate-200">
+                    {projects.map((item: any) => (
+                      <li key={item.title}>{item.title}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </motion.div>
 
             <motion.div
               variants={itemVariants}
@@ -159,20 +179,23 @@ export default function Hero() {
               
               {/* Main profile picture container */}
               <div className="relative w-80 h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl shadow-blue-500/30 bg-gradient-to-br from-blue-500/20 to-sky-500/20 backdrop-blur-sm">
-                <Image
-                  src="/profile-pic.jpeg"
-                  alt="Olukunle Owolabi - AI Engineer & Applied Scientist"
-                  fill
-                  className="object-cover object-center"
-                  priority
-                  sizes="(max-width: 768px) 320px, (max-width: 1024px) 384px, 384px"
-                />
-                
-                {/* Overlay gradient for better text contrast */}
+                {profile?.image && (
+                  <Image
+                    src={
+                      profile.image.startsWith("http")
+                        ? profile.image
+                        : `${BACKEND_URL.replace(/\/$/, "")}${profile.image.startsWith("/") ? "" : "/"}${profile.image}`
+                    }
+                    alt={profile?.name || "Profile"}
+                    fill
+                    className="object-cover object-center"
+                    priority
+                    sizes="(max-width: 768px) 320px, (max-width: 1024px) 384px, 384px"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent" />
               </div>
-              
-              {/* Floating tech badges around the profile picture */}
+              {/* Floating tech badges */}
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -181,7 +204,6 @@ export default function Hero() {
               >
                 <span className="text-2xl">🤖</span>
               </motion.div>
-              
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -190,7 +212,6 @@ export default function Hero() {
               >
                 <span className="text-2xl">📊</span>
               </motion.div>
-              
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -199,7 +220,6 @@ export default function Hero() {
               >
                 <span className="text-lg">🔍</span>
               </motion.div>
-              
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}

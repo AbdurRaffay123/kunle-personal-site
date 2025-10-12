@@ -6,14 +6,14 @@ const getMainPageData = async () => {
   // Get profile (exclude _id and sensitive fields)
   const profile = await UserProfile.findOne({}, { _id: 0, password: 0 });
 
-  // Get latest 3 research items
+  // Get latest 3 research items (if Research has isPublished)
   const research = await Research.find({ isPublished: true })
     .sort({ createdAt: -1 })
     .limit(3)
-    .select('-_id -author'); // Exclude _id and author if needed
+    .select('-_id -author');
 
-  // Get latest 3 projects
-  const projects = await Project.find({ isPublished: true })
+  // Get latest 3 projects (no isPublished filter)
+  const projects = await Project.find({})
     .sort({ createdAt: -1 })
     .limit(3)
     .select('-_id');

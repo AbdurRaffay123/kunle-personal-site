@@ -45,7 +45,7 @@ const uploadProfileImage = multer({
     fileSize: 2 * 1024 * 1024, // 2MB limit
     files: 1 // Single file only
   }
-}).single('profileImage'); // Field name 'profileImage'
+}).single('image'); // Field name 'profileImage'
 
 module.exports = {
   uploadProfileImage

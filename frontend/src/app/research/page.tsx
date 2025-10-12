@@ -8,37 +8,52 @@ import EmptyState from "@/components/UI/EmptyState";
 import ErrorState from "@/components/UI/ErrorState";
 import { debounce } from "@/lib/utils";
 import { useFetch } from "@/hooks/useFetch";
-import { getAllResearch } from "@/apis/Research/api";
+import { getAllResearch, getResearchByTag } from "@/apis/Research/api";
 import type { Research } from "@/apis/Research/api";
 import ResearchCard from "@/components/Card/ResearchCard"; // You should create this similar to ProjectCard
 
+const TAG_FILTERS = [
+  "All",
+  "LLM & Deep Learning",
+  "NLP",
+  "Forecasting",
+  "ML",
+  "Others",
+];
+
 export default function ResearchPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+  const [activeTag, setActiveTag] = useState("All");
+
   const fetchResearchList = useCallback(
     async () => {
-      const res = await getAllResearch();
-      return res.data;
+      if (activeTag && activeTag !== "All") {
+        const res = await getResearchByTag(activeTag);
+        return res.data;
+      } else {
+        const res = await getAllResearch();
+        return res.data;
+      }
     },
-    [] // No dependencies, so it's stable
+    [activeTag]
   );
 
   const { data: researchList, loading, error, refetch } = useFetch<Research[]>(fetchResearchList);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
-  // Filter researches
+  // Filter researches (only by search, tag filtering is now handled by API)
   const filteredResearch = useMemo(() => {
     if (!researchList) return [];
     return researchList.filter((research) => {
-      const matchesSearch =
+      return (
         !searchTerm ||
         research.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         research.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         research.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        research.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-      // If you have a featured property, use it; otherwise, remove featured filter
-      return matchesSearch;
+        research.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     });
-  }, [researchList, searchTerm, showFeaturedOnly]);
+  }, [researchList, searchTerm]);
 
   const handleSearch = debounce((value: string) => {
     setSearchTerm(value);
@@ -106,6 +121,23 @@ export default function ResearchPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Tag Filters */}
+        <div className="mb-8 flex flex-wrap gap-3 justify-center">
+          {TAG_FILTERS.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => setActiveTag(tag)}
+              className={`px-4 py-2 rounded-full font-medium text-sm transition ${
+                activeTag === tag
+                  ? "bg-blue-600 text-white shadow"
+                  : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900"
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
 
         {/* Results count */}
         {!loading && researchList && (

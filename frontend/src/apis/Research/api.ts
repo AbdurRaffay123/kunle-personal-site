@@ -1,3 +1,4 @@
+
 import instance from "@/axios/Axios";
 
 // Types
@@ -168,6 +169,21 @@ export const getResearchByCategory = async (category: string): Promise<ResearchL
     throw {
       success: false,
       message: error.response?.data?.message || 'Failed to fetch research by category',
+      errors: error.response?.data?.errors || []
+    } as ApiError;
+  }
+
+};
+
+export const getResearchByTag = async (tag: string): Promise<ResearchListResponse> => {
+  try {
+    const response = await instance.get(`/api/research/tag/${tag}`);
+    return response.data;
+  } catch (error: any) {
+    console.error('Get research by tag error:', error);
+    throw {
+      success: false,
+      message: error.response?.data?.message || 'Failed to fetch research by tag',
       errors: error.response?.data?.errors || []
     } as ApiError;
   }

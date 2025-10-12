@@ -4,15 +4,19 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import { UserIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import { getProfile, createOrUpdateProfile } from "@/apis/About/api";
+import { toast } from "react-hot-toast";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 interface AboutData {
   name: string;
   designation: string;
   bio: string;
-  profileImage: string;
+  image: string | File; // <-- allow both types
   socialLinks: {
     linkedin: string;
     github: string;
@@ -22,32 +26,92 @@ interface AboutData {
 }
 
 export default function AdminAboutPage() {
-  const [aboutData, setAboutData] = useState<AboutData>({
-    name: "Olukunle Owolabi",
-    designation: "Lead AI Engineer & Applied Scientist",
-    bio: "Lead AI Engineer & Applied Scientist with 7+ years of End-to-End AI & ML experience. Ex Meta Engineer, PhD at Tufts. I specialize in building and deploying large-scale end-to-end ML systems including LLMs, Recommender Systems, Anomaly/Fraud Detection, Forecasting, and Optimization.",
-    profileImage: "/api/placeholder/300/300",
-    socialLinks: {
-      linkedin: "https://linkedin.com/in/olukunle",
-      github: "https://github.com/olukunle",
-      twitter: "https://twitter.com/olukunle",
-      email: "olukunle@example.com",
-    },
-  });
-
+  const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(aboutData);
+  const [formData, setFormData] = useState<AboutData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await getProfile();
+        if (res.success && res.data) {
+          setAboutData(res.data);
+          setFormData(res.data); // Initialize formData for editing
+        } else {
+          // No profile data: initialize empty formData for creation
+          setFormData({
+            name: "",
+            designation: "",
+            bio: "",
+            image: "",
+            socialLinks: {
+              linkedin: "",
+              github: "",
+              twitter: "",
+              email: "",
+            },
+          });
+          setIsEditing(true); // Show form for creation
+        }
+      } catch (error: any) {
+        toast.error(error.message || "Failed to fetch profile");
+        // On error, allow creation
+        setFormData({
+          name: "",
+          designation: "",
+          bio: "",
+          image: "",
+          socialLinks: {
+            linkedin: "",
+            github: "",
+            twitter: "",
+            email: "",
+          },
+        });
+        setIsEditing(true);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleEdit = () => {
-    setFormData(aboutData);
+    setFormData(aboutData); // Set formData to current profile
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setAboutData(formData);
-    setIsEditing(false);
-    // Here you would typically save to backend
-    alert("About information saved successfully!");
+  const handleSave = async () => {
+    if (!formData) return;
+    setIsLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append("name", formData.name);
+      fd.append("designation", formData.designation);
+      fd.append("bio", formData.bio);
+      fd.append("linkedin", formData.socialLinks.linkedin);
+      fd.append("github", formData.socialLinks.github);
+      fd.append("twitter", formData.socialLinks.twitter);
+      fd.append("email", formData.socialLinks.email);
+
+      if (formData.image && formData.image instanceof File) {
+        fd.append("image", formData.image);
+      }
+
+      const res = await createOrUpdateProfile(fd);
+      if (res.success && res.data) {
+        setAboutData(res.data);
+        setFormData(res.data);
+        toast.success("About information saved successfully!");
+        setIsEditing(false);
+      } else {
+        toast.error(res.message || "Failed to save profile");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to save profile");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -55,14 +119,15 @@ export default function AdminAboutPage() {
     setIsEditing(false);
   };
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | File) => {
+    if (!formData) return;
     if (field.startsWith("socialLinks.")) {
       const socialField = field.split(".")[1];
       setFormData({
         ...formData,
         socialLinks: {
           ...formData.socialLinks,
-          [socialField]: value,
+          [socialField]: value as string,
         },
       });
     } else {
@@ -75,16 +140,11 @@ export default function AdminAboutPage() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // In a real app, you would upload the file and get a URL
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setFormData({
-          ...formData,
-          profileImage: event.target?.result as string,
-        });
-      };
-      reader.readAsDataURL(file);
+    if (file && formData) {
+      setFormData({
+        ...formData,
+        image: file,
+      });
     }
   };
 
@@ -101,25 +161,30 @@ export default function AdminAboutPage() {
               Manage your personal information and bio
             </p>
           </div>
-          <button
-            onClick={isEditing ? handleSave : handleEdit}
-            className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 rounded-md hover:opacity-90 transition font-medium"
-          >
-            {isEditing ? "Save Changes" : "Edit Profile"}
-          </button>
+          {/* Show Edit/Create button only if not editing */}
+          {!isEditing && (
+            <button
+              onClick={handleEdit}
+              className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 rounded-md hover:opacity-90 transition font-medium"
+              disabled={isLoading}
+            >
+              {aboutData ? "Edit Profile" : "Create Profile"}
+            </button>
+          )}
         </div>
 
         {/* Content */}
         <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-md max-w-4xl mx-auto space-y-6">
           {isEditing ? (
             <EditForm
-              formData={formData}
+              formData={formData!}
               onChange={handleChange}
               onImageUpload={handleImageUpload}
               onCancel={handleCancel}
+              onSave={handleSave}
             />
           ) : (
-            <ViewMode aboutData={aboutData} />
+            aboutData && <ViewMode aboutData={aboutData} />
           )}
         </div>
       </div>
@@ -135,7 +200,13 @@ function ViewMode({ aboutData }: { aboutData: AboutData }) {
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
         <div className="relative">
           <img
-            src={aboutData.profileImage}
+            src={
+              typeof aboutData.image === "string" && aboutData.image
+                ? aboutData.image.startsWith("http")
+                  ? aboutData.image
+                  : `${BACKEND_URL.replace(/\/$/, "")}${aboutData.image.startsWith("/") ? "" : "/"}${aboutData.image}`
+                : undefined
+            }
             alt={aboutData.name}
             className="w-32 h-32 rounded-full object-cover border-4 border-blue-200 dark:border-blue-800"
           />
@@ -196,25 +267,38 @@ function EditForm({
   onChange,
   onImageUpload,
   onCancel,
+  onSave,
 }: {
   formData: AboutData;
-  onChange: (field: string, value: string) => void;
+  onChange: (field: string, value: string | File) => void;
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCancel: () => void;
+  onSave: () => void;
 }) {
   return (
-    <form className="space-y-6">
+    <form className="space-y-6" onSubmit={e => { e.preventDefault(); onSave(); }}>
       {/* Profile Image */}
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Profile Image
         </label>
         <div className="flex items-center gap-4">
-          <img
-            src={formData.profileImage}
-            alt="Profile"
-            className="w-20 h-20 rounded-full object-cover border-2 border-slate-300 dark:border-slate-600"
-          />
+          {(typeof formData.image === "string" && formData.image) ||
+           (formData.image instanceof File) ? (
+            <img
+              src={
+                typeof formData.image === "string" && formData.image
+                  ? formData.image.startsWith("http")
+                    ? formData.image
+                    : `${BACKEND_URL.replace(/\/$/, "")}${formData.image.startsWith("/") ? "" : "/"}${formData.image}`
+                  : formData.image instanceof File
+                  ? URL.createObjectURL(formData.image as File)
+                  : undefined
+              }
+              alt="Profile"
+              className="w-20 h-20 rounded-full object-cover border-2 border-slate-300 dark:border-slate-600"
+            />
+          ) : null}
           <div>
             <input
               type="file"
@@ -309,10 +393,7 @@ function EditForm({
           Cancel
         </button>
         <button
-          type="button"
-          onClick={() => {
-            // This will be handled by the parent component
-          }}
+          type="submit"
           className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-2 rounded-md hover:opacity-90 transition"
         >
           Save Changes

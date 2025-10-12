@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import Button from "@/components/UI/Button";
 import Link from "next/link";
 import Image from "next/image";
+import { useProfile } from "@/contexts/ProfileContext";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,6 +34,8 @@ const itemVariants = {
 };
 
 export default function Hero() {
+  const profile = useProfile();
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 dark:from-slate-900 dark:via-blue-900 dark:to-slate-950">
       {/* Animated background elements */}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import ThemeProvider from "@/providers/ThemeProvider";
+import { getProfile } from "@/apis/About/api";
+import { ProfileProvider } from "@/contexts/ProfileContext";
 import ConditionalLayout from "@/components/Layout/ConditionalLayout";
 import "./globals.css";
 
@@ -74,11 +76,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let profile: any = null;
+  try {
+    const res = await getProfile();
+    profile = res?.data || null;
+  } catch {
+    profile = null;
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -90,7 +100,9 @@ export default function RootLayout({
         className={`${inter.variable} ${lora.variable} bg-white font-sans text-gray-900 antialiased dark:bg-gray-900 dark:text-white`}
       >
         <ThemeProvider>
-          <ConditionalLayout>{children}</ConditionalLayout>
+          <ProfileProvider profile={profile}>
+            <ConditionalLayout>{children}</ConditionalLayout>
+          </ProfileProvider>
         </ThemeProvider>
 
         {/* Schema.org structured data */}

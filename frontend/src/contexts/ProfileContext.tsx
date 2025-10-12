@@ -3,6 +3,7 @@ import React, { createContext, useContext } from "react";
 
 export interface Profile {
   name: string;
+  designation?: string;
   bio: string;
   image: string;
   socialLinks: {

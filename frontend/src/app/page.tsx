@@ -7,7 +7,8 @@ import Hero from "@/components/Hero/Hero";
 import NoteCard from "@/components/Card/NoteCard";
 import BlogCard from "@/components/Card/BlogCard";
 import ProjectCard from "@/components/Card/ProjectCard";
-import { getBlogs } from "@/lib/api";
+import ResearchCard from "@/components/Card/ResearchCard";
+import { getBlogs, getNotes } from "@/lib/api";
 import { getMainPageData } from "@/apis/About/api"; // <-- Import your profile API
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
 
@@ -19,9 +20,12 @@ export const metadata = genMeta({
 });
 
 export default async function Home() {
-  // Fetch blogs as before
+  // Fetch blogs and notes
   const blogs = await getBlogs().catch(() => []);
   const latestBlogs = blogs.slice(0, 3);
+  
+  const notes = await getNotes().catch(() => []);
+  const latestNotes = notes.slice(0, 3);
 
   // Fetch user profile (which includes projects and research)
   const profileRes = await getMainPageData().catch(() => null);
@@ -122,7 +126,7 @@ export default async function Home() {
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
               {featuredProjects.map((project: any, index: number) => (
-                <ProjectCard key={project._id} project={project} index={index} />
+                <ProjectCard key={project._id || `project-${index}`} project={project} index={index} />
               ))}
             </div>
           </div>
@@ -154,7 +158,39 @@ export default async function Home() {
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {latestResearch.map((research: any, index: number) => (
-                <NoteCard key={research._id} note={research} index={index} />
+                <ResearchCard key={research._id || `research-${index}`} research={research} index={index} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Latest Notes */}
+      {latestNotes.length > 0 && (
+        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-slate-900 dark:bg-slate-900">
+          <div className="max-w-screen-2xl mx-auto">
+            <div className="mb-12 flex items-center justify-between">
+              <div>
+                <h2 className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">
+                  Latest Notes
+                </h2>
+                <p className="text-lg text-slate-300">
+                  Quick thoughts and technical notes
+                </p>
+              </div>
+              <Link
+                href="/notes"
+                className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-blue-400 font-semibold hover:text-blue-300 transition-colors"
+              >
+                View All
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {latestNotes.map((note: any, index: number) => (
+                <NoteCard key={note._id || `note-${index}`} note={note} index={index} />
               ))}
             </div>
           </div>
@@ -186,7 +222,7 @@ export default async function Home() {
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {latestBlogs.map((blog: any, index: number) => (
-                <BlogCard key={blog.slug} blog={blog} index={index} />
+                <BlogCard key={blog.slug || `blog-${index}`} blog={blog} index={index} />
               ))}
             </div>
           </div>

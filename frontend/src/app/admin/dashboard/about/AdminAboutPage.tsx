@@ -164,7 +164,7 @@ export default function AdminAboutPage() {
           {!isEditing && (
             <button
               onClick={handleEdit}
-              className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 rounded-md hover:opacity-90 transition font-medium"
+              className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-3 rounded-md hover:opacity-90 hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
               disabled={isLoading}
             >
               {aboutData ? "Edit Profile" : "Create Profile"}
@@ -395,13 +395,13 @@ function EditForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+          className="px-6 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 rounded"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-2 rounded-md hover:opacity-90 transition"
+          className="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-6 py-2 rounded-md hover:opacity-90 hover:shadow-lg hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
         >
           Save Changes
         </button>

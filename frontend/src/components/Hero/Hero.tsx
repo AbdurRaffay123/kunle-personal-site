@@ -90,6 +90,15 @@ export default function Hero() {
               <span className="text-white">{profile?.name || "Your Name"}</span>
             </motion.h1>
 
+            {profile?.designation && (
+              <motion.p
+                variants={itemVariants}
+                className="text-2xl md:text-3xl font-semibold text-blue-300 dark:text-blue-400 mb-6"
+              >
+                {profile.designation}
+              </motion.p>
+            )}
+
             <motion.p
               variants={itemVariants}
               className="text-xl md:text-2xl leading-relaxed text-slate-200 dark:text-slate-300 max-w-3xl mb-8"
@@ -98,7 +107,7 @@ export default function Hero() {
             </motion.p>
 
             {/* Optionally show latest research/project titles */}
-            <motion.div variants={itemVariants} className="mb-6">
+            {/* <motion.div variants={itemVariants} className="mb-6">
               {research.length > 0 && (
                 <div className="mb-2">
                   <span className="font-semibold text-blue-300">Latest Research:</span>
@@ -119,7 +128,7 @@ export default function Hero() {
                   </ul>
                 </div>
               )}
-            </motion.div>
+            </motion.div> */}
 
             <motion.div
               variants={itemVariants}

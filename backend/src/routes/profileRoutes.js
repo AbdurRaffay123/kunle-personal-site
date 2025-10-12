@@ -5,9 +5,10 @@ const { uploadProfileImage } = require('../middleware/uploadMiddleware');
 
 const router = express.Router();
 
-router
+// Public routes (no auth required)
+router.get('/public', profileController.getPublicProfile);  // GET /api/profile/public
 
-// Apply auth middleware to all profile routes
+// Apply auth middleware to all remaining profile routes
 router.use(authMiddleware);
 
 // Profile routes - Only Create/Update and Read

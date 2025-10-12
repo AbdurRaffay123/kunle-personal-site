@@ -146,9 +146,34 @@ const getImageUrl = (imagePath) => {
   return `${baseUrl}/stored-files/avatars/${filename}`;
 };
 
+/**
+ * Get public profile (first profile in database, for public display)
+ * @returns {Object} - Public profile data or null
+ */
+const getPublicProfile = async () => {
+  try {
+    // Get the first profile (assuming single-user site)
+    const profile = await UserProfile.findOne().populate('user', 'email').lean();
+    
+    if (!profile) {
+      return null;
+    }
+    
+    // Add full image URL if image exists
+    if (profile.image) {
+      profile.imageUrl = getImageUrl(profile.image);
+    }
+    
+    return profile;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createOrUpdateProfile,
   getProfile,
   updateProfileImage,
-  getImageUrl
+  getImageUrl,
+  getPublicProfile
 };

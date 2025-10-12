@@ -65,7 +65,7 @@ export default function AdminTable({
                     {onEdit && (
                       <button
                         onClick={() => onEdit(item)}
-                        className="text-blue-600 hover:underline hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-200 cursor-pointer"
+                        className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-300 dark:hover:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 cursor-pointer"
                       >
                         Edit
                       </button>
@@ -74,7 +74,7 @@ export default function AdminTable({
                       <button
                         key={index}
                         onClick={() => action.onClick(item)}
-                        className={action.className || "text-purple-600 hover:underline hover:text-purple-700 dark:hover:text-purple-400 transition-colors duration-200 cursor-pointer"}
+                        className={action.className || "px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/40 hover:text-purple-700 dark:hover:text-purple-300 hover:border-purple-300 dark:hover:border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 cursor-pointer"}
                       >
                         {action.label}
                       </button>
@@ -82,7 +82,7 @@ export default function AdminTable({
                     {onApprove && (
                       <button
                         onClick={() => onApprove(item)}
-                        className="text-green-600 hover:underline hover:text-green-700 dark:hover:text-green-400 transition-colors duration-200 cursor-pointer"
+                        className="px-3 py-1.5 text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/40 hover:text-green-700 dark:hover:text-green-300 hover:border-green-300 dark:hover:border-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 cursor-pointer"
                       >
                         Approve
                       </button>
@@ -90,7 +90,7 @@ export default function AdminTable({
                     {onDelete && (
                       <button
                         onClick={() => onDelete(item)}
-                        className="text-red-500 hover:underline hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 cursor-pointer"
+                        className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md hover:bg-red-100 dark:hover:bg-red-900/40 hover:text-red-700 dark:hover:text-red-300 hover:border-red-300 dark:hover:border-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 cursor-pointer"
                       >
                         Delete
                       </button>

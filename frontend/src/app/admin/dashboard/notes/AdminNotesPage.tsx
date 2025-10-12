@@ -259,14 +259,18 @@ export default function AdminNotesPage() {
     return (
       <AdminLayout title={isEditingExisting ? "Edit Note Content" : "Create New Note"}>
         <div className="space-y-6">
-          {/* Back Button */}
+          {/* Back Button - Navigate to Notes List */}
           <div className="flex justify-start">
             <button
-              onClick={() => router.back()}
+              onClick={() => {
+                setIsEditorMode(false);
+                setCurrentNote(null);
+                setEditorContent('');
+              }}
               className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
             >
               <ArrowLeftIcon className="w-4 h-4 mr-2" />
-              Back
+              Back to Notes List
             </button>
           </div>
           
@@ -296,13 +300,13 @@ export default function AdminNotesPage() {
               
               <button
                 onClick={handleEditorCancel}
-                className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+                className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleEditorSave}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors font-medium"
+                className="bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:scale-105 text-white px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
               >
                 Save & Finish
               </button>
@@ -326,17 +330,6 @@ export default function AdminNotesPage() {
     return (
       <AdminLayout title="Manage Notes">
         <div className="space-y-6">
-          {/* Back Button */}
-          <div className="flex justify-start">
-            <button
-              onClick={() => router.back()}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
-            >
-              <ArrowLeftIcon className="w-4 h-4 mr-2" />
-              Back
-            </button>
-          </div>
-          
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -351,17 +344,6 @@ export default function AdminNotesPage() {
   return (
     <AdminLayout title="Manage Notes">
       <div className="space-y-6">
-        {/* Back Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
-          >
-            <ArrowLeftIcon className="w-4 h-4 mr-2" />
-            Back
-          </button>
-        </div>
-        
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -377,7 +359,7 @@ export default function AdminNotesPage() {
               setEditingNote(null);
               setIsModalOpen(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors font-medium cursor-pointer hover:scale-105"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-all duration-200 font-medium cursor-pointer hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
           >
             Add New Note
           </button>
@@ -402,9 +384,8 @@ export default function AdminNotesPage() {
           onDelete={handleDelete}
           customActions={[
             {
-              label: "Edit Content",
-              onClick: handleEditContent,
-              className: "text-purple-600 hover:underline hover:text-purple-700 dark:hover:text-purple-400 transition-colors duration-200 cursor-pointer"
+              label: "Edit Notes",
+              onClick: handleEditContent
             }
           ]}
         />
@@ -545,7 +526,7 @@ function NoteForm({
           <button
             type="button"
             onClick={addTag}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 hover:shadow-lg hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
           >
             Add
           </button>
@@ -557,13 +538,13 @@ function NoteForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+          className="bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:scale-105 text-white px-4 py-2 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
         >
           {note ? "Update" : "Create"}
         </button>

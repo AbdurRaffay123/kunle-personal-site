@@ -4,14 +4,32 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Container from "@/components/UI/Container";
 import Button from "@/components/UI/Button";
+import Spinner from "@/components/UI/Spinner";
 import { submitContact } from "@/lib/api";
+import { getPublicProfile } from "@/apis/About/api";
 import type { ContactFormData } from "@/types";
 
+interface ProfileData {
+  name: string;
+  designation: string;
+  bio: string;
+  image?: string;
+  imageUrl?: string;
+  socialLinks: {
+    linkedin?: string;
+    github?: string;
+    twitter?: string;
+    email?: string;
+  };
+}
+
 export default function AboutPage() {
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -20,6 +38,23 @@ export default function AboutPage() {
   });
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Fetch profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getPublicProfile();
+        if (response.success && response.data) {
+          setProfileData(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({
@@ -43,6 +78,14 @@ export default function AboutPage() {
       setErrorMessage(error instanceof Error ? error.message : "Something went wrong");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32 pb-20 flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32 pb-20">
@@ -71,68 +114,58 @@ export default function AboutPage() {
             className="rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 p-8 shadow-lg"
           >
             <h2 className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6">
-              Hi, I&apos;m Olukunle Owolabi
+              Hi, I&apos;m {profileData?.name || "Loading..."}
             </h2>
+            {profileData?.designation && (
+              <p className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-4">
+                {profileData.designation}
+              </p>
+            )}
             <div className="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed">
-              <p>
-                I&apos;m a <strong className="text-blue-600 dark:text-blue-400">Lead AI Engineer & Applied Scientist</strong> with over 7 years of experience building and deploying large-scale, end-to-end ML systems.
-              </p>
-              <p>
-                I previously worked as an engineer at <strong>Meta</strong> and hold a <strong>PhD from Tufts University</strong>, where I specialized in machine learning research.
-              </p>
-              <p>
-                My expertise spans multiple domains including:
-              </p>
-              <ul className="list-disc list-inside space-y-2 pl-4">
-                <li>Large Language Models (LLMs)</li>
-                <li>Recommender Systems</li>
-                <li>Anomaly & Fraud Detection</li>
-                <li>Time Series Forecasting</li>
-                <li>Optimization & Decision Systems</li>
-              </ul>
-              <p>
-                I&apos;m passionate about building AI systems that solve real-world problems and creating tools that make ML more accessible to everyone.
-              </p>
+              {profileData?.bio ? (
+                <p className="whitespace-pre-wrap">{profileData.bio}</p>
+              ) : (
+                <p>No bio available yet.</p>
+              )}
             </div>
 
             {/* Social Links */}
-            <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                Connect with me
-              </h3>
-              <div className="flex flex-wrap gap-4">
-                {[
-                  { name: "GitHub", icon: "🔗", href: "https://github.com" },
-                  { name: "LinkedIn", icon: "💼", href: "https://linkedin.com" },
-                  { name: "Twitter", icon: "🐦", href: "https://twitter.com" },
-                  { name: "Email", icon: "📧", href: "mailto:contact@example.com" },
-                ].map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-sky-500 text-white font-semibold hover:from-blue-700 hover:to-sky-600 shadow-md hover:shadow-lg hover:shadow-blue-500/30 transition-all"
-                  >
-                    <span className="text-xl">{link.icon}</span>
-                    {link.name}
-                  </a>
-                ))}
+            {profileData?.socialLinks && Object.entries(profileData.socialLinks).some(([_, url]) => url && url.trim()) && (
+              <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                  Connect with me
+                </h3>
+                <div className="flex flex-wrap gap-4">
+                  {Object.entries(profileData.socialLinks)
+                    .filter(([_, url]) => url && url.trim())
+                    .map(([platform, url]) => {
+                      const icons: Record<string, string> = {
+                        github: "🔗",
+                        linkedin: "💼",
+                        twitter: "🐦",
+                        email: "📧"
+                      };
+                      const icon = icons[platform] || "🌐";
+                      const href = platform === "email" && url && !url.startsWith("mailto:") 
+                        ? `mailto:${url}` 
+                        : url || "#";
+                      
+                      return (
+                        <a
+                          key={platform}
+                          href={href}
+                          target={platform === "email" ? undefined : "_blank"}
+                          rel={platform === "email" ? undefined : "noopener noreferrer"}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-sky-500 text-white font-semibold hover:from-blue-700 hover:to-sky-600 shadow-md hover:shadow-lg hover:shadow-blue-500/30 transition-all capitalize"
+                        >
+                          <span className="text-xl">{icon}</span>
+                          {platform}
+                        </a>
+                      );
+                    })}
+                </div>
               </div>
-            </div>
-
-            {/* Download CV */}
-            <div className="mt-6">
-              <Button
-                as="a"
-                href="/cv.pdf"
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto"
-              >
-                📄 Download CV
-              </Button>
-            </div>
+            )}
           </motion.div>
 
           {/* Contact Form */}

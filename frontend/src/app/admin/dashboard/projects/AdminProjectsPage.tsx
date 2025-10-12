@@ -47,7 +47,14 @@ export default function AdminProjectsPage() {
 
   const columns = [
     { key: "title", label: "Title" },
-    { key: "description", label: "Description" },
+    { 
+      key: "description", 
+      label: "Description",
+      render: (value: string) => {
+        if (!value) return '-';
+        return value.length > 100 ? `${value.substring(0, 100)}...` : value;
+      }
+    },
     {
       key: "technologies",
       label: "Technologies",
@@ -392,7 +399,7 @@ function ProjectForm({
           <button
             type="button"
             onClick={addTech}
-            className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+            className="rounded-md bg-blue-600 px-4 py-2 text-white transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
             disabled={isLoading}
           >
             Add
@@ -404,14 +411,14 @@ function ProjectForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-slate-600 transition-colors hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+          className="px-4 py-2 text-slate-600 transition-all duration-200 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
           disabled={isLoading}
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+          className="rounded-md bg-blue-600 px-4 py-2 text-white transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
           disabled={isLoading}
         >
           {project ? "Update" : "Create"}

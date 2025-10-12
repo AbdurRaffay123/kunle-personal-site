@@ -138,8 +138,39 @@ const updateProfileImage = async (req, res) => {
   }
 };
 
+/**
+ * Get public profile (for public About page)
+ */
+const getPublicProfile = async (req, res) => {
+  try {
+    const profile = await profileService.getPublicProfile();
+    
+    if (!profile) {
+      return res.status(200).json({
+        success: true,
+        message: 'No profile found',
+        data: null
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Profile retrieved successfully',
+      data: profile
+    });
+    
+  } catch (error) {
+    console.error('Error fetching public profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   createOrUpdateProfile,
   getProfile,
-  updateProfileImage
+  updateProfileImage,
+  getPublicProfile
 };

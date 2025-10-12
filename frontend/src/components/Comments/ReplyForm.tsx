@@ -55,7 +55,7 @@ export default function ReplyForm({ onSubmit, onCancel, isSubmitting }: ReplyFor
         <button
           type="submit"
           disabled={isSubmitting || !replyEmail.trim() || !replyContent.trim()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
         >
           {isSubmitting ? 'Posting...' : 'Post Reply'}
         </button>
@@ -63,7 +63,7 @@ export default function ReplyForm({ onSubmit, onCancel, isSubmitting }: ReplyFor
           type="button"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors disabled:opacity-50"
+          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 rounded"
         >
           Cancel
         </button>

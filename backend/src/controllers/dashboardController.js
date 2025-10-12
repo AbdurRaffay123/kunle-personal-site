@@ -5,7 +5,7 @@
 const Blog = require('../models/Blog');
 const Note = require('../models/Note');
 const Project = require('../models/Project');
-const Article = require('../models/Article'); // Using Article instead of Research
+const Research = require('../models/Research');
 const Comment = require('../models/Comment');
 const authMiddleware = require('../middleware/authMiddleware');
 
@@ -16,13 +16,13 @@ const getDashboardStats = async (req, res) => {
       totalBlogs,
       totalNotes,
       totalProjects,
-      totalArticles,
+      totalResearch,
       totalComments
     ] = await Promise.all([
       Blog.countDocuments(),
       Note.countDocuments(),
       Project.countDocuments(),
-      Article.countDocuments(),
+      Research.countDocuments(),
       Comment.countDocuments()
     ]);
 
@@ -32,7 +32,7 @@ const getDashboardStats = async (req, res) => {
         totalBlogs,
         totalNotes,
         totalProjects,
-        totalResearch: totalArticles, // Map articles to research for frontend compatibility
+        totalResearch,
         totalComments
       }
     });
@@ -51,7 +51,7 @@ const getRecentActivity = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     
     // Get recent activities from all collections
-    const [recentBlogs, recentNotes, recentProjects, recentArticles, recentComments] = await Promise.all([
+    const [recentBlogs, recentNotes, recentProjects, recentResearch, recentComments] = await Promise.all([
       Blog.find()
         .select('title createdAt updatedAt')
         .sort({ updatedAt: -1 })
@@ -64,7 +64,7 @@ const getRecentActivity = async (req, res) => {
         .select('title createdAt updatedAt')
         .sort({ updatedAt: -1 })
         .limit(5),
-      Article.find()
+      Research.find()
         .select('title createdAt updatedAt')
         .sort({ updatedAt: -1 })
         .limit(5),
@@ -116,15 +116,15 @@ const getRecentActivity = async (req, res) => {
       });
     });
 
-    // Add article activities (mapped as research for frontend compatibility)
-    recentArticles.forEach(article => {
+    // Add research activities
+    recentResearch.forEach(research => {
       activities.push({
-        id: article._id,
+        id: research._id,
         type: 'research',
         action: 'Research item added',
-        title: article.title,
-        createdAt: article.createdAt,
-        updatedAt: article.updatedAt,
+        title: research.title,
+        createdAt: research.createdAt,
+        updatedAt: research.updatedAt,
         user: 'You'
       });
     });

@@ -22,6 +22,16 @@ export const createOrUpdateProfile = async (formData: FormData) => {
   }
 };
 
+// Get public profile (for About page)
+export const getPublicProfile = async () => {
+  try {
+    const response = await instance.get("/api/profile/public");
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch profile" };
+  }
+};
+
 // Get main page data (profile, research, projects)
 export const getMainPageData = async () => {
   try {

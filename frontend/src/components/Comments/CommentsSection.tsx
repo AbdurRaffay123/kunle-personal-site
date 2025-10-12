@@ -217,7 +217,7 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
           {!isReply && (
             <button
               onClick={() => setReplyingTo(comment._id)}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 flex-shrink-0"
+              className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 rounded px-2 py-1"
             >
               <ArrowUturnLeftIcon className="h-4 w-4" />
               Reply
@@ -318,7 +318,7 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
         <button
           type="submit"
           disabled={submitting}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
         >
           {submitting ? 'Posting...' : 'Post Comment'}
         </button>

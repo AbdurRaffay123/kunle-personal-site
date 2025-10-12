@@ -3,12 +3,12 @@
  */
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import Hero from "@/components/Hero/Hero";
 import NoteCard from "@/components/Card/NoteCard";
 import BlogCard from "@/components/Card/BlogCard";
 import ProjectCard from "@/components/Card/ProjectCard";
-import { getNotes, getBlogs, getProjects } from "@/lib/api";
+import { getBlogs } from "@/lib/api";
+import { getMainPageData } from "@/apis/About/api"; // <-- Import your profile API
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
 
 export const metadata = genMeta({
@@ -19,20 +19,19 @@ export const metadata = genMeta({
 });
 
 export default async function Home() {
-  // Fetch latest content with error handling
-  const [notes, blogs, projects] = await Promise.all([
-    getNotes().catch(() => []),
-    getBlogs().catch(() => []),
-    getProjects().catch(() => []),
-  ]);
-
-  const latestNotes = notes.slice(0, 3);
+  // Fetch blogs as before
+  const blogs = await getBlogs().catch(() => []);
   const latestBlogs = blogs.slice(0, 3);
-  const featuredProjects = projects.filter((p) => p.featured).slice(0, 3) || projects.slice(0, 3);
+
+  // Fetch user profile (which includes projects and research)
+  const profileRes = await getMainPageData().catch(() => null);
+  const profile = profileRes?.data || {};
+  const featuredProjects = profile.projects?.slice(0, 3) || [];
+  const latestResearch = profile.research?.slice(0, 3) || [];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <Hero />
+      <Hero/>
 
       {/* Quick Links Section */}
       <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-white dark:bg-slate-900">
@@ -122,29 +121,29 @@ export default async function Home() {
               </Link>
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-              {featuredProjects.map((project, index) => (
-                <ProjectCard key={project.id} project={project} index={index} />
+              {featuredProjects.map((project: any, index: number) => (
+                <ProjectCard key={project._id} project={project} index={index} />
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* Latest Notes */}
-      {latestNotes.length > 0 && (
+      {/* Latest Research */}
+      {latestResearch.length > 0 && (
         <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-white dark:bg-slate-900">
           <div className="max-w-screen-2xl mx-auto">
             <div className="mb-12 flex items-center justify-between">
               <div>
                 <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 dark:text-blue-400 mb-2">
-                  Latest Notes
+                  Latest Research
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-400">
                   Recent technical insights and learning resources
                 </p>
               </div>
               <Link
-                href="/notes"
+                href="/research"
                 className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
                 View All
@@ -154,8 +153,8 @@ export default async function Home() {
               </Link>
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {latestNotes.map((note, index) => (
-                <NoteCard key={note._id} note={note} index={index} />
+              {latestResearch.map((research: any, index: number) => (
+                <NoteCard key={research._id} note={research} index={index} />
               ))}
             </div>
           </div>
@@ -186,7 +185,7 @@ export default async function Home() {
               </Link>
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {latestBlogs.map((blog, index) => (
+              {latestBlogs.map((blog: any, index: number) => (
                 <BlogCard key={blog.slug} blog={blog} index={index} />
               ))}
             </div>

@@ -84,6 +84,7 @@ export default async function RootLayout({
   let mainData = { profile: null, research: [], projects: [] };
   try {
     const res = await getMainPageData();
+    console.log(res);
     mainData = res?.data || mainData;
   } catch {
     // fallback to empty data

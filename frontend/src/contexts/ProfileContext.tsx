@@ -23,6 +23,7 @@ const ProfileContext = createContext<MainPageData | null>(null);
 
 export const useProfile = () => useContext(ProfileContext);
 
+
 export function ProfileProvider({
   mainData,
   children,

@@ -61,18 +61,24 @@ export function slugify(text: string): string {
 }
 
 /**
- * Extract headings from markdown content for table of contents
+ * Extract headings from HTML content for table of contents
  */
-export function extractHeadings(markdown: string): { id: string; text: string; level: number }[] {
-  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+export function extractHeadings(html: string): { id: string; text: string; level: number }[] {
   const headings: { id: string; text: string; level: number }[] = [];
+  
+  // Parse HTML to extract h1-h6 tags
+  const headingRegex = /<h([1-6])[^>]*>(.*?)<\/h\1>/gi;
   let match;
 
-  while ((match = headingRegex.exec(markdown)) !== null) {
-    const level = match[1].length;
-    const text = match[2].trim();
+  while ((match = headingRegex.exec(html)) !== null) {
+    const level = parseInt(match[1]);
+    // Strip any HTML tags from the heading text
+    const text = match[2].replace(/<[^>]*>/g, '').trim();
     const id = slugify(text);
-    headings.push({ id, text, level });
+    
+    if (text) {
+      headings.push({ id, text, level });
+    }
   }
 
   return headings;

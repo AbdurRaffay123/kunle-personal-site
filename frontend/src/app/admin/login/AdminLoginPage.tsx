@@ -79,6 +79,7 @@ export default function AdminLoginPage() {
               required
               className="w-full px-4 py-3 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="Enter your email"
+              suppressHydrationWarning
             />
           </div>
 
@@ -100,6 +101,7 @@ export default function AdminLoginPage() {
                 required
                 className="w-full px-4 py-3 pr-12 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="Enter your password"
+                suppressHydrationWarning
               />
               <button
                 type="button"

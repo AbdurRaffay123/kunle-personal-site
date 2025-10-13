@@ -24,6 +24,8 @@ import { NotepadToolbar } from './NotepadToolbar';
 import { notepadService } from '@/services/notepadService';
 import toast from 'react-hot-toast';
 import { useCallback, useEffect } from 'react';
+import MathBlock from './extensions/MathBlock';
+import SpecialCodeBlock from './extensions/SpecialCodeBlock';
 
 interface NotepadEditorProps {
   content?: string;
@@ -69,6 +71,8 @@ export function NotepadEditor({
       Placeholder.configure({
         placeholder,
       }),
+      MathBlock,
+      SpecialCodeBlock,
     ],
     content,
     immediatelyRender: false, // Fix SSR hydration issues

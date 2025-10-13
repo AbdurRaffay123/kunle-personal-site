@@ -13,6 +13,7 @@ import { Menu, X, Save, Tag, Star, StarOff } from 'lucide-react';
 import { NotepadList } from '@/components/Notepad/NotepadList';
 import { NotepadEditor } from '@/components/Notepad/NotepadEditor';
 import { ConfirmDeleteModal } from '@/components/Notepad/ConfirmDeleteModal';
+import { HintBanner } from '@/components/Notepad/HintBanner';
 import { NotepadNote, NotepadNoteMeta } from '@/types/notepad';
 import { notepadService } from '@/services/notepadService';
 import toast from 'react-hot-toast';
@@ -319,6 +320,7 @@ export default function NotepadPage() {
 
               {/* Editor */}
               <div className="flex-1 p-4 overflow-auto">
+                <HintBanner />
                 <NotepadEditor
                   content={content}
                   onChange={setContent}

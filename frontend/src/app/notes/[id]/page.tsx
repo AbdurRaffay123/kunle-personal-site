@@ -5,10 +5,11 @@
 import { notFound } from "next/navigation";
 import Container from "@/components/UI/Container";
 import TwoColumn from "@/components/Layout/TwoColumn";
-import HtmlRenderer from "@/components/Markdown/HtmlRenderer";
+import NotesHtmlRenderer from "@/components/Markdown/NotesHtmlRenderer";
 import Tag from "@/components/UI/Tag";
 import NoteCard from "@/components/Card/NoteCard";
 import CommentsSection from "@/components/Comments/CommentsSection";
+import TableOfContents from "@/components/UI/TableOfContents";
 import { getNoteBySlug, getNotes } from "@/lib/api";
 import { formatDate, extractHeadings } from "@/lib/utils";
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
@@ -102,28 +103,7 @@ export default async function NotePage({ params }: NotePageProps) {
 
       {/* Table of Contents */}
       {headings.length > 0 && (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-            Table of Contents
-          </h3>
-          <nav>
-            <ul className="space-y-2 text-sm">
-              {headings.map((heading) => (
-                <li
-                  key={heading.id}
-                  style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
-                >
-                  <a
-                    href={`#${heading.id}`}
-                    className="text-gray-600 transition-colors hover:text-primary dark:text-gray-400 dark:hover:text-primary-400"
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
+        <TableOfContents headings={headings} />
       )}
 
       {/* Related notes */}
@@ -178,7 +158,7 @@ export default async function NotePage({ params }: NotePageProps) {
 
       {/* Content */}
       <div className="mt-8">
-        <HtmlRenderer content={note.content} />
+        <NotesHtmlRenderer content={note.content} />
       </div>
 
       {/* Comments */}
@@ -191,7 +171,7 @@ export default async function NotePage({ params }: NotePageProps) {
   return (
     <div>
       <Container>
-        <div className="flex justify-start mb-6 pt-8">
+        <div className="flex justify-start mb-6 pt-24 md:pt-28">
           <BackButton />
         </div>
       </Container>

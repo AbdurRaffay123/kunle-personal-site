@@ -5,7 +5,9 @@
 
 "use client";
 
+import { useEffect, useRef } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
+import { slugify } from '@/lib/utils';
 
 interface HtmlRendererProps {
   content: string;
@@ -13,14 +15,33 @@ interface HtmlRendererProps {
 }
 
 export default function HtmlRenderer({ content, className = "" }: HtmlRendererProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
   // Sanitize HTML to prevent XSS attacks
   const sanitizedContent = DOMPurify.sanitize(content, {
     ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['target', 'rel', 'style', 'class'],
+    ADD_ATTR: ['target', 'rel', 'style', 'class', 'id'],
   });
+
+  // Add IDs to headings after render for TOC linking
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const headings = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    headings.forEach((heading) => {
+      const text = heading.textContent || '';
+      const id = slugify(text);
+      if (id && !heading.id) {
+        heading.id = id;
+        // Add scroll margin for better positioning when jumping to section
+        (heading as HTMLElement).style.scrollMarginTop = '100px';
+      }
+    });
+  }, [sanitizedContent]);
 
   return (
     <div 
+      ref={contentRef}
       className={`prose prose-lg dark:prose-invert max-w-none 
         prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-slate-100
         prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed

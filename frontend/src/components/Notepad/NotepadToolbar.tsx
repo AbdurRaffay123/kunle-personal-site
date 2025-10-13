@@ -26,7 +26,9 @@ import {
   AlignRight,
   AlignJustify,
   Palette,
-  Highlighter
+  Highlighter,
+  Sigma,
+  Terminal
 } from 'lucide-react';
 import { useState } from 'react';
 import { ImageInsertModal } from './ImageInsertModal';
@@ -173,6 +175,25 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           title="Code Block"
         >
           <Code className="w-4 h-4" />
+        </ToolbarButton>
+
+        <Separator />
+
+        {/* Special Markers */}
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleMathBlock().run()}
+          isActive={editor.isActive('mathBlock')}
+          title="Mark as Mathematical Expression (will be highlighted specially)"
+        >
+          <Sigma className="w-4 h-4" />
+        </ToolbarButton>
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleSpecialCodeBlock().run()}
+          isActive={editor.isActive('specialCodeBlock')}
+          title="Mark as Special Code Block (enhanced styling)"
+        >
+          <Terminal className="w-4 h-4" />
         </ToolbarButton>
 
         <Separator />

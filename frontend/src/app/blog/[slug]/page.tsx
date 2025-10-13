@@ -207,8 +207,8 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
   return (
     <div>
       <Container>
-        <div className="flex justify-start mb-6 pt-8">
-          <BackButton />
+        <div className="flex justify-start mb-6 pt-24 md:pt-28">
+          <BackButton href="/blog" label="Back to Blog" />
         </div>
       </Container>
       <TwoColumn main={main} sidebar={sidebar} />

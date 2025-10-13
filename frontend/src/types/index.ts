@@ -26,16 +26,17 @@ export interface Note extends NoteMeta {
 }
 
 export interface BlogMeta {
-  slug: string;
+  _id: string;
   title: string;
-  description: string;
-  excerpt: string;
-  tags: string[];
+  description?: string;
+  excerpt?: string;
+  tags?: string[];
+  image?: string;
   thumbnail?: string;
-  updatedAt: string;
   createdAt?: string;
+  updatedAt?: string;
   readingTime?: number;
-  author?: string;
+  slug?: string;
 }
 
 export interface Blog extends BlogMeta {

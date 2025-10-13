@@ -7,40 +7,28 @@ const blogSchema = new mongoose.Schema({
     trim: true,
     maxlength: [200, 'Title cannot exceed 200 characters']
   },
-  slug: {
+  description: {
     type: String,
-    required: [true, 'Slug is required'],
-    unique: true,
+    required: [true, 'Description is required'],
     trim: true,
-    lowercase: true,
-    match: [/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be URL-friendly (lowercase, numbers, hyphens only)']
+    maxlength: [2000, 'Description cannot exceed 2000 characters']
   },
-  status: {
+  category: {
     type: String,
-    enum: {
-      values: ['draft', 'published'],
-      message: 'Status must be either "draft" or "published"'
-    },
-    default: 'draft'
+    required: [true, 'Category is required'],
+    trim: true,
+    maxlength: [100, 'Category cannot exceed 100 characters']
+  },
+  image: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true
 });
 
 // Index for better query performance
-blogSchema.index({ status: 1, createdAt: -1 });
-blogSchema.index({ slug: 1 });
-
-// Generate slug from title if not provided
-blogSchema.pre('save', function(next) {
-  if (!this.slug && this.title) {
-    this.slug = this.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  }
-  next();
-});
+blogSchema.index({ category: 1, createdAt: -1 });
 
 // Remove sensitive data from JSON output
 blogSchema.methods.toJSON = function() {

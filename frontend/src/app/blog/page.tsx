@@ -13,10 +13,11 @@ import EmptyState from "@/components/UI/EmptyState";
 import ErrorState from "@/components/UI/ErrorState";
 import { debounce } from "@/lib/utils";
 import { useFetch } from "@/hooks/useFetch";
-import { getBlogs } from "@/lib/api";
+import { getBlogs } from "@/apis/Blog/api"; // <-- Use your API here
 import type { BlogMeta } from "@/types";
 
 const POSTS_PER_PAGE = 9;
+const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/").replace(/\/$/, "");
 
 export default function BlogPage() {
   const { data: blogs, loading, error, refetch } = useFetch<BlogMeta[]>(getBlogs);
@@ -30,8 +31,7 @@ export default function BlogPage() {
       (blog) =>
         !searchTerm ||
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        blog.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [blogs, searchTerm]);
 
@@ -130,7 +130,22 @@ export default function BlogPage() {
           <>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedBlogs.map((blog, index) => (
-                <BlogCard key={blog.slug} blog={blog} index={index} />
+                <div key={blog._id || index} className="flex flex-col">
+                  {/* Blog Image */}
+                  {blog.image && (
+                    <img
+                      src={
+                        blog.image.startsWith("/stored-files/")
+                          ? `${BACKEND_URL}${blog.image}`
+                          : `${BACKEND_URL}/stored-files/blog-images/${blog.image}`
+                      }
+                      alt={blog.title}
+                      className="w-full h-48 object-cover rounded-lg mb-4"
+                    />
+                  )}
+                  {/* Blog Card */}
+                  <BlogCard blog={blog} index={index} />
+                </div>
               ))}
             </div>
 

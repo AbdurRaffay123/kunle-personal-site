@@ -58,8 +58,8 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
       <div className={`flex flex-1 flex-col p-6 ${featured ? "md:w-1/2" : ""}`}>
         {/* Metadata */}
         <div className="mb-3 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <time dateTime={blog.createdAt || blog.updatedAt}>
-            {formatDate(blog.createdAt || blog.updatedAt, "short")}
+          <time dateTime={blog.createdAt || blog.updatedAt || ""}>
+            {formatDate(blog.createdAt || blog.updatedAt || new Date(), "short")}
           </time>
           {blog.readingTime && (
             <>

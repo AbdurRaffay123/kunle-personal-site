@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Base upload directory - stored within the project
-const UPLOAD_BASE_DIR = path.join(__dirname, '../stored-files');
+const UPLOAD_BASE_DIR = path.join(__dirname, '../../stored-files');
 
 // Ensure base directory exists
 if (!fs.existsSync(UPLOAD_BASE_DIR)) {

@@ -1,115 +1,135 @@
 /**
  * Admin Blogs Management Page
+ * Updated: Uses backend APIs for CRUD operations, removes dummy data.
  */
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
 import AdminModal from "@/components/Admin/AdminModal";
+import {
+  getBlogs,
+  createBlog,
+  updateBlog,
+  deleteBlog as apiDeleteBlog,
+} from "@/apis/Blog/api";
 
 interface Blog {
-  id: number;
+  _id: string;
   title: string;
-  slug: string;
-  status: "published" | "draft";
+  description: string;
+  category: string;
+  image?: string;
   createdAt: string;
-  author: string;
   views: number;
 }
 
-export default function AdminBlogsPage() {
-  const [blogs, setBlogs] = useState<Blog[]>([
-    {
-      id: 1,
-      title: "Introduction to Machine Learning",
-      slug: "intro-to-ml",
-      status: "published",
-      createdAt: "2024-01-15",
-      author: "Olukunle O.",
-      views: 1250,
-    },
-    {
-      id: 2,
-      title: "Advanced Deep Learning Techniques",
-      slug: "advanced-deep-learning",
-      status: "draft",
-      createdAt: "2024-01-20",
-      author: "Olukunle O.",
-      views: 0,
-    },
-    {
-      id: 3,
-      title: "Building Recommender Systems",
-      slug: "recommender-systems",
-      status: "published",
-      createdAt: "2024-01-25",
-      author: "Olukunle O.",
-      views: 890,
-    },
-  ]);
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/";
+// Ensure only one slash between backend URL and image path
+const columns = [
+  { key: "title", label: "Title" },
+  { key: "description", label: "Description" },
+  { key: "category", label: "Category" },
+  {
+    key: "image",
+    label: "Image",
+    render: (value: string) =>
+      value ? (
+        <img
+          src={
+            value.startsWith("/stored-files/")
+              ? `${BACKEND_URL.replace(/\/$/, "")}${value}`
+              : `${BACKEND_URL.replace(/\/$/, "")}/stored-files/blog-images/${value}`
+          }
+          alt="Blog"
+          className="h-10 w-16 object-cover rounded"
+        />
+      ) : (
+        <span className="text-slate-400">No Image</span>
+      ),
+  },
+  { key: "views", label: "Views" },
+  { key: "createdAt", label: "Created" },
+];
 
+export default function AdminBlogsPage() {
+  // State for blogs, modal, editing, and search
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const columns = [
-    { key: "title", label: "Title" },
-    { key: "slug", label: "Slug" },
-    { 
-      key: "status", 
-      label: "Status",
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === "published" 
-            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-            : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-        }`}>
-          {value}
-        </span>
-      )
-    },
-    { key: "author", label: "Author" },
-    { key: "views", label: "Views" },
-    { key: "createdAt", label: "Created" },
-  ];
+  // Fetch blogs from API on mount
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
 
-  const filteredBlogs = blogs.filter(blog =>
-    blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    blog.slug.toLowerCase().includes(searchTerm.toLowerCase())
+  // Fetch blogs from backend API
+  const fetchBlogs = async () => {
+    setLoading(true);
+    try {
+      const res = await getBlogs();
+      console.log(res);
+      setBlogs(res.data);
+    } catch (error) {
+      // Handle error (show toast or log)
+      console.error("Failed to fetch blogs:", error);
+    }
+    setLoading(false);
+  };
+
+  // Filter blogs by search term
+  const filteredBlogs = blogs.filter(
+    (blog) =>
+      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      blog.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      blog.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Edit handler
   const handleEdit = (blog: Blog) => {
     setEditingBlog(blog);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (blog: Blog) => {
+  // Delete handler (calls API)
+  const handleDelete = async (blog: Blog) => {
     if (confirm(`Are you sure you want to delete "${blog.title}"?`)) {
-      setBlogs(blogs.filter(b => b.id !== blog.id));
+      try {
+        await apiDeleteBlog(blog._id);
+        fetchBlogs();
+      } catch (error) {
+        console.error("Failed to delete blog:", error);
+      }
     }
   };
 
-  const handleSave = (blogData: Partial<Blog>) => {
-    if (editingBlog) {
-      setBlogs(blogs.map(blog => 
-        blog.id === editingBlog.id ? { ...blog, ...blogData } : blog
-      ));
-    } else {
-      const newBlog: Blog = {
-        id: Math.max(...blogs.map(b => b.id)) + 1,
-        title: blogData.title || "",
-        slug: blogData.slug || "",
-        status: blogData.status || "draft",
-        createdAt: new Date().toISOString().split('T')[0],
-        author: "Olukunle O.",
-        views: 0,
-      };
-      setBlogs([...blogs, newBlog]);
+  // Save handler (create or update)
+  const handleSave = async (blogData: Partial<Blog> & { imageFile?: File }) => {
+    try {
+      // Prepare FormData for image upload
+      const formData = new FormData();
+      formData.append("title", blogData.title || "");
+      formData.append("description", blogData.description || "");
+      formData.append("category", blogData.category || "");
+      if (blogData.imageFile) {
+        formData.append("image", blogData.imageFile);
+      }
+
+      if (editingBlog) {
+        await updateBlog(editingBlog._id, formData);
+      } else {
+        await createBlog(formData);
+      }
+      fetchBlogs();
+      setIsModalOpen(false);
+      setEditingBlog(null);
+    } catch (error) {
+      console.error("Failed to save blog:", error);
     }
-    setIsModalOpen(false);
-    setEditingBlog(null);
   };
 
   return (
@@ -153,6 +173,7 @@ export default function AdminBlogsPage() {
           data={filteredBlogs}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          loading={loading}
         />
 
         {/* Modal */}
@@ -178,22 +199,40 @@ export default function AdminBlogsPage() {
   );
 }
 
-// Blog Form Component
-function BlogForm({ 
-  blog, 
-  onSave, 
-  onCancel 
-}: { 
-  blog: Blog | null; 
-  onSave: (data: Partial<Blog>) => void; 
-  onCancel: () => void; 
+/**
+ * BlogForm component
+ * Handles both create and update, supports image upload.
+ */
+function BlogForm({
+  blog,
+  onSave,
+  onCancel,
+}: {
+  blog: Blog | null;
+  onSave: (data: Partial<Blog> & { imageFile?: File }) => void;
+  onCancel: () => void;
 }) {
   const [formData, setFormData] = useState({
     title: blog?.title || "",
-    slug: blog?.slug || "",
-    status: blog?.status || "draft",
+    description: blog?.description || "",
+    category: blog?.category || "",
+    image: blog?.image || "",
+    imageFile: undefined as File | undefined,
   });
 
+  // Handle file input change
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: file,
+        image: URL.createObjectURL(file),
+      }));
+    }
+  };
+
+  // Submit handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
@@ -208,7 +247,9 @@ function BlogForm({
         <input
           type="text"
           value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, title: e.target.value })
+          }
           className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           required
         />
@@ -216,12 +257,28 @@ function BlogForm({
 
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Slug
+          Description
+        </label>
+        <textarea
+          value={formData.description}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
+          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          Category
         </label>
         <input
           type="text"
-          value={formData.slug}
-          onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+          value={formData.category}
+          onChange={(e) =>
+            setFormData({ ...formData, category: e.target.value })
+          }
           className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           required
         />
@@ -229,16 +286,27 @@ function BlogForm({
 
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Status
+          Image
         </label>
-        <select
-          value={formData.status}
-          onChange={(e) => setFormData({ ...formData, status: e.target.value as "published" | "draft" })}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
           className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-        </select>
+        />
+        {formData.image && (
+          <img
+            src={
+              formData.image.startsWith("blob:")
+                ? formData.image
+                : formData.image.startsWith("/stored-files/")
+                  ? `${BACKEND_URL.replace(/\/$/, "")}${formData.image}`
+                  : `${BACKEND_URL.replace(/\/$/, "")}/stored-files/blog-images/${formData.image}`
+            }
+            alt="Preview"
+            className="mt-2 h-20 w-32 object-cover rounded"
+          />
+        )}
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">

@@ -1,7 +1,3 @@
-/**
- * Blog index page with premium layout and pagination
- */
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -15,6 +11,7 @@ import { debounce } from "@/lib/utils";
 import { useFetch } from "@/hooks/useFetch";
 import { getBlogs } from "@/apis/Blog/api"; // <-- Use your API here
 import type { BlogMeta } from "@/types";
+import Link from "next/link";
 
 const POSTS_PER_PAGE = 9;
 const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/").replace(/\/$/, "");
@@ -24,10 +21,13 @@ export default function BlogPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+
+  console.log(blogs);
   // Filter blogs
   const filteredBlogs = useMemo(() => {
-    if (!blogs) return [];
-    return blogs.filter(
+    const blogArray = Array.isArray(blogs?.data) ? blogs.data : [];
+    if (!blogArray) return [];
+    return blogArray.filter(
       (blog) =>
         !searchTerm ||
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -131,7 +131,6 @@ export default function BlogPage() {
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedBlogs.map((blog, index) => (
                 <div key={blog._id || index} className="flex flex-col">
-                  {/* Blog Image */}
                   {blog.image && (
                     <img
                       src={
@@ -143,7 +142,7 @@ export default function BlogPage() {
                       className="w-full h-48 object-cover rounded-lg mb-4"
                     />
                   )}
-                  {/* Blog Card */}
+                  {/* DO NOT wrap BlogCard in Link here */}
                   <BlogCard blog={blog} index={index} />
                 </div>
               ))}

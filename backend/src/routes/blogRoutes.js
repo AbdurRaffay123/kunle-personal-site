@@ -61,12 +61,12 @@ const validateBlogUpdate = [
 ];
 
 router.get('/', blogController.getBlogs);   
+router.get('/:id', blogController.getBlogById);  
 router.use(authMiddleware);
 
 // Blog CRUD routes with multer for image upload
 router.post('/', uploadBlogImage, validateBlog, blogController.createBlog); // POST /api/blogs
 router.get('/stats', blogController.getBlogStats);                          // GET /api/blogs/stats
-router.get('/:id', blogController.getBlogById);                             // GET /api/blogs/:id
 router.put('/:id', uploadBlogImage, validateBlogUpdate, blogController.updateBlog); // PUT /api/blogs/:id
 router.delete('/:id', blogController.deleteBlog);                           // DELETE /api/blogs/:id
 

@@ -122,7 +122,7 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
   );
 
   return (
-    <Link href={`/blog/${blog.slug}`} aria-label={`Read blog post: ${blog.title}`}>
+    <Link href={`/blog/${blog._id}`} aria-label={`Read blog post: ${blog.title}`}>
       {CardContent}
     </Link>
   );

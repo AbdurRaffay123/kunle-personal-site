@@ -13,25 +13,25 @@ import BlogCard from "@/components/Card/BlogCard";
 import CommentsSection from "@/components/Comments/CommentsSection";
 import ShareButtons from "@/components/ShareButtons/ShareButtons";
 import BackButton from "@/components/UI/BackButton";
-import { getBlogBySlug, getBlogs } from "@/lib/api";
+import { getBlogById, getBlogs } from "@/apis/Blog/api"; // <-- Use getBlogById
 import { formatDate, extractHeadings } from "@/lib/utils";
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
 
 interface BlogPageProps {
-  params: Promise<{ slug: string }>;
+  params: { id: string };
 }
 
 export async function generateMetadata({ params }: BlogPageProps) {
-  const { slug } = await params;
+  const { id } = params;
   try {
-    const blog = await getBlogBySlug(slug);
+    const response = await getBlogById(id);
+    const blog = response.data; // <-- Use .data here!
     return genMeta({
       title: blog.title,
-      description: blog.description || blog.excerpt,
-      image: blog.thumbnail,
-      path: `/blog/${slug}`,
+      description: blog.description,
+      image: blog.image,
+      path: `/blog/${id}`,
       date: blog.createdAt || blog.updatedAt,
-      tags: blog.tags,
       type: "article",
     });
   } catch {
@@ -43,31 +43,28 @@ export async function generateMetadata({ params }: BlogPageProps) {
 }
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
-  const { slug } = await params;
+  const { id } = params;
 
   let blog;
   try {
-    blog = await getBlogBySlug(slug);
+    const response = await getBlogById(id);
+    blog = response.data; // <-- Use .data here!
+    if (!blog) throw new Error("Blog not found");
   } catch {
     notFound();
   }
 
-  // Get related posts by tags
-  const allBlogs = await getBlogs().catch(() => []);
-  const relatedBlogs = allBlogs
-    .filter(
-      (b) =>
-        b.slug !== slug &&
-        b.tags?.some((tag) => blog.tags?.includes(tag)),
-    )
-    .slice(0, 3);
+  // Get related posts (simple: exclude current)
+  const allBlogsRes = await getBlogs().catch(() => ({ data: [] }));
+  const allBlogs = Array.isArray(allBlogsRes.data) ? allBlogsRes.data : [];
+  const relatedBlogs = allBlogs.filter((b) => b._id !== id).slice(0, 3);
 
   // Extract headings for table of contents
   const headings = extractHeadings(blog.content);
 
   // Social share URLs
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const postUrl = `${siteUrl}/blog/${slug}`;
+  const postUrl = `${siteUrl}/blog/${id}`;
 
   // Sidebar content
   const sidebar = (
@@ -124,7 +121,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
           </h3>
           <div className="space-y-4">
             {relatedBlogs.map((relatedBlog) => (
-              <BlogCard key={relatedBlog.slug} blog={relatedBlog} />
+              <BlogCard key={relatedBlog._id} blog={relatedBlog} />
             ))}
           </div>
         </div>
@@ -154,12 +151,6 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         <time dateTime={blog.createdAt || blog.updatedAt}>
           {formatDate(blog.createdAt || blog.updatedAt)}
         </time>
-        {blog.readingTime && (
-          <>
-            <span>•</span>
-            <span>{blog.readingTime} min read</span>
-          </>
-        )}
         {blog.author && (
           <>
             <span>•</span>
@@ -168,22 +159,15 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         )}
       </div>
 
-      {/* Tags */}
-      {blog.tags && blog.tags.length > 0 && (
-        <div className="mb-8 flex flex-wrap gap-2">
-          {blog.tags.map((tag) => (
-            <Tag key={tag} variant="primary">
-              {tag}
-            </Tag>
-          ))}
-        </div>
-      )}
-
       {/* Featured image */}
-      {blog.thumbnail && (
+      {blog.image && (
         <div className="relative mb-8 aspect-video overflow-hidden rounded-lg">
           <Image
-            src={blog.thumbnail}
+            src={
+              blog.image.startsWith("/stored-files/")
+                ? `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}${blog.image}`
+                : `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/stored-files/blog-images/${blog.image}`
+            }
             alt={blog.title}
             fill
             className="object-cover"
@@ -199,7 +183,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
 
       {/* Comments */}
       <div className="mt-16">
-        <CommentsSection postId={blog.slug} postType="blog" />
+        <CommentsSection postId={blog._id} postType="blog" />
       </div>
     </article>
   );

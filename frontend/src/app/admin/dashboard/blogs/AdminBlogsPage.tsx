@@ -145,14 +145,14 @@ export default function AdminBlogsPage() {
 
   return (
     <AdminLayout title="Manage Blogs">
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div className="text-center md:text-left">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white">
               Blog Posts
             </h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
               Manage your blog posts and articles
             </p>
           </div>
@@ -161,20 +161,21 @@ export default function AdminBlogsPage() {
               setEditingBlog(null);
               setIsModalOpen(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-all duration-200 font-medium cursor-pointer hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+            className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-all duration-200 font-medium cursor-pointer hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
           >
-            Add New Blog
+            <span className="md:hidden">+ Add New Blog</span>
+            <span className="hidden md:inline">Add New Blog</span>
           </button>
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md">
+        <div className="bg-white dark:bg-slate-800 p-3 md:p-4 rounded-lg shadow-md">
           <input
             type="text"
             placeholder="Search blogs..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
@@ -258,7 +259,7 @@ function BlogForm({
           onChange={(e) =>
             setFormData({ ...formData, title: e.target.value })
           }
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           required
         />
       </div>
@@ -272,7 +273,8 @@ function BlogForm({
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          rows={3}
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           required
         />
       </div>
@@ -287,7 +289,7 @@ function BlogForm({
           onChange={(e) =>
             setFormData({ ...formData, category: e.target.value })
           }
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           required
         />
       </div>
@@ -302,26 +304,26 @@ function BlogForm({
           onChange={(e) =>
             setFormData({ ...formData, link: e.target.value })
           }
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="https://example.com/blog-post"
           required
         />
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">
           The URL where the blog post is hosted externally
         </p>
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex flex-col md:flex-row justify-end gap-3 pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+          className="w-full md:w-auto px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:scale-105 text-white px-4 py-2 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+          className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:scale-105 text-white px-4 py-2 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
         >
           {blog ? "Update" : "Create"}
         </button>

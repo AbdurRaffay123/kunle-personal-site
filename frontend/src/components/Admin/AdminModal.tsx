@@ -31,7 +31,7 @@ export default function AdminModal({ isOpen, onClose, title, children }: AdminMo
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="flex min-h-screen items-center justify-center p-2 md:p-4">
         {/* Backdrop */}
         <div
           className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
@@ -39,10 +39,10 @@ export default function AdminModal({ isOpen, onClose, title, children }: AdminMo
         />
 
         {/* Modal */}
-        <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="relative bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-xl w-full max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
-            <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+          <div className="flex items-center justify-between p-4 md:p-6 border-b border-slate-200 dark:border-slate-700">
+            <h3 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-white">
               {title}
             </h3>
             <button
@@ -54,7 +54,7 @@ export default function AdminModal({ isOpen, onClose, title, children }: AdminMo
           </div>
 
           {/* Content */}
-          <div className="p-6">
+          <div className="p-4 md:p-6">
             {children}
           </div>
         </div>

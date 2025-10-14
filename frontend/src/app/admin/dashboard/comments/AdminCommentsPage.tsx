@@ -203,30 +203,28 @@ export default function AdminCommentsPage() {
 
   return (
     <AdminLayout title="Manage Comments">
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div className="text-center md:text-left">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white">
               Comments ({comments.length})
             </h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
               View and manage comments on your content
             </p>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <input
-              type="text"
-              placeholder="Search comments..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+        {/* Search */}
+        <div className="bg-white dark:bg-slate-800 p-3 md:p-4 rounded-lg shadow-md">
+          <input
+            type="text"
+            placeholder="Search comments..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
 
         {/* Table */}

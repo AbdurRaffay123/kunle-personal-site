@@ -52,8 +52,16 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
         onClose={() => setSidebarOpen(false)}
       />
 
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main content */}
-      <div className="flex-1 flex flex-col md:ml-64">
+      <div className="flex-1 flex flex-col md:ml-16 lg:ml-64">
         {/* Header */}
         <AdminHeader
           title={title}
@@ -61,8 +69,10 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
         />
 
         {/* Page content */}
-        <main className="flex-1 p-6 lg:p-8">
-          {children}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

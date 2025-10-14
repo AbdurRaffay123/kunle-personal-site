@@ -6,6 +6,9 @@ export interface Project {
   title: string;
   description: string;
   link: string;
+  githubUrl?: string;
+  liveUrl?: string;
+  status?: 'completed' | 'in-progress' | 'planned';
   technologies: string[];
   createdAt: string;
   updatedAt: string;

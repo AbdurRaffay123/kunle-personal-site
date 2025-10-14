@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
 import AdminModal from "@/components/Admin/AdminModal";
+import { ConfirmDeleteModal } from "@/components/Notepad/ConfirmDeleteModal";
 import {
   getBlogs,
   createBlog,
@@ -21,36 +22,38 @@ interface Blog {
   title: string;
   description: string;
   category: string;
-  image?: string;
+  link: string;
   createdAt: string;
-  views: number;
+  updatedAt: string;
 }
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/";
-// Ensure only one slash between backend URL and image path
 const columns = [
   { key: "title", label: "Title" },
-  { key: "description", label: "Description" },
-  { key: "category", label: "Category" },
-  {
-    key: "image",
-    label: "Image",
-    render: (value: string) =>
-      value ? (
-        <img
-          src={
-            value.startsWith("/stored-files/")
-              ? `${BACKEND_URL.replace(/\/$/, "")}${value}`
-              : `${BACKEND_URL.replace(/\/$/, "")}/stored-files/blog-images/${value}`
-          }
-          alt="Blog"
-          className="h-10 w-16 object-cover rounded"
-        />
-      ) : (
-        <span className="text-slate-400">No Image</span>
-      ),
+  { 
+    key: "description", 
+    label: "Description",
+    render: (value: string) => (
+      <span className="max-w-xs truncate block" title={value}>
+        {value}
+      </span>
+    )
   },
-  { key: "views", label: "Views" },
+  { key: "category", label: "Category" },
+  { 
+    key: "link", 
+    label: "Link",
+    render: (value: string) => (
+      <a 
+        href={value} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-xs block"
+        title={value}
+      >
+        {value.length > 30 ? `${value.substring(0, 30)}...` : value}
+      </a>
+    )
+  },
   { key: "createdAt", label: "Created" },
 ];
 
@@ -61,6 +64,10 @@ export default function AdminBlogsPage() {
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    blog: Blog | null;
+  }>({ isOpen: false, blog: null });
 
   // Fetch blogs from API on mount
   useEffect(() => {
@@ -73,7 +80,7 @@ export default function AdminBlogsPage() {
     try {
       const res = await getBlogs();
       console.log(res);
-      setBlogs(res.data);
+      setBlogs(res.data || res);
     } catch (error) {
       // Handle error (show toast or log)
       console.error("Failed to fetch blogs:", error);
@@ -95,34 +102,38 @@ export default function AdminBlogsPage() {
     setIsModalOpen(true);
   };
 
-  // Delete handler (calls API)
-  const handleDelete = async (blog: Blog) => {
-    if (confirm(`Are you sure you want to delete "${blog.title}"?`)) {
-      try {
-        await apiDeleteBlog(blog._id);
-        fetchBlogs();
-      } catch (error) {
-        console.error("Failed to delete blog:", error);
-      }
+  // Delete handler - opens confirmation modal
+  const handleDelete = (blog: Blog) => {
+    setDeleteModal({ isOpen: true, blog });
+  };
+
+  // Confirm delete handler (calls API)
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.blog) return;
+    
+    try {
+      await apiDeleteBlog(deleteModal.blog._id);
+      fetchBlogs();
+      setDeleteModal({ isOpen: false, blog: null });
+    } catch (error) {
+      console.error("Failed to delete blog:", error);
     }
   };
 
   // Save handler (create or update)
-  const handleSave = async (blogData: Partial<Blog> & { imageFile?: File }) => {
+  const handleSave = async (blogData: Partial<Blog>) => {
     try {
-      // Prepare FormData for image upload
-      const formData = new FormData();
-      formData.append("title", blogData.title || "");
-      formData.append("description", blogData.description || "");
-      formData.append("category", blogData.category || "");
-      if (blogData.imageFile) {
-        formData.append("image", blogData.imageFile);
-      }
+      const data = {
+        title: blogData.title || "",
+        description: blogData.description || "",
+        category: blogData.category || "",
+        link: blogData.link || "",
+      };
 
       if (editingBlog) {
-        await updateBlog(editingBlog._id, formData);
+        await updateBlog(editingBlog._id, data);
       } else {
-        await createBlog(formData);
+        await createBlog(data);
       }
       fetchBlogs();
       setIsModalOpen(false);
@@ -194,6 +205,16 @@ export default function AdminBlogsPage() {
             }}
           />
         </AdminModal>
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmDeleteModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, blog: null })}
+          onConfirm={handleConfirmDelete}
+          title="Delete Blog Post"
+          message="Are you sure you want to delete this blog post? This action cannot be undone."
+          itemName={deleteModal.blog?.title}
+        />
       </div>
     </AdminLayout>
   );
@@ -201,7 +222,7 @@ export default function AdminBlogsPage() {
 
 /**
  * BlogForm component
- * Handles both create and update, supports image upload.
+ * Handles both create and update for external blog links.
  */
 function BlogForm({
   blog,
@@ -209,28 +230,15 @@ function BlogForm({
   onCancel,
 }: {
   blog: Blog | null;
-  onSave: (data: Partial<Blog> & { imageFile?: File }) => void;
+  onSave: (data: Partial<Blog>) => void;
   onCancel: () => void;
 }) {
   const [formData, setFormData] = useState({
     title: blog?.title || "",
     description: blog?.description || "",
     category: blog?.category || "",
-    image: blog?.image || "",
-    imageFile: undefined as File | undefined,
+    link: blog?.link || "",
   });
-
-  // Handle file input change
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-        image: URL.createObjectURL(file),
-      }));
-    }
-  };
 
   // Submit handler
   const handleSubmit = (e: React.FormEvent) => {
@@ -286,27 +294,21 @@ function BlogForm({
 
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Image
+          External Link
         </label>
         <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
+          type="url"
+          value={formData.link}
+          onChange={(e) =>
+            setFormData({ ...formData, link: e.target.value })
+          }
           className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="https://example.com/blog-post"
+          required
         />
-        {formData.image && (
-          <img
-            src={
-              formData.image.startsWith("blob:")
-                ? formData.image
-                : formData.image.startsWith("/stored-files/")
-                  ? `${BACKEND_URL.replace(/\/$/, "")}${formData.image}`
-                  : `${BACKEND_URL.replace(/\/$/, "")}/stored-files/blog-images/${formData.image}`
-            }
-            alt="Preview"
-            className="mt-2 h-20 w-32 object-cover rounded"
-          />
-        )}
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          The URL where the blog post is hosted externally
+        </p>
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">

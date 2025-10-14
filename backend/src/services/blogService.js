@@ -2,16 +2,11 @@ const Blog = require("../models/Blog");
 
 /**
  * Create a new blog
- * @param {Object} data - Blog data (title, description, category)
- * @param {Object} file - Multer file object (optional)
+ * @param {Object} data - Blog data (title, description, category, link)
  * @returns {Object} - Created blog
  */
-const createBlog = async (data, file) => {
+const createBlog = async (data) => {
   try {
-    if (file) {
-      // Save only the relative path for frontend usage
-      data.image = `/stored-files/blog-images/${file.filename}`;
-    }
     const blog = new Blog(data);
     const savedBlog = await blog.save();
     return savedBlog;
@@ -82,14 +77,10 @@ const getBlogById = async (blogId) => {
  * Update a blog
  * @param {string} blogId - Blog ID
  * @param {Object} data - Updated blog data
- * @param {Object} file - Multer file object (optional)
  * @returns {Object} - Updated blog
  */
-const updateBlog = async (blogId, data, file) => {
+const updateBlog = async (blogId, data) => {
   try {
-    if (file) {
-      data.image = `/stored-files/blog-images/${file.filename}`;
-    }
     const blog = await Blog.findByIdAndUpdate(
       blogId,
       { ...data },

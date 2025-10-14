@@ -28,15 +28,12 @@ export interface Note extends NoteMeta {
 export interface BlogMeta {
   _id: string;
   title: string;
-  description?: string;
-  excerpt?: string;
-  tags?: string[];
+  description: string;
+  category: string;
+  link: string;
   image?: string;
-  thumbnail?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  readingTime?: number;
-  slug?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Blog extends BlogMeta {

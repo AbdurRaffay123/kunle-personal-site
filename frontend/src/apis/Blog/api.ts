@@ -2,11 +2,18 @@ import instance from "@/axios/Axios";
 
 const API_BASE_URL = "/api/blogs";
 
-// Create a new blog (with image upload)
-export const createBlog = async (formData: FormData) => {
-  const response = await instance.post(API_BASE_URL, formData, {
+interface BlogData {
+  title: string;
+  description: string;
+  category: string;
+  link: string;
+}
+
+// Create a new blog
+export const createBlog = async (data: BlogData) => {
+  const response = await instance.post(API_BASE_URL, data, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
     withCredentials: true,
   });
@@ -14,11 +21,14 @@ export const createBlog = async (formData: FormData) => {
 };
 
 // Get all blogs (with pagination)
-export const getBlogs = async (page = 1, limit = 10) => {
+export const getBlogs = async (page = 1, limit = 100) => {
+  console.log('Making API call to:', `${API_BASE_URL}?page=${page}&limit=${limit}`);
   const response = await instance.get(`${API_BASE_URL}?page=${page}&limit=${limit}`, {
     withCredentials: true,
   });
-  return response.data;
+  console.log('API response:', response.data);
+  // Return the data array directly from the response
+  return response.data.data || response.data;
 };
 
 // Get a single blog by ID
@@ -29,11 +39,11 @@ export const getBlogById = async (id: string) => {
   return response.data;
 };
 
-// Update a blog (with image upload)
-export const updateBlog = async (id: string, formData: FormData) => {
-  const response = await instance.put(`${API_BASE_URL}/${id}`, formData, {
+// Update a blog
+export const updateBlog = async (id: string, data: Partial<BlogData>) => {
+  const response = await instance.put(`${API_BASE_URL}/${id}`, data, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
     withCredentials: true,
   });

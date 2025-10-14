@@ -53,12 +53,12 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 flex flex-col h-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
           {research.title}
         </h2>
         
-        <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3 leading-relaxed">
+        <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3 leading-relaxed flex-grow">
           {research.description}
         </p>
 

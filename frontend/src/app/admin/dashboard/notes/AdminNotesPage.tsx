@@ -150,7 +150,7 @@ export default function AdminNotesPage() {
       // For editing existing notes, save directly
       try {
         const updatedNote = await updateNote(editingNote._id, noteData);
-        setNotes(notes.map(note => 
+      setNotes(notes.map(note => 
           note._id === editingNote._id ? updatedNote : note
         ));
         setIsModalOpen(false);

@@ -15,11 +15,10 @@ const createBlog = async (req, res) => {
       });
     }
 
-    const { title, description, category } = req.body;
-    const blogData = { title, description, category };
+    const { title, description, category, link } = req.body;
+    const blogData = { title, description, category, link };
 
-    // Pass req.file to service for image upload
-    const blog = await blogService.createBlog(blogData, req.file);
+    const blog = await blogService.createBlog(blogData);
 
     res.status(201).json({
       success: true,
@@ -119,14 +118,14 @@ const updateBlog = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { title, description, category } = req.body;
+    const { title, description, category, link } = req.body;
     const updateData = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (category) updateData.category = category;
+    if (link) updateData.link = link;
 
-    // Pass req.file to service for image upload
-    const blog = await blogService.updateBlog(id, updateData, req.file);
+    const blog = await blogService.updateBlog(id, updateData);
 
     res.status(200).json({
       success: true,

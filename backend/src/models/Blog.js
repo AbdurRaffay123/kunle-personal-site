@@ -19,9 +19,15 @@ const blogSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Category cannot exceed 100 characters']
   },
+  link: {
+    type: String,
+    required: [true, 'Link is required'],
+    trim: true
+  },
+  // Add image field for Unsplash integration
   image: {
     type: String,
-    trim: true
+    default: null
   }
 }, {
   timestamps: true

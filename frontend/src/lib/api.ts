@@ -131,33 +131,8 @@ export async function getBlogs(): Promise<BlogMeta[]> {
   }
 }
 
-export async function getBlogBySlug(slug: string): Promise<Blog> {
-  logMockDataStatus();
-  
-  if (USE_MOCK_DATA) {
-    const blog = mockBlogs.find((b) => b.slug === slug);
-    if (!blog) throw new Error("Blog not found");
-    return {
-      ...blog,
-      content: generateMockContent(blog.title),
-    };
-  }
-  
-  try {
-    const response = await fetchAPI<APIResponse<Blog>>(`/api/v1/blogs/${slug}`, {
-      cache: "no-store",
-    });
-    return response.data;
-  } catch (error) {
-    // Silent fallback to mock data
-    const blog = mockBlogs.find((b) => b.slug === slug);
-    if (!blog) throw error;
-    return {
-      ...blog,
-      content: generateMockContent(blog.title),
-    };
-  }
-}
+// Note: getBlogBySlug function removed since blogs now link directly to external sites
+// No blog detail pages are needed anymore
 
 // Projects API
 export async function getProjects(): Promise<Project[]> {

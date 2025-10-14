@@ -3,6 +3,7 @@ import { Inter, Lora } from "next/font/google";
 import ThemeProvider from "@/providers/ThemeProvider";
 import { getMainPageData } from "@/apis/About/api";
 import { ProfileProvider } from "@/contexts/ProfileContext";
+import { ImageProvider } from "@/contexts/ImageContext";
 import ConditionalLayout from "@/components/Layout/ConditionalLayout";
 import "./globals.css";
 
@@ -101,9 +102,11 @@ export default async function RootLayout({
         className={`${inter.variable} ${lora.variable} bg-white font-sans text-gray-900 antialiased dark:bg-gray-900 dark:text-white`}
       >
         <ThemeProvider>
-          <ProfileProvider mainData={mainData}>
-            <ConditionalLayout>{children}</ConditionalLayout>
-          </ProfileProvider>
+          <ImageProvider>
+            <ProfileProvider mainData={mainData}>
+              <ConditionalLayout>{children}</ConditionalLayout>
+            </ProfileProvider>
+          </ImageProvider>
         </ThemeProvider>
 
         {/* Schema.org structured data */}

@@ -24,12 +24,12 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
       transition: { 
         duration: 0.5, 
         delay: index * 0.1,
-        ease: [0.25, 0.46, 0.45, 0.94] as const
+        ease: "easeOut"
       }
     },
     hover: { 
       y: -8,
-      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const }
+      transition: { duration: 0.3, ease: "easeOut" }
     }
   };
 

@@ -1,7 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
 const blogController = require('../controllers/blogController');
-const { uploadBlogImage } = require('../middleware/uploadMiddleware'); // <-- Use correct middleware
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -26,9 +25,11 @@ const validateBlog = [
     .isLength({ max: 100 })
     .withMessage('Category cannot exceed 100 characters')
     .trim(),
-  body('image')
-    .optional()
-    .isString()
+  body('link')
+    .notEmpty()
+    .withMessage('Link is required')
+    .isURL()
+    .withMessage('Link must be a valid URL')
     .trim()
 ];
 
@@ -54,20 +55,23 @@ const validateBlogUpdate = [
     .isLength({ max: 100 })
     .withMessage('Category cannot exceed 100 characters')
     .trim(),
-  body('image')
+  body('link')
     .optional()
-    .isString()
+    .notEmpty()
+    .withMessage('Link cannot be empty')
+    .isURL()
+    .withMessage('Link must be a valid URL')
     .trim()
 ];
 
 router.get('/', blogController.getBlogs);   
 router.use(authMiddleware);
 
-// Blog CRUD routes with multer for image upload
-router.post('/', uploadBlogImage, validateBlog, blogController.createBlog); // POST /api/blogs
+// Blog CRUD routes
+router.post('/', validateBlog, blogController.createBlog); // POST /api/blogs
 router.get('/stats', blogController.getBlogStats);                          // GET /api/blogs/stats
 router.get('/:id', blogController.getBlogById);                             // GET /api/blogs/:id
-router.put('/:id', uploadBlogImage, validateBlogUpdate, blogController.updateBlog); // PUT /api/blogs/:id
+router.put('/:id', validateBlogUpdate, blogController.updateBlog); // PUT /api/blogs/:id
 router.delete('/:id', blogController.deleteBlog);                           // DELETE /api/blogs/:id
 
 module.exports = router;

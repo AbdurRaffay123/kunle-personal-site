@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import BlogCard from "@/components/Card/BlogCard";
 import Container from "@/components/UI/Container";
@@ -20,13 +20,40 @@ const POSTS_PER_PAGE = 9;
 const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/").replace(/\/$/, "");
 
 export default function BlogPage() {
-  const { data: blogs, loading, error, refetch } = useFetch<BlogMeta[]>(getBlogs);
+  const [blogs, setBlogs] = useState<BlogMeta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Fetch blogs function
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Fetching blogs...');
+      const data = await getBlogs();
+      console.log('Blog data received:', data);
+      // Ensure we always set an array
+      setBlogs(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching blogs:', err);
+      setError(err instanceof Error ? err.message : "Failed to load blogs");
+      setBlogs([]); // Set empty array on error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch blogs on client-side only
+  useEffect(() => {
+    fetchBlogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Filter blogs
   const filteredBlogs = useMemo(() => {
-    if (!blogs) return [];
+    if (!blogs || !Array.isArray(blogs)) return [];
     return blogs.filter(
       (blog) =>
         !searchTerm ||
@@ -51,7 +78,7 @@ export default function BlogPage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32">
         <Container>
-          <ErrorState message={error} onRetry={refetch} />
+          <ErrorState message={error} onRetry={fetchBlogs} />
         </Container>
       </div>
     );
@@ -130,22 +157,7 @@ export default function BlogPage() {
           <>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedBlogs.map((blog, index) => (
-                <div key={blog._id || index} className="flex flex-col">
-                  {/* Blog Image */}
-                  {blog.image && (
-                    <img
-                      src={
-                        blog.image.startsWith("/stored-files/")
-                          ? `${BACKEND_URL}${blog.image}`
-                          : `${BACKEND_URL}/stored-files/blog-images/${blog.image}`
-                      }
-                      alt={blog.title}
-                      className="w-full h-48 object-cover rounded-lg mb-4"
-                    />
-                  )}
-                  {/* Blog Card */}
-                  <BlogCard blog={blog} index={index} />
-                </div>
+                <BlogCard key={blog._id || index} blog={blog} index={index} />
               ))}
             </div>
 

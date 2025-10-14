@@ -106,18 +106,18 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
               GitHub
             </a>
           )}
-          {(project.liveUrl || project.link) && (
+          {project.liveUrl && (
             <a
-              href={project.liveUrl || project.link}
+              href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-              aria-label={`View ${project.liveUrl ? 'live demo' : 'project'} of ${project.title}`}
+              aria-label={`View live demo of ${project.title}`}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
-              {project.liveUrl ? 'Live Demo' : 'View Project'}
+              Live Demo
             </a>
           )}
         </div>

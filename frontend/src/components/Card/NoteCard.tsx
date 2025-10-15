@@ -53,7 +53,7 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
     >
       <Link
         href={`/notes/${note._id}`}
-        className="group block h-full overflow-hidden rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
+        className="group block h-full overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
         aria-label={`Read note: ${note.title}`}
       >
         {/* Image Container */}
@@ -70,7 +70,7 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
           {/* Topic Badge */}
           {note.topic && (
             <div className="absolute top-3 left-3">
-              <span className="px-2 py-1 text-xs font-medium bg-blue-600/90 text-white rounded-full backdrop-blur-sm">
+              <span className="px-2 py-1 text-xs font-medium bg-blue-600/90 dark:bg-blue-500/90 text-white rounded-full backdrop-blur-sm">
                 {note.topic}
               </span>
             </div>

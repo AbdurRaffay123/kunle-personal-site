@@ -37,21 +37,25 @@ const config: Config = {
           800: "#075985",
           900: "#0C4A6E",
         },
-        background: {
-          light: "#F8FAFC",
-          dark: "#0F172A",
+        light: {
+          bg: "#f8f9fa",
+          card: "#ffffff",
+          text: "#111111",
+          textSecondary: "#374151",
+          textMuted: "#6b7280",
+          border: "#e5e7eb",
+          surface: "#ffffff",
+          surfaceHover: "#f9fafb",
         },
-        surface: {
-          light: "#F1F5F9",
-          dark: "#1E293B",
-        },
-        textPrimary: {
-          light: "#111827",
-          dark: "#E2E8F0",
-        },
-        textMuted: {
-          light: "#475569",
-          dark: "#94A3B8",
+        dark: {
+          bg: "#0d1b2a",
+          card: "#1b263b",
+          text: "#e0e0e0",
+          textSecondary: "#cbd5e1",
+          textMuted: "#94a3b8",
+          border: "#2c3e50",
+          surface: "#1e293b",
+          surfaceHover: "#334155",
         },
       },
       fontFamily: {

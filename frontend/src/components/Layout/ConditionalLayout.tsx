@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import FloatingThemeToggle from "@/components/UI/FloatingThemeToggle";
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -32,6 +33,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
+      <FloatingThemeToggle />
     </div>
   );
 }

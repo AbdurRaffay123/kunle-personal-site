@@ -39,7 +39,7 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
       initial="hidden"
       animate="visible"
       whileHover="hover"
-      className="group relative overflow-hidden rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
+      className="group relative overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
     >
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
@@ -54,7 +54,7 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
         
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
-          <span className="px-2 py-1 text-xs font-medium bg-blue-600/90 text-white rounded-full backdrop-blur-sm">
+          <span className="px-2 py-1 text-xs font-medium bg-blue-600/90 dark:bg-blue-500/90 text-white rounded-full backdrop-blur-sm">
             {blog.category || 'General'}
           </span>
         </div>
@@ -62,16 +62,16 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
           {blog.title}
         </h3>
         
-        <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-3">
+        <p className="text-gray-600 dark:text-slate-400 text-sm mb-4 line-clamp-3">
           {blog.description}
         </p>
 
         {/* Metadata */}
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-500 mb-4">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-slate-500 mb-4">
           <span className="flex items-center gap-1">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

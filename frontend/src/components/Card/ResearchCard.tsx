@@ -29,7 +29,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
         y: -4,
         transition: { duration: 0.3 },
       }}
-      className="group overflow-hidden rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
+      className="group overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
     >
       {/* Image Container */}
       <div className="relative h-40 overflow-hidden">
@@ -45,7 +45,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
         {/* Category Badge */}
         {research.category && (
           <div className="absolute top-3 left-3">
-            <span className="px-2 py-1 text-xs font-medium bg-purple-600/90 text-white rounded-full backdrop-blur-sm">
+            <span className="px-2 py-1 text-xs font-medium bg-purple-600/90 dark:bg-purple-500/90 text-white rounded-full backdrop-blur-sm">
               {research.category}
             </span>
           </div>

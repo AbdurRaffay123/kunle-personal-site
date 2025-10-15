@@ -57,7 +57,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-white dark:bg-slate-900">
       <Hero/>
 
       {/* Quick Links Section */}
@@ -67,7 +67,7 @@ export default function Home() {
             <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 dark:text-blue-400 mb-4">
               Explore My Work
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
               Discover my projects, technical notes, and insights on AI & ML
             </p>
           </div>
@@ -106,15 +106,15 @@ export default function Home() {
               <Link
                 key={item.title}
                 href={item.href}
-                className="group relative overflow-hidden rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 p-8 shadow-lg hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105"
+                className="group relative overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 p-8 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                 <div className="relative z-10">
                   <div className="mb-4 text-5xl">{item.icon}</div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-400">
+                  <p className="text-gray-600 dark:text-slate-400">
                     {item.description}
                   </p>
                 </div>
@@ -126,7 +126,7 @@ export default function Home() {
 
       {/* Featured Projects */}
       {featuredProjects.length > 0 && (
-        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-slate-50 dark:bg-slate-900/50">
+        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-gray-50 dark:bg-slate-900/50">
           <div className="max-w-screen-2xl mx-auto">
             <div className="mb-12 flex items-center justify-between">
               <div>
@@ -221,7 +221,7 @@ export default function Home() {
       )}
 
       {/* Latest Blog Posts */}
-      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-gray-50 dark:bg-slate-900/50">
         <div className="max-w-screen-2xl mx-auto">
           <div className="mb-12 flex items-center justify-between">
             <div>

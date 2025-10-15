@@ -97,6 +97,17 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#2563eb" />
         <link rel="icon" href="/favicon.ico" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                // Force light theme
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme-preference', 'light');
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
       <body
         className={`${inter.variable} ${lora.variable} bg-white font-sans text-gray-900 antialiased dark:bg-gray-900 dark:text-white`}

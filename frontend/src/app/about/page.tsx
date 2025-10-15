@@ -81,14 +81,14 @@ export default function AboutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32 pb-20 flex items-center justify-center">
+      <div className="min-h-screen light:bg-slate-50 dark:bg-slate-900 pt-32 pb-20 flex items-center justify-center">
         <Spinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-32 pb-20">
       <div className="max-w-screen-2xl mx-auto px-8 sm:px-12 lg:px-16 xl:px-24">
         {/* Header */}
         <motion.div
@@ -100,7 +100,7 @@ export default function AboutPage() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-700 dark:text-blue-400 mb-4">
             About Me
           </h1>
-          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
             Get in touch and learn more about my work and background.
           </p>
         </motion.div>
@@ -111,7 +111,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 p-8 shadow-lg"
+            className="rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/30 dark:border-slate-700/30 p-8 shadow-lg"
           >
             <h2 className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6">
               Hi, I&apos;m {profileData?.name || "Loading..."}
@@ -121,7 +121,7 @@ export default function AboutPage() {
                 {profileData.designation}
               </p>
             )}
-            <div className="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed">
+            <div className="space-y-4 text-gray-700 dark:text-slate-300 leading-relaxed">
               {profileData?.bio ? (
                 <p className="whitespace-pre-wrap">{profileData.bio}</p>
               ) : (
@@ -131,8 +131,8 @@ export default function AboutPage() {
 
             {/* Social Links */}
             {profileData?.socialLinks && Object.entries(profileData.socialLinks).some(([_, url]) => url && url.trim()) && (
-              <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+              <div className="mt-8 pt-8 border-t border-gray-200 dark:border-slate-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Connect with me
                 </h3>
                 <div className="flex flex-wrap gap-4">
@@ -173,7 +173,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 p-8 shadow-lg"
+            className="rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/30 dark:border-slate-700/30 p-8 shadow-lg"
           >
             <h2 className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6">
               Get in Touch
@@ -183,7 +183,7 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
                 >
                   Name
                 </label>
@@ -194,7 +194,7 @@ export default function AboutPage() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   placeholder="Your name"
                 />
               </div>
@@ -202,7 +202,7 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
                 >
                   Email
                 </label>
@@ -213,7 +213,7 @@ export default function AboutPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   placeholder="your@email.com"
                 />
               </div>
@@ -221,7 +221,7 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="subject"
-                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
                 >
                   Subject
                 </label>
@@ -232,7 +232,7 @@ export default function AboutPage() {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   placeholder="Message subject"
                 />
               </div>
@@ -240,7 +240,7 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
                 >
                   Message
                 </label>
@@ -251,7 +251,7 @@ export default function AboutPage() {
                   onChange={handleChange}
                   required
                   rows={6}
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
                   placeholder="Your message..."
                 />
               </div>

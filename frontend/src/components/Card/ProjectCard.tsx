@@ -28,7 +28,7 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         y: -4,
         transition: { duration: 0.3 },
       }}
-      className="group overflow-hidden rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
+      className="group overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
     >
       {/* Image Container */}
       <div className="relative h-40 overflow-hidden">
@@ -46,10 +46,10 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
           <div className="absolute top-3 right-3">
             <span className={`px-2 py-1 text-xs font-medium rounded-full backdrop-blur-sm ${
               project.status === 'completed' 
-                ? 'bg-green-600/90 text-white'
+                ? 'bg-green-600/90 dark:bg-green-500/90 text-white'
                 : project.status === 'in-progress'
-                ? 'bg-yellow-600/90 text-white'
-                : 'bg-blue-600/90 text-white'
+                ? 'bg-yellow-600/90 dark:bg-yellow-500/90 text-white'
+                : 'bg-blue-600/90 dark:bg-blue-500/90 text-white'
             }`}>
               {project.status}
             </span>
@@ -59,11 +59,11 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+        <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
           {project.title}
         </h3>
 
-        <p className="mb-4 text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+        <p className="mb-4 text-gray-600 dark:text-slate-400 leading-relaxed line-clamp-3">
           {project.description}
         </p>
 

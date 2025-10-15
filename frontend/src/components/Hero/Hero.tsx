@@ -41,7 +41,7 @@ export default function Hero() {
   const research = mainData?.research || [];
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 dark:from-slate-900 dark:via-blue-900 dark:to-slate-950">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-slate-900 dark:via-blue-900 dark:to-slate-950">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <motion.div
@@ -55,7 +55,7 @@ export default function Hero() {
             repeat: Infinity,
             ease: "linear",
           }}
-          className="absolute -left-96 -top-96 h-[800px] w-[800px] rounded-full bg-blue-500 opacity-20 blur-3xl"
+          className="absolute -left-96 -top-96 h-[800px] w-[800px] rounded-full bg-blue-200 opacity-30 blur-3xl dark:bg-blue-500 dark:opacity-20"
         />
         <motion.div
           animate={{
@@ -68,7 +68,7 @@ export default function Hero() {
             repeat: Infinity,
             ease: "linear",
           }}
-          className="absolute -bottom-96 -right-96 h-[800px] w-[800px] rounded-full bg-sky-400 opacity-20 blur-3xl"
+          className="absolute -bottom-96 -right-96 h-[800px] w-[800px] rounded-full bg-sky-100 opacity-25 blur-3xl dark:bg-sky-400 dark:opacity-20"
         />
       </div>
 
@@ -83,17 +83,17 @@ export default function Hero() {
           <div className="text-left pl-0 lg:pl-8 order-2 lg:order-1">
             <motion.h1
               variants={itemVariants}
-              className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-400 to-blue-500"
+              className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-sky-400 dark:to-blue-500"
             >
               Hi, I&apos;m
               <br />
-              <span className="text-white">{profile?.name || "Your Name"}</span>
+              <span className="text-gray-900 dark:text-white">{profile?.name || "Your Name"}</span>
             </motion.h1>
 
             {profile?.designation && (
               <motion.p
                 variants={itemVariants}
-                className="text-2xl md:text-3xl font-semibold text-blue-300 dark:text-blue-400 mb-6"
+                className="text-2xl md:text-3xl font-semibold text-blue-600 dark:text-blue-400 mb-6"
               >
                 {profile.designation}
               </motion.p>
@@ -101,7 +101,7 @@ export default function Hero() {
 
             <motion.p
               variants={itemVariants}
-              className="text-xl md:text-2xl leading-relaxed text-slate-200 dark:text-slate-300 max-w-3xl mb-8"
+              className="text-xl md:text-2xl leading-relaxed text-gray-600 dark:text-gray-300 max-w-3xl mb-8"
             >
               {profile?.bio || "Your bio goes here."}
             </motion.p>
@@ -137,7 +137,7 @@ export default function Hero() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   href="/project"
-                  className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-sky-500 rounded-full shadow-lg shadow-blue-500/40 hover:shadow-blue-400/60 hover:from-blue-700 hover:to-sky-600 transition-all duration-300"
+                  className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
                 >
                   View Projects
                   <svg
@@ -159,7 +159,7 @@ export default function Hero() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   href="/about"
-                  className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-full hover:bg-white/20 hover:border-white/30 transition-all duration-300"
+                  className="inline-flex items-center px-8 py-4 text-lg font-semibold text-gray-700 dark:text-white bg-white/80 dark:bg-white/10 backdrop-blur-sm border-2 border-gray-200 dark:border-white/20 rounded-full hover:bg-white dark:hover:bg-white/20 hover:border-gray-300 dark:hover:border-white/30 transition-all duration-300"
                 >
                   Get in Touch
                 </Link>
@@ -184,10 +184,10 @@ export default function Hero() {
               className="relative"
             >
               {/* Glowing background circle */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-sky-400 to-blue-500 opacity-20 blur-xl scale-110 animate-pulse" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-sky-400 to-blue-500 opacity-30 blur-xl scale-110 animate-pulse dark:opacity-20" />
               
               {/* Main profile picture container */}
-              <div className="relative w-80 h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl shadow-blue-500/30 bg-gradient-to-br from-blue-500/20 to-sky-500/20 backdrop-blur-sm">
+              <div className="relative w-80 h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-4 border-white/80 dark:border-white/20 shadow-2xl shadow-gray-200/40 dark:shadow-blue-500/30 bg-gradient-to-br from-blue-50/50 to-white/50 dark:from-blue-500/20 dark:to-sky-500/20 backdrop-blur-sm">
                 {profile?.image && (
                   <Image
                     src={
@@ -202,7 +202,7 @@ export default function Hero() {
                     sizes="(max-width: 768px) 320px, (max-width: 1024px) 384px, 384px"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/10 via-transparent to-transparent dark:from-blue-900/20" />
               </div>
               {/* Floating tech badges */}
               <motion.div
@@ -243,7 +243,7 @@ export default function Hero() {
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 dark:from-slate-900 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-900 to-transparent" />
     </section>
   );
 }

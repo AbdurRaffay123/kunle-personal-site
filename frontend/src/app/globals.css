@@ -1,17 +1,33 @@
 @import "tailwindcss";
 
-/* CSS Variables for theme */
+/* CSS Variables for light theme */
 :root {
-  --background: #F8FAFC;
-  --foreground: #111827;
-  --primary: #2563EB;
-  --primary-dark: #1E40AF;
-  --accent: #38BDF8;
+  --background: #ffffff;
+  --foreground: #111111;
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --accent: #60a5fa;
+  --surface: #f8f9fa;
+  --surface-hover: #f1f5f9;
+  --border: #e5e7eb;
+  --text-muted: #6b7280;
+  --text-secondary: #374151;
+  --card: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
 }
 
 .dark {
-  --background: #0F172A;
-  --foreground: #E2E8F0;
+  --background: #0d1b2a;
+  --foreground: #e0e0e0;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+  --border: #2c3e50;
+  --text-muted: #94a3b8;
+  --text-secondary: #cbd5e1;
+  --card: #1b263b;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-hover: rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
@@ -21,23 +37,30 @@
   --font-serif: var(--font-lora);
 }
 
-/* Base styles */
-
+/* Base styles - Force light theme */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 100px;
-  background-color: var(--background);
+  background-color: #ffffff !important;
+  color: #111111 !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html:not(.dark) {
+  background-color: #ffffff !important;
+  color: #111111 !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #ffffff !important;
+  color: #111111 !important;
   font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Scrollbar Styling */
@@ -313,4 +336,14 @@ body {
   outline: 2px solid #2563EB;
   outline-offset: 2px;
   border-radius: 0.25rem;
+}
+
+/* Universal theme transition */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disable transitions for elements that shouldn't have them */
+*:not([class*="transition"]):not([class*="animate"]) {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }

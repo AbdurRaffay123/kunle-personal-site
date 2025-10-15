@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { useTheme } from "next-themes";
-import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
 import LogoutModal from "./LogoutModal";
+import ThemeToggle from "@/components/UI/ThemeToggle";
 
 interface AdminHeaderProps {
   title: string;
@@ -13,7 +12,6 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
-  const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -53,18 +51,8 @@ export default function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
           </div>
         )}
 
-        {/* Theme Toggle */}
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200 cursor-pointer hover:scale-105"
-          aria-label="Toggle theme"
-        >
-          {theme === "dark" ? (
-            <SunIcon className="h-5 w-5" />
-          ) : (
-            <MoonIcon className="h-5 w-5" />
-          )}
-        </button>
+        {/* Enhanced Theme Toggle */}
+        <ThemeToggle variant="minimal" />
 
         {/* Logout Button */}
         <button

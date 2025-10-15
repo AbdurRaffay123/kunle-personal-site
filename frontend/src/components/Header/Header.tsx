@@ -5,11 +5,13 @@
 
 "use client";
 
+// In src/components/Header/Header.tsx, update the imports section (lines 8-12):
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
+import ThemeToggle from "@/components/UI/ThemeToggle";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -24,7 +26,6 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { theme, setTheme } = useTheme();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -38,17 +39,14 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md shadow-blue-900/10"
-          : "bg-white/80 dark:bg-slate-900/70 backdrop-blur-sm shadow-sm"
-      } border-b border-slate-200/20 dark:border-slate-700/20`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white/95 dark:bg-slate-900/90 backdrop-blur-md shadow-lg shadow-gray-200/50 dark:shadow-blue-900/10"
+            : "bg-white/90 dark:bg-slate-900/70 backdrop-blur-sm shadow-sm shadow-gray-100/30 dark:shadow-slate-900/20"
+        } border-b border-gray-200/30 dark:border-slate-700/20`}
     >
       <nav className="max-w-screen-2xl mx-auto flex items-center justify-between py-5 px-[35px]">
         {/* Logo */}
@@ -59,7 +57,7 @@ export default function Header() {
           className="flex items-center space-x-3"
         >
           <Link href="/">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 dark:from-blue-400 dark:via-blue-500 dark:to-sky-400 bg-clip-text text-transparent hover:from-blue-800 hover:to-sky-600 dark:hover:from-blue-300 dark:hover:to-sky-300 transition-all duration-300 cursor-pointer">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-blue-500 dark:to-sky-400 bg-clip-text text-transparent hover:from-blue-700 hover:to-blue-500 dark:hover:from-blue-300 dark:hover:to-sky-300 transition-all duration-300 cursor-pointer">
               Olukunle O.
             </h1>
           </Link>
@@ -86,7 +84,7 @@ export default function Header() {
               >
                 <Link
                   href={item.href}
-                  className={`relative text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 group ${
+                  className={`relative text-gray-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 group ${
                     isActive ? "text-blue-600 dark:text-blue-400 font-semibold" : ""
                   }`}
                 >
@@ -114,58 +112,8 @@ export default function Header() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex items-center space-x-4"
         >
-          {/* Theme Toggle */}
-          {mounted && (
-            <motion.button
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleTheme}
-              className="relative p-3 rounded-full bg-gradient-to-r from-blue-600 to-sky-500 dark:from-blue-500 dark:to-sky-400 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:shadow-xl transition-all duration-300 cursor-pointer"
-              aria-label="Toggle theme"
-            >
-              <AnimatePresence mode="wait" initial={false}>
-                {theme === "dark" ? (
-                  <motion.svg
-                    key="sun"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </motion.svg>
-                ) : (
-                  <motion.svg
-                    key="moon"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                    />
-                  </motion.svg>
-                )}
-              </AnimatePresence>
-            </motion.button>
-          )}
+          {/* Enhanced Theme Toggle */}
+          <ThemeToggle variant="default" />
 
           {/* Admin Login Link - Only show on public routes */}
           {mounted && (
@@ -191,7 +139,7 @@ export default function Header() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="md:hidden p-2 rounded-lg text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
           >

@@ -8,9 +8,9 @@ export default function Footer() {
   const profile = mainData?.profile;
 
   return (
-    <footer className="w-full bg-white dark:bg-slate-900 text-center py-16 px-8 sm:px-12 lg:px-16 xl:px-24 border-t border-slate-300/20 dark:border-slate-700/20 ">
+    <footer className="w-full bg-white dark:bg-slate-900 text-center py-16 px-8 sm:px-12 lg:px-16 xl:px-24 border-t border-gray-200/20 dark:border-slate-700/20 ">
       <div className="max-w-screen-2xl mx-auto py-8">
-        <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
+        <p className="text-gray-600 dark:text-slate-400 text-sm mb-4">
           © {currentYear} {profile?.name || "Your Name"} — All rights reserved.
         </p>
 

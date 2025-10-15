@@ -29,7 +29,12 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
         y: -4,
         transition: { duration: 0.3 },
       }}
-      className="group overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
+      className="group overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
+      style={{
+        backgroundColor: 'var(--card)',
+        borderColor: 'var(--border)',
+        boxShadow: 'var(--shadow)'
+      }}
     >
       {/* Image Container */}
       <div className="relative h-40 overflow-hidden">
@@ -45,7 +50,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
         {/* Category Badge */}
         {research.category && (
           <div className="absolute top-3 left-3">
-            <span className="px-2 py-1 text-xs font-medium bg-purple-600/90 dark:bg-purple-500/90 text-white rounded-full backdrop-blur-sm">
+            <span className="px-2 py-1 text-xs font-medium bg-blue-600/90 dark:bg-blue-500/90 text-white rounded-full backdrop-blur-sm">
               {research.category}
             </span>
           </div>
@@ -54,7 +59,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
 
       {/* Content */}
       <div className="p-6">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+        <h2 className="text-xl font-bold mb-3 transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
           {research.title}
         </h2>
         
@@ -68,7 +73,11 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
             {research.tags.slice(0, 3).map((tag, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 text-xs font-medium rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                className="px-2.5 py-1 text-xs font-medium rounded-md"
+                style={{
+                  backgroundColor: 'var(--tag-bg)',
+                  color: 'var(--tag-text)'
+                }}
               >
                 {tag}
               </span>
@@ -86,7 +95,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
           href={research.researchLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
         >
           View Research
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

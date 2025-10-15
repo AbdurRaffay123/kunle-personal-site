@@ -25,7 +25,11 @@ export default function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-12 text-center shadow-xl backdrop-blur-sm dark:border-gray-700 dark:from-gray-800 dark:to-gray-900"
+      className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-xl backdrop-blur-sm"
+      style={{
+        backgroundColor: 'var(--explore-card-bg)',
+        borderColor: 'var(--border)'
+      }}
       role="status"
       aria-live="polite"
     >
@@ -35,11 +39,11 @@ export default function EmptyState({
         </div>
       )}
       
-      <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
+      <h3 className="mb-3 text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
         {title}
       </h3>
       
-      <p className="mb-6 max-w-md text-gray-600 dark:text-gray-400">
+      <p className="mb-6 max-w-md" style={{ color: 'var(--text-primary)' }}>
         {description}
       </p>
 

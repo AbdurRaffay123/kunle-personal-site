@@ -192,16 +192,19 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
     <div className={`${isReply ? 'ml-8 md:ml-12 mt-3' : ''} mb-4`}>
       <div className={`p-4 rounded-lg shadow-sm border ${
         isReply 
-          ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 border-l-4 border-l-blue-500' 
-          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-      }`}>
+          ? 'border-blue-200 dark:border-blue-800 border-l-4 border-l-blue-500' 
+          : ''
+      }`} style={{
+        backgroundColor: isReply ? 'var(--comments-input-bg)' : 'var(--comments-input-bg)',
+        borderColor: isReply ? undefined : 'var(--comments-input-border)'
+      }}>
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
             {isReply && (
               <ArrowUturnLeftIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
             )}
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white">
+              <h4 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {comment.email}
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
@@ -225,11 +228,7 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
           )}
         </div>
         
-        <p className={`whitespace-pre-wrap ${
-          isReply 
-            ? 'text-slate-800 dark:text-slate-200' 
-            : 'text-slate-700 dark:text-slate-300'
-        }`}>
+        <p className="whitespace-pre-wrap" style={{ color: 'var(--text-primary)' }}>
           {comment.content}
         </p>
         
@@ -263,7 +262,7 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm">
+      <div className="p-8 rounded-lg shadow-sm" style={{ backgroundColor: 'var(--comments-bg)' }}>
         <div className="animate-pulse space-y-4">
           <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4"></div>
           <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
@@ -273,43 +272,53 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
   }
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg">
+    <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--comments-bg)' }}>
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <ChatBubbleLeftIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h3 className="text-2xl font-bold" style={{ color: 'var(--nav-text)' }}>
           Comments ({comments.length})
         </h3>
       </div>
 
       {/* Comment form */}
-      <form onSubmit={handleSubmit} className="mb-8 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-        <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+      <form onSubmit={handleSubmit} className="mb-8 p-6 rounded-lg shadow-sm border" style={{ backgroundColor: 'var(--comments-input-bg)', borderColor: 'var(--comments-input-border)' }}>
+        <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--nav-text)' }}>
           Leave a Comment
         </h4>
         
         <div className="mb-4">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--nav-text)' }}>
             Email *
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{
+              backgroundColor: 'var(--comments-input-bg)',
+              borderColor: 'var(--comments-input-border)',
+              color: 'var(--comments-input-text)'
+            }}
             required
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--nav-text)' }}>
             Comment *
           </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Share your thoughts..."
-            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            style={{
+              backgroundColor: 'var(--comments-input-bg)',
+              borderColor: 'var(--comments-input-border)',
+              color: 'var(--comments-input-text)'
+            }}
             rows={4}
             required
           />

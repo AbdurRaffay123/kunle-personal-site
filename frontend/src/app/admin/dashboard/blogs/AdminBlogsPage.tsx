@@ -152,7 +152,7 @@ export default function AdminBlogsPage() {
             <h2 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white">
               Blog Posts
             </h2>
-            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
+            <p className="text-sm md:text-base" style={{ color: 'var(--text-primary)' }}>
               Manage your blog posts and articles
             </p>
           </div>
@@ -169,13 +169,18 @@ export default function AdminBlogsPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-slate-800 p-3 md:p-4 rounded-lg shadow-md">
+        <div className="p-3 md:p-4 rounded-lg shadow-md" style={{ backgroundColor: 'var(--search-bg)' }}>
           <input
             type="text"
             placeholder="Search blogs..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{
+              backgroundColor: 'var(--card)',
+              borderColor: 'var(--search-border)',
+              color: 'var(--search-text)'
+            }}
           />
         </div>
 
@@ -250,7 +255,7 @@ function BlogForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Title
         </label>
         <input
@@ -259,13 +264,18 @@ function BlogForm({
           onChange={(e) =>
             setFormData({ ...formData, title: e.target.value })
           }
-          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Description
         </label>
         <textarea
@@ -274,13 +284,18 @@ function BlogForm({
             setFormData({ ...formData, description: e.target.value })
           }
           rows={3}
-          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Category
         </label>
         <input
@@ -289,13 +304,18 @@ function BlogForm({
           onChange={(e) =>
             setFormData({ ...formData, category: e.target.value })
           }
-          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           External Link
         </label>
         <input
@@ -304,11 +324,16 @@ function BlogForm({
           onChange={(e) =>
             setFormData({ ...formData, link: e.target.value })
           }
-          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
           placeholder="https://example.com/blog-post"
           required
         />
-        <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-xs md:text-sm mt-1" style={{ color: 'var(--text-primary)' }}>
           The URL where the blog post is hosted externally
         </p>
       </div>

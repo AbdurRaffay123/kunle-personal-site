@@ -61,7 +61,7 @@ export default function ResearchPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32">
+      <div className="min-h-screen pt-32" style={{ backgroundColor: 'var(--background)' }}>
         <Container>
           <ErrorState message={error} onRetry={refetch} />
         </Container>
@@ -70,7 +70,7 @@ export default function ResearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32 pb-20">
+    <div className="min-h-screen pt-32 pb-20" style={{ backgroundColor: 'var(--background)' }}>
       <div className="max-w-screen-2xl mx-auto px-8 sm:px-12 lg:px-16 xl:px-24">
         {/* Header */}
         <motion.div
@@ -79,10 +79,10 @@ export default function ResearchPage() {
           transition={{ duration: 0.5 }}
           className="mb-12 text-center"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-700 dark:text-blue-400 mb-4">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4" style={{ color: 'var(--nav-text)' }}>
             Researches
           </h1>
-          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
             Explore my published and ongoing research in AI, ML, and more.
           </p>
         </motion.div>
@@ -92,7 +92,11 @@ export default function ResearchPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-10 rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/30 dark:border-slate-700/30 p-6 shadow-lg"
+          className="mb-10 rounded-xl backdrop-blur-sm border p-6 shadow-lg"
+          style={{
+            backgroundColor: 'var(--search-bg)',
+            borderColor: 'var(--search-border)'
+          }}
         >
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             {/* Search input */}
@@ -115,7 +119,12 @@ export default function ResearchPage() {
                 type="search"
                 placeholder="Search research by title, description, category, or tag..."
                 onChange={(e) => handleSearch(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 py-3 pl-12 pr-4 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full rounded-lg border py-3 pl-12 pr-4 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                style={{
+                  backgroundColor: 'var(--card)',
+                  borderColor: 'var(--search-border)',
+                  color: 'var(--search-text)'
+                }}
                 aria-label="Search research"
               />
             </div>
@@ -131,8 +140,14 @@ export default function ResearchPage() {
               className={`px-4 py-2 rounded-full font-medium text-sm transition ${
                 activeTag === tag
                   ? "bg-blue-600 text-white shadow"
-                  : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900"
+                  : "hover:bg-blue-100 dark:hover:bg-blue-900"
               }`}
+              style={{
+                backgroundColor: activeTag === tag ? undefined : 'var(--card)',
+                color: activeTag === tag ? undefined : 'var(--search-text)',
+                borderColor: activeTag === tag ? undefined : 'var(--search-border)',
+                border: activeTag === tag ? undefined : '1px solid'
+              }}
             >
               {tag}
             </button>

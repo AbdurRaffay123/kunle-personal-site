@@ -32,7 +32,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   // Show loading while auth is being determined
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--loading-bg)' }}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );

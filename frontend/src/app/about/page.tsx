@@ -81,14 +81,14 @@ export default function AboutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen light:bg-slate-50 dark:bg-slate-900 pt-32 pb-20 flex items-center justify-center">
+      <div className="min-h-screen pt-32 pb-20 flex items-center justify-center" style={{ backgroundColor: 'var(--background)' }}>
         <Spinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-32 pb-20">
+    <div className="min-h-screen pt-32 pb-20" style={{ backgroundColor: 'var(--background)' }}>
       <div className="max-w-screen-2xl mx-auto px-8 sm:px-12 lg:px-16 xl:px-24">
         {/* Header */}
         <motion.div
@@ -97,10 +97,10 @@ export default function AboutPage() {
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-blue-700 dark:text-blue-400 mb-4">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4" style={{ color: 'var(--nav-text)' }}>
             About Me
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
             Get in touch and learn more about my work and background.
           </p>
         </motion.div>
@@ -111,17 +111,21 @@ export default function AboutPage() {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/30 dark:border-slate-700/30 p-8 shadow-lg"
+            className="rounded-xl backdrop-blur-sm border p-8 shadow-lg"
+            style={{
+              backgroundColor: 'var(--about-card-bg)',
+              borderColor: 'var(--border)'
+            }}
           >
-            <h2 className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6">
-              Hi, I&apos;m {profileData?.name || "Loading..."}
+            <h2 className="text-3xl font-bold mb-6" style={{ color: 'var(--hero-text)' }}>
+              Hi, I&apos;m <span style={{ color: 'var(--hero-name)' }}>{profileData?.name || "Loading..."}</span>
             </h2>
             {profileData?.designation && (
               <p className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-4">
                 {profileData.designation}
               </p>
             )}
-            <div className="space-y-4 text-gray-700 dark:text-slate-300 leading-relaxed">
+            <div className="space-y-4 leading-relaxed" style={{ color: 'var(--text-primary)' }}>
               {profileData?.bio ? (
                 <p className="whitespace-pre-wrap">{profileData.bio}</p>
               ) : (
@@ -173,7 +177,11 @@ export default function AboutPage() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="rounded-xl bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/30 dark:border-slate-700/30 p-8 shadow-lg"
+            className="rounded-xl backdrop-blur-sm border p-8 shadow-lg"
+            style={{
+              backgroundColor: 'var(--about-card-bg)',
+              borderColor: 'var(--border)'
+            }}
           >
             <h2 className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6">
               Get in Touch
@@ -183,7 +191,8 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: 'var(--nav-text)' }}
                 >
                   Name
                 </label>
@@ -194,7 +203,12 @@ export default function AboutPage() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-lg border px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  style={{
+                    backgroundColor: 'var(--about-input-bg)',
+                    borderColor: 'var(--about-input-border)',
+                    color: 'var(--about-input-text)'
+                  }}
                   placeholder="Your name"
                 />
               </div>
@@ -202,7 +216,8 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: 'var(--nav-text)' }}
                 >
                   Email
                 </label>
@@ -213,7 +228,12 @@ export default function AboutPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-lg border px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  style={{
+                    backgroundColor: 'var(--about-input-bg)',
+                    borderColor: 'var(--about-input-border)',
+                    color: 'var(--about-input-text)'
+                  }}
                   placeholder="your@email.com"
                 />
               </div>
@@ -221,7 +241,8 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="subject"
-                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: 'var(--nav-text)' }}
                 >
                   Subject
                 </label>
@@ -232,7 +253,12 @@ export default function AboutPage() {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-lg border px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  style={{
+                    backgroundColor: 'var(--about-input-bg)',
+                    borderColor: 'var(--about-input-border)',
+                    color: 'var(--about-input-text)'
+                  }}
                   placeholder="Message subject"
                 />
               </div>
@@ -240,7 +266,8 @@ export default function AboutPage() {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: 'var(--nav-text)' }}
                 >
                   Message
                 </label>
@@ -251,7 +278,12 @@ export default function AboutPage() {
                   onChange={handleChange}
                   required
                   rows={6}
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
+                  className="w-full rounded-lg border px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
+                  style={{
+                    backgroundColor: 'var(--about-input-bg)',
+                    borderColor: 'var(--about-input-border)',
+                    color: 'var(--about-input-text)'
+                  }}
                   placeholder="Your message..."
                 />
               </div>

@@ -192,9 +192,13 @@ export function NotepadEditor({
   }
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm">
+    <div className="border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm" style={{ backgroundColor: 'var(--card)' }}>
       <style dangerouslySetInnerHTML={{
         __html: `
+          .ProseMirror {
+            color: var(--foreground) !important;
+            background-color: var(--card) !important;
+          }
           .ProseMirror ul {
             list-style-type: disc !important;
             padding-left: 1.5rem !important;
@@ -208,10 +212,22 @@ export function NotepadEditor({
           .ProseMirror li {
             margin: 0.25rem 0 !important;
             line-height: 1.6 !important;
-            color: rgb(51 65 85) !important;
+            color: var(--foreground) !important;
           }
-          .dark .ProseMirror li {
-            color: rgb(203 213 225) !important;
+          .ProseMirror h1, .ProseMirror h2, .ProseMirror h3, .ProseMirror h4, .ProseMirror h5, .ProseMirror h6 {
+            color: var(--foreground) !important;
+          }
+          .ProseMirror p {
+            color: var(--foreground) !important;
+          }
+          .ProseMirror strong {
+            color: var(--foreground) !important;
+          }
+          .ProseMirror em {
+            color: var(--foreground) !important;
+          }
+          .ProseMirror code {
+            color: var(--foreground) !important;
           }
         `
       }} />

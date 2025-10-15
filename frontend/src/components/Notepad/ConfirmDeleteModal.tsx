@@ -34,14 +34,14 @@ export function ConfirmDeleteModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full">
+      <div className="rounded-lg shadow-xl max-w-md w-full" style={{ backgroundColor: 'var(--card)' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 dark:bg-red-900/20 rounded-full">
               <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
               {title}
             </h3>
           </div>
@@ -55,19 +55,19 @@ export function ConfirmDeleteModal({
 
         {/* Content */}
         <div className="p-4">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
+          <p className="mb-4" style={{ color: 'var(--text-primary)' }}>
             {message}
           </p>
           
           {itemName && (
-            <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-md mb-4">
-              <p className="font-medium text-slate-900 dark:text-white">
+            <div className="p-3 rounded-md mb-4" style={{ backgroundColor: 'var(--surface)' }}>
+              <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
                 "{itemName}"
               </p>
             </div>
           )}
 
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
             This action cannot be undone.
           </p>
         </div>
@@ -76,7 +76,13 @@ export function ConfirmDeleteModal({
         <div className="flex justify-end gap-3 p-4 border-t border-slate-200 dark:border-slate-700">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 rounded-md cursor-pointer"
+            className="px-4 py-2 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 rounded-md cursor-pointer"
+            style={{
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--card)',
+              borderColor: 'var(--border)',
+              border: '1px solid'
+            }}
           >
             Cancel
           </button>

@@ -48,8 +48,10 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 dark:from-slate-950 dark:via-blue-900 dark:to-slate-950 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-md w-[90%] max-w-md space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{
+      background: 'linear-gradient(to bottom right, var(--primary-dark), var(--primary), var(--accent))'
+    }}>
+      <div className="p-8 rounded-xl shadow-md w-[90%] max-w-md space-y-6" style={{ backgroundColor: 'var(--card)' }}>
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
@@ -77,7 +79,12 @@ export default function AdminLoginPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full px-4 py-3 rounded-md border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              style={{
+                backgroundColor: 'var(--background)',
+                borderColor: 'var(--search-border)',
+                color: 'var(--search-text)'
+              }}
               placeholder="Enter your email"
               suppressHydrationWarning
             />
@@ -99,7 +106,12 @@ export default function AdminLoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 pr-12 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 pr-12 rounded-md border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                style={{
+                  backgroundColor: 'var(--background)',
+                  borderColor: 'var(--search-border)',
+                  color: 'var(--search-text)'
+                }}
                 placeholder="Enter your password"
                 suppressHydrationWarning
               />

@@ -39,7 +39,12 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
       initial="hidden"
       animate="visible"
       whileHover="hover"
-      className="group relative overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
+      className="group relative overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
+      style={{
+        backgroundColor: 'var(--card)',
+        borderColor: 'var(--border)',
+        boxShadow: 'var(--shadow)'
+      }}
     >
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
@@ -62,7 +67,7 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        <h3 className="text-xl font-bold mb-3 line-clamp-2 transition-colors" style={{ color: 'var(--nav-text)' }}>
           {blog.title}
         </h3>
         

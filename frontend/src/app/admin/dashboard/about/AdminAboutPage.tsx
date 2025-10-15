@@ -153,10 +153,10 @@ export default function AdminAboutPage() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
               About Me
             </h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p style={{ color: 'var(--text-primary)' }}>
               Manage your personal information and bio
             </p>
           </div>
@@ -173,7 +173,7 @@ export default function AdminAboutPage() {
         </div>
 
         {/* Content */}
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-md max-w-4xl mx-auto space-y-6">
+        <div className="p-8 rounded-xl shadow-md max-w-4xl mx-auto space-y-6" style={{ backgroundColor: 'var(--admin-quick-actions-bg)' }}>
           {isEditing ? (
             <EditForm
               formData={formData!}
@@ -214,7 +214,7 @@ function ViewMode({ aboutData }: { aboutData: AboutData }) {
           </div>
         </div>
         <div className="flex-1 text-center md:text-left">
-          <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          <h3 className="text-3xl font-bold mb-2" style={{ color: 'var(--nav-text)' }}>
             {aboutData.name}
           </h3>
           <p className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-4">
@@ -282,7 +282,7 @@ function EditForm({
     <form className="space-y-6" onSubmit={e => { e.preventDefault(); onSave(); }}>
       {/* Profile Image */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Profile Image
         </label>
         <div className="flex items-center gap-4">
@@ -323,62 +323,82 @@ function EditForm({
 
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Name
         </label>
         <input
           type="text"
           value={formData.name}
           onChange={(e) => onChange("name", e.target.value)}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
           required
         />
       </div>
 
       {/* Designation */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Designation
         </label>
         <input
           type="text"
           value={formData.designation}
           onChange={(e) => onChange("designation", e.target.value)}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
           required
         />
       </div>
 
       {/* Bio */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Bio
         </label>
         <textarea
           value={formData.bio}
           onChange={(e) => onChange("bio", e.target.value)}
           rows={6}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
           required
         />
       </div>
 
       {/* Social Links */}
       <div>
-        <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+        <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
           Social Links
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {Object.entries(formData.socialLinks).map(([platform, url]) => (
             <div key={platform}>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 capitalize">
+              <label className="block text-sm font-medium mb-2 capitalize" style={{ color: 'var(--text-primary)' }}>
                 {platform}
               </label>
               <input
                 type={platform === "email" ? "email" : "url"}
                 value={url}
                 onChange={(e) => onChange(`socialLinks.${platform}`, e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ 
+            backgroundColor: 'var(--card)', 
+            color: 'var(--foreground)', 
+            borderColor: 'var(--border)' 
+          }}
                 placeholder={
                   platform === "email"
                     ? "your@email.com"

@@ -32,7 +32,8 @@ export default function LogoutModal({ isOpen, onClose, onConfirm, isLoading = fa
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-slate-800 rounded-lg shadow-xl z-50 p-6"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md rounded-lg shadow-xl z-50 p-6"
+            style={{ backgroundColor: 'var(--card)' }}
           >
             <div className="text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
@@ -51,11 +52,11 @@ export default function LogoutModal({ isOpen, onClose, onConfirm, isLoading = fa
                 </svg>
               </div>
               
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Confirm Logout
               </h3>
               
-              <p className="text-slate-600 dark:text-slate-400 mb-6">
+              <p className="mb-6" style={{ color: 'var(--text-primary)' }}>
                 Are you sure you want to logout? You will be redirected to the login page.
               </p>
               
@@ -63,7 +64,13 @@ export default function LogoutModal({ isOpen, onClose, onConfirm, isLoading = fa
                 <button
                   onClick={onClose}
                   disabled={isLoading}
-                  className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    color: 'var(--text-primary)',
+                    backgroundColor: 'var(--surface)',
+                    borderColor: 'var(--border)',
+                    border: '1px solid'
+                  }}
                 >
                   Cancel
                 </button>

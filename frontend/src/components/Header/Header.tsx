@@ -42,11 +42,13 @@ export default function Header() {
 
   return (
     <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/95 dark:bg-slate-900/90 backdrop-blur-md shadow-lg shadow-gray-200/50 dark:shadow-blue-900/10"
-            : "bg-white/90 dark:bg-slate-900/70 backdrop-blur-sm shadow-sm shadow-gray-100/30 dark:shadow-slate-900/20"
-        } border-b border-gray-200/30 dark:border-slate-700/20`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 backdrop-blur-md shadow-lg border-b border-gray-200/30 dark:border-slate-700/20`}
+        style={{
+          backgroundColor: scrolled 
+            ? 'var(--background)' 
+            : 'var(--background)',
+          opacity: scrolled ? 0.95 : 0.9
+        }}
     >
       <nav className="max-w-screen-2xl mx-auto flex items-center justify-between py-5 px-[35px]">
         {/* Logo */}
@@ -84,9 +86,12 @@ export default function Header() {
               >
                 <Link
                   href={item.href}
-                  className={`relative text-gray-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 group ${
-                    isActive ? "text-blue-600 dark:text-blue-400 font-semibold" : ""
+                  className={`relative transition-colors duration-300 group ${
+                    isActive ? "font-semibold" : ""
                   }`}
+                  style={{
+                    color: isActive ? 'var(--nav-text)' : 'var(--text-secondary)'
+                  }}
                 >
                   {item.name}
                   {/* Active Underline */}
@@ -176,7 +181,8 @@ export default function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 shadow-lg"
+            className="md:hidden backdrop-blur-md border-t border-slate-200 dark:border-slate-700 shadow-lg"
+            style={{ backgroundColor: 'var(--background)' }}
           >
             <div className="max-w-screen-2xl mx-auto px-8 py-6 space-y-4">
               {navigation.map((item, index) => {
@@ -197,8 +203,11 @@ export default function Header() {
                       className={`block text-lg font-medium py-3 px-4 rounded-lg transition-all ${
                         isActive
                           ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md"
-                          : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400"
+                          : "hover:bg-slate-100 dark:hover:bg-slate-800"
                       }`}
+                      style={{
+                        color: isActive ? 'white' : 'var(--text-secondary)'
+                      }}
                     >
                       {item.name}
                     </Link>

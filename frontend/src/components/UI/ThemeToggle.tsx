@@ -7,7 +7,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
-import { SunIcon, MoonIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 
 interface ThemeToggleProps {
   variant?: "default" | "minimal" | "floating";
@@ -35,22 +35,15 @@ export default function ThemeToggle({
   }
 
   const getNextTheme = () => {
-    switch (theme) {
-      case "light":
-        return "dark";
-      case "dark":
-        return "system";
-      case "system":
-      default:
-        return "light";
-    }
+    return theme === "light" ? "dark" : "light";
   };
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
-    // Force apply theme class to HTML element
+    // Apply theme class to HTML element
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme-preference', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme-preference', 'light');
@@ -58,9 +51,6 @@ export default function ThemeToggle({
   };
 
   const getCurrentIcon = () => {
-    if (theme === "system") {
-      return <ComputerDesktopIcon className="h-5 w-5" />;
-    }
     return theme === "dark" ? (
       <SunIcon className="h-5 w-5" />
     ) : (
@@ -69,9 +59,6 @@ export default function ThemeToggle({
   };
 
   const getCurrentLabel = () => {
-    if (theme === "system") {
-      return `System (${systemTheme})`;
-    }
     return theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
   };
 
@@ -107,7 +94,7 @@ export default function ThemeToggle({
       
       {showLabel && (
         <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-          {theme === "system" ? "System" : theme === "dark" ? "Dark" : "Light"}
+          {theme === "dark" ? "Dark" : "Light"}
         </span>
       )}
     </div>

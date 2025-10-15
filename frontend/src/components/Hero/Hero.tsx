@@ -41,7 +41,10 @@ export default function Hero() {
   const research = mainData?.research || [];
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-slate-900 dark:via-blue-900 dark:to-slate-950">
+    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ 
+      background: 'var(--background)',
+      backgroundImage: 'linear-gradient(to bottom right, var(--surface), var(--background), var(--surface-hover))'
+    }}>
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <motion.div
@@ -83,11 +86,12 @@ export default function Hero() {
           <div className="text-left pl-0 lg:pl-8 order-2 lg:order-1">
             <motion.h1
               variants={itemVariants}
-              className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-sky-400 dark:to-blue-500"
+              className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6"
+              style={{ color: 'var(--hero-text)' }}
             >
               Hi, I&apos;m
               <br />
-              <span className="text-gray-900 dark:text-white">{profile?.name || "Your Name"}</span>
+              <span style={{ color: 'var(--hero-name)' }}>{profile?.name || "Your Name"}</span>
             </motion.h1>
 
             {profile?.designation && (
@@ -101,7 +105,8 @@ export default function Hero() {
 
             <motion.p
               variants={itemVariants}
-              className="text-xl md:text-2xl leading-relaxed text-gray-600 dark:text-gray-300 max-w-3xl mb-8"
+              className="text-xl md:text-2xl leading-relaxed max-w-3xl mb-8"
+              style={{ color: 'var(--text-secondary)' }}
             >
               {profile?.bio || "Your bio goes here."}
             </motion.p>
@@ -159,7 +164,12 @@ export default function Hero() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   href="/about"
-                  className="inline-flex items-center px-8 py-4 text-lg font-semibold text-gray-700 dark:text-white bg-white/80 dark:bg-white/10 backdrop-blur-sm border-2 border-gray-200 dark:border-white/20 rounded-full hover:bg-white dark:hover:bg-white/20 hover:border-gray-300 dark:hover:border-white/30 transition-all duration-300"
+                  className="inline-flex items-center px-8 py-4 text-lg font-semibold backdrop-blur-sm border-2 rounded-full transition-all duration-300"
+                  style={{
+                    backgroundColor: 'var(--contact-bg)',
+                    color: 'var(--contact-text)',
+                    borderColor: 'var(--border)'
+                  }}
                 >
                   Get in Touch
                 </Link>
@@ -243,7 +253,9 @@ export default function Hero() {
       </div>
 
       {/* Bottom gradient fade */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-900 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-32" style={{
+            background: `linear-gradient(to top, var(--background), transparent)`
+          }} />
     </section>
   );
 }

@@ -69,8 +69,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 sticky top-24">
-      <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="rounded-lg border p-6 sticky top-24" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+      <h3 className="mb-4 text-lg font-semibold" style={{ color: 'var(--nav-text)' }}>
         Table of Contents
       </h3>
       <nav>

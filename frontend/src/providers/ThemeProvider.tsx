@@ -9,9 +9,14 @@ import { ReactNode, useEffect } from "react";
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Force light theme application on mount
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('theme-preference', 'light');
+    // Initialize theme from localStorage or default to light
+    const savedTheme = localStorage.getItem('theme-preference');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme-preference', 'light');
+    }
   }, []);
 
   return (
@@ -22,7 +27,6 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       disableTransitionOnChange={false}
       storageKey="theme-preference"
       themes={['light', 'dark']}
-      forcedTheme="light"
     >
       {children}
     </NextThemesProvider>

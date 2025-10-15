@@ -30,10 +30,10 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   // Show loading while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--loading-bg)' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading...</p>
+          <p style={{ color: 'var(--text-primary)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -45,7 +45,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
       {/* Sidebar */}
       <AdminSidebar
         isOpen={sidebarOpen}

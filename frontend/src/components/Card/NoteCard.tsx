@@ -53,7 +53,12 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
     >
       <Link
         href={`/notes/${note._id}`}
-        className="group block h-full overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
+        className="group block h-full overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
+        style={{
+          backgroundColor: 'var(--card)',
+          borderColor: 'var(--border)',
+          boxShadow: 'var(--shadow)'
+        }}
         aria-label={`Read note: ${note.title}`}
       >
         {/* Image Container */}
@@ -79,7 +84,7 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
 
         {/* Content */}
         <div className="p-6">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+          <h3 className="text-xl font-bold mb-3 transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
             {note.title}
           </h3>
 
@@ -125,7 +130,11 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
               {note.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-1 text-xs font-medium rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                  className="px-2.5 py-1 text-xs font-medium rounded-md"
+                  style={{
+                    backgroundColor: 'var(--tag-bg)',
+                    color: 'var(--tag-text)'
+                  }}
                 >
                   {tag}
                 </span>

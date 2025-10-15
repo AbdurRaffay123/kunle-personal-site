@@ -25,16 +25,20 @@ export default function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
   };
 
   return (
-    <header className="flex justify-between items-center bg-white dark:bg-slate-800 py-4 px-6 lg:px-8 shadow-md border-b border-slate-200 dark:border-slate-700">
+    <header className="flex justify-between items-center py-4 px-6 lg:px-8 shadow-md border-b" style={{ 
+      backgroundColor: 'var(--card)',
+      borderColor: 'var(--border)'
+    }}>
       {/* Left side */}
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
           className="md:hidden p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+          style={{ color: 'var(--text-primary)' }}
         >
           <Bars3Icon className="h-6 w-6" />
         </button>
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
           {title}
         </h1>
       </div>
@@ -43,9 +47,9 @@ export default function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
       <div className="flex items-center gap-4">
         {/* User Info */}
         {user && (
-          <div className="hidden sm:flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 px-5">
+          <div className="hidden sm:flex items-center gap-2 text-sm px-5" style={{ color: 'var(--text-primary)' }}>
             <span>Welcome,</span>
-            <span className="font-medium text-slate-900 dark:text-slate-200">
+            <span className="font-medium">
               {user.email || "Admin"}
             </span>
           </div>

@@ -5,6 +5,7 @@ import { Toaster, toast } from "react-hot-toast";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
 import AdminModal from "@/components/Admin/AdminModal";
+import DeleteConfirmModal from "@/components/Admin/DeleteConfirmModal";
 import { createResearch, getAllResearch, updateResearch, deleteResearch } from "@/apis/Research/api";
 import type { CreateResearchRequest } from "@/apis/Research/api";
 
@@ -189,7 +190,7 @@ export default function AdminResearchPage() {
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
               Research
             </h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p style={{ color: 'var(--text-primary)' }}>
               Manage your research projects and publications
             </p>
           </div>
@@ -206,13 +207,18 @@ export default function AdminResearchPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md">
+        <div className="p-4 rounded-lg shadow-md" style={{ backgroundColor: 'var(--search-bg)' }}>
           <input
             type="text"
             placeholder="Search research..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{
+              backgroundColor: 'var(--card)',
+              borderColor: 'var(--search-border)',
+              color: 'var(--search-text)'
+            }}
           />
         </div>
 
@@ -245,39 +251,18 @@ export default function AdminResearchPage() {
         </AdminModal>
 
         {/* Delete Confirmation Modal */}
-        <AdminModal
+        <DeleteConfirmModal
           isOpen={deleteModalOpen}
           onClose={() => {
             setDeleteModalOpen(false);
             setResearchToDelete(null);
           }}
+          onConfirm={confirmDelete}
           title="Delete Research"
-        >
-          <div className="space-y-4">
-            <p>
-              Are you sure you want to delete <span className="font-semibold">{researchToDelete?.title}</span>?
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setDeleteModalOpen(false);
-                  setResearchToDelete(null);
-                }}
-                className="px-4 py-2 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                disabled={isLoading}
-              >
-                {isLoading ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        </AdminModal>
+          message="Are you sure you want to delete this research? This action cannot be undone."
+          itemName={researchToDelete?.title}
+          isDeleting={isLoading}
+        />
       </div>
     </AdminLayout>
   );
@@ -331,7 +316,7 @@ function ResearchForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Title
         </label>
         <input
@@ -339,13 +324,18 @@ function ResearchForm({
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           disabled={isLoading}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Description
         </label>
         <textarea
@@ -353,13 +343,18 @@ function ResearchForm({
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           disabled={isLoading}
           rows={3}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Category
         </label>
         <input
@@ -367,13 +362,18 @@ function ResearchForm({
           value={formData.category}
           onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           disabled={isLoading}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Research Link
         </label>
         <input
@@ -382,16 +382,21 @@ function ResearchForm({
           onChange={(e) => setFormData({ ...formData, link: e.target.value })}
           disabled={isLoading}
           placeholder="https://example.com/research-paper"
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
         />
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
           Enter the URL to your research paper, publication, or project repository
         </p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Tags
         </label>
         <div className="flex flex-wrap gap-2 mb-2">
@@ -420,7 +425,12 @@ function ResearchForm({
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
             disabled={isLoading}
             placeholder="Add a tag..."
-            className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: 'var(--card)',
+              color: 'var(--foreground)',
+              borderColor: 'var(--border)'
+            }}
           />
           <button
             type="button"

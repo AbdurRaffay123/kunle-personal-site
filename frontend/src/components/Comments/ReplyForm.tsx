@@ -30,7 +30,7 @@ export default function ReplyForm({ onSubmit, onCancel, isSubmitting }: ReplyFor
   return (
     <form onSubmit={handleSubmit} className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
       <div className="mb-3">
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--nav-text)' }}>
           Email *
         </label>
         <input
@@ -38,7 +38,12 @@ export default function ReplyForm({ onSubmit, onCancel, isSubmitting }: ReplyFor
           value={replyEmail}
           onChange={(e) => setReplyEmail(e.target.value)}
           placeholder="your@email.com"
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{
+            backgroundColor: 'var(--comments-input-bg)',
+            borderColor: 'var(--comments-input-border)',
+            color: 'var(--comments-input-text)'
+          }}
           required
           autoFocus
         />
@@ -47,7 +52,12 @@ export default function ReplyForm({ onSubmit, onCancel, isSubmitting }: ReplyFor
         value={replyContent}
         onChange={(e) => setReplyContent(e.target.value)}
         placeholder="Write your reply..."
-        className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        style={{
+          backgroundColor: 'var(--comments-input-bg)',
+          borderColor: 'var(--comments-input-border)',
+          color: 'var(--comments-input-text)'
+        }}
         rows={3}
         required
       />

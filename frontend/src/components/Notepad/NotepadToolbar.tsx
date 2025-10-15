@@ -64,8 +64,9 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
       className={`p-2 rounded-md transition-colors ${
         isActive
           ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-          : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}`}
+          : 'hover:bg-slate-100 dark:hover:bg-slate-700'
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      style={{ color: isActive ? undefined : 'var(--foreground)' }}
       aria-label={title}
     >
       {children}
@@ -78,7 +79,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-1 p-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+      <div className="flex flex-wrap items-center gap-1 p-3 border-b border-slate-200 dark:border-slate-700" style={{ backgroundColor: 'var(--card)' }}>
         {/* Text Formatting */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -117,7 +118,8 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
               editor.chain().focus().toggleHeading({ level: parseInt(level) as 1 | 2 | 3 | 4 | 5 | 6 }).run();
             }
           }}
-          className="px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+          className="px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
           title="Text Style"
         >
           <option value="paragraph">Paragraph</option>

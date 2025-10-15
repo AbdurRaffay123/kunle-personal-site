@@ -28,7 +28,12 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         y: -4,
         transition: { duration: 0.3 },
       }}
-      className="group overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300"
+      className="group overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
+      style={{
+        backgroundColor: 'var(--card)',
+        borderColor: 'var(--border)',
+        boxShadow: 'var(--shadow)'
+      }}
     >
       {/* Image Container */}
       <div className="relative h-40 overflow-hidden">
@@ -59,7 +64,7 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+        <h3 className="mb-3 text-xl font-bold transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
           {project.title}
         </h3>
 
@@ -77,7 +82,11 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
             {project.technologies.slice(0, 4).map((tech) => (
               <span
                 key={tech}
-                className="px-2.5 py-1 text-xs font-medium rounded-md bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300"
+                className="px-2.5 py-1 text-xs font-medium rounded-md"
+                style={{
+                  backgroundColor: 'var(--tag-bg)',
+                  color: 'var(--tag-text)'
+                }}
               >
                 {tech}
               </span>

@@ -8,9 +8,9 @@ export default function Footer() {
   const profile = mainData?.profile;
 
   return (
-    <footer className="w-full bg-white dark:bg-slate-900 text-center py-16 px-8 sm:px-12 lg:px-16 xl:px-24 border-t border-gray-200/20 dark:border-slate-700/20 ">
+    <footer className="w-full text-center py-16 px-8 sm:px-12 lg:px-16 xl:px-24 border-t border-gray-200/20 dark:border-slate-700/20" style={{ backgroundColor: 'var(--footer-bg)' }}>
       <div className="max-w-screen-2xl mx-auto py-8">
-        <p className="text-gray-600 dark:text-slate-400 text-sm mb-4">
+        <p className="text-sm mb-4" style={{ color: 'var(--text-primary)' }}>
           © {currentYear} {profile?.name || "Your Name"} — All rights reserved.
         </p>
 
@@ -109,19 +109,22 @@ export default function Footer() {
         <div className="flex justify-center items-center space-x-6 mt-6">
           <a
             href="/privacy"
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            style={{ color: 'var(--text-primary)' }}
           >
             Privacy
           </a>
           <a
             href="/terms"
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            style={{ color: 'var(--text-primary)' }}
           >
             Terms
           </a>
           <a
             href="/admin/login"
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            style={{ color: 'var(--text-primary)' }}
           >
             Admin
           </a>

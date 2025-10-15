@@ -350,7 +350,7 @@ export default function AdminNotesPage() {
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
               Technical Notes
             </h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p style={{ color: 'var(--text-primary)' }}>
               Manage your technical notes and learning resources
             </p>
           </div>
@@ -366,13 +366,18 @@ export default function AdminNotesPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md">
+        <div className="p-4 rounded-lg shadow-md" style={{ backgroundColor: 'var(--search-bg)' }}>
           <input
             type="text"
             placeholder="Search notes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{
+              backgroundColor: 'var(--card)',
+              borderColor: 'var(--search-border)',
+              color: 'var(--search-text)'
+            }}
           />
         </div>
 
@@ -467,34 +472,44 @@ function NoteForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Title
         </label>
         <input
           type="text"
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
         />
       </div>
 
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Topic
         </label>
         <input
           type="text"
           value={formData.topic}
           onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
           Tags
         </label>
         <div className="flex flex-wrap gap-2 mb-2">
@@ -521,7 +536,12 @@ function NoteForm({
             onChange={(e) => setTagInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
             placeholder="Add a tag..."
-            className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{
+              backgroundColor: 'var(--card)',
+              color: 'var(--foreground)',
+              borderColor: 'var(--border)'
+            }}
           />
           <button
             type="button"

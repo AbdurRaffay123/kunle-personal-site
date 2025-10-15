@@ -67,13 +67,13 @@ export default async function NotePage({ params }: NotePageProps) {
   const sidebar = (
     <div className="space-y-8">
       {/* Metadata */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="rounded-lg border p-6" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+        <h3 className="mb-4 text-lg font-semibold" style={{ color: 'var(--nav-text)' }}>
           Metadata
         </h3>
         <dl className="space-y-2 text-sm">
           <div>
-            <dt className="font-medium text-gray-700 dark:text-gray-300">
+            <dt className="font-medium" style={{ color: 'var(--nav-text)' }}>
               Updated
             </dt>
             <dd className="text-gray-600 dark:text-gray-400">
@@ -82,7 +82,7 @@ export default async function NotePage({ params }: NotePageProps) {
           </div>
           {note.readingTime && (
             <div>
-              <dt className="font-medium text-gray-700 dark:text-gray-300">
+              <dt className="font-medium" style={{ color: 'var(--nav-text)' }}>
                 Reading Time
               </dt>
               <dd className="text-gray-600 dark:text-gray-400">
@@ -92,10 +92,10 @@ export default async function NotePage({ params }: NotePageProps) {
           )}
           {note.topic && (
             <div>
-              <dt className="font-medium text-gray-700 dark:text-gray-300">
+              <dt className="font-medium" style={{ color: 'var(--nav-text)' }}>
                 Topic
               </dt>
-              <dd className="text-gray-600 dark:text-gray-400">{note.topic}</dd>
+              <dd className="text-blue-700 dark:text-blue-400">{note.topic}</dd>
             </div>
           )}
         </dl>
@@ -141,7 +141,7 @@ export default async function NotePage({ params }: NotePageProps) {
       </nav>
 
       {/* Title */}
-      <h1 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl">
+      <h1 className="mb-4 text-4xl font-bold md:text-5xl" style={{ color: 'var(--nav-text)' }}>
         {note.title}
       </h1>
 

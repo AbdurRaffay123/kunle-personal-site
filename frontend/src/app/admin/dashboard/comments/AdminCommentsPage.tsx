@@ -210,26 +210,31 @@ export default function AdminCommentsPage() {
             <h2 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white">
               Comments ({comments.length})
             </h2>
-            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
+            <p className="text-sm md:text-base" style={{ color: 'var(--text-primary)' }}>
               View and manage comments on your content
             </p>
           </div>
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-slate-800 p-3 md:p-4 rounded-lg shadow-md">
+        <div className="p-3 md:p-4 rounded-lg shadow-md" style={{ backgroundColor: 'var(--search-bg)' }}>
           <input
             type="text"
             placeholder="Search comments..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{
+              backgroundColor: 'var(--card)',
+              borderColor: 'var(--search-border)',
+              color: 'var(--search-text)'
+            }}
           />
         </div>
 
         {/* Table */}
         {filteredComments.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 p-12 rounded-lg shadow-md text-center">
+          <div className="p-12 rounded-lg shadow-md text-center" style={{ backgroundColor: 'var(--card)' }}>
             <p className="text-slate-600 dark:text-slate-400">
               {searchTerm ? 'No comments found matching your search.' : 'No comments yet.'}
             </p>

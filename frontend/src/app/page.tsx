@@ -57,17 +57,17 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
       <Hero/>
 
       {/* Quick Links Section */}
-      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-white dark:bg-slate-900">
+      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--background)' }}>
         <div className="max-w-screen-2xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 dark:text-blue-400 mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: 'var(--nav-text)' }}>
               Explore My Work
             </h2>
-            <p className="text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
               Discover my projects, technical notes, and insights on AI & ML
             </p>
           </div>
@@ -106,15 +106,25 @@ export default function Home() {
               <Link
                 key={item.title}
                 href={item.href}
-                className="group relative overflow-hidden rounded-xl bg-white/90 dark:bg-slate-800/60 backdrop-blur-sm border border-gray-200/40 dark:border-slate-700/30 p-8 shadow-lg hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105"
+                className="group relative overflow-hidden rounded-xl backdrop-blur-sm border p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                style={{
+                  backgroundColor: 'var(--explore-card-bg)',
+                  borderColor: 'var(--border)',
+                  boxShadow: 'var(--shadow)'
+                }}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                 <div className="relative z-10">
                   <div className="mb-4 text-5xl">{item.icon}</div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <h3 
+                    className="text-xl font-bold mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                    style={{ 
+                      color: 'var(--text-primary)'
+                    }}
+                  >
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-slate-400">
+                  <p style={{ color: 'var(--text-secondary)' }}>
                     {item.description}
                   </p>
                 </div>
@@ -126,7 +136,7 @@ export default function Home() {
 
       {/* Featured Projects */}
       {featuredProjects.length > 0 && (
-        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-gray-50 dark:bg-slate-900/50">
+        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="max-w-screen-2xl mx-auto">
             <div className="mb-12 flex items-center justify-between">
               <div>
@@ -158,7 +168,7 @@ export default function Home() {
 
       {/* Latest Research */}
       {latestResearch.length > 0 && (
-        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-white dark:bg-slate-900">
+        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--background)' }}>
           <div className="max-w-screen-2xl mx-auto">
             <div className="mb-12 flex items-center justify-between">
               <div>
@@ -190,20 +200,21 @@ export default function Home() {
 
       {/* Latest Notes */}
       {latestNotes.length > 0 && (
-        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-slate-900 dark:bg-slate-900">
+        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="max-w-screen-2xl mx-auto">
             <div className="mb-12 flex items-center justify-between">
               <div>
-                <h2 className="text-4xl sm:text-5xl font-bold text-blue-400 mb-2">
+                <h2 className="text-4xl sm:text-5xl font-bold mb-2" style={{ color: 'var(--nav-text)' }}>
                   Latest Notes
                 </h2>
-                <p className="text-lg text-slate-300">
+                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
                   Quick thoughts and technical notes
                 </p>
               </div>
               <Link
                 href="/notes"
-                className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-blue-400 font-semibold hover:text-blue-300 transition-colors"
+                className="hidden sm:inline-flex items-center gap-2 px-6 py-3 font-semibold transition-colors"
+                style={{ color: 'var(--nav-text)' }}
               >
                 View All
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,7 +232,7 @@ export default function Home() {
       )}
 
       {/* Latest Blog Posts */}
-      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24 bg-gray-50 dark:bg-slate-900/50">
+      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
         <div className="max-w-screen-2xl mx-auto">
           <div className="mb-12 flex items-center justify-between">
             <div>

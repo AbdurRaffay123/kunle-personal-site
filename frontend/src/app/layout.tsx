@@ -101,16 +101,24 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                // Force light theme
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme-preference', 'light');
+                // Initialize theme from localStorage
+                const savedTheme = localStorage.getItem('theme-preference');
+                if (savedTheme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
               } catch (e) {}
             `,
           }}
         />
       </head>
       <body
-        className={`${inter.variable} ${lora.variable} bg-white font-sans text-gray-900 antialiased dark:bg-gray-900 dark:text-white`}
+        className={`${inter.variable} ${lora.variable} font-sans antialiased`}
+        style={{
+          backgroundColor: 'var(--background)',
+          color: 'var(--foreground)'
+        }}
       >
         <ThemeProvider>
           <ImageProvider>

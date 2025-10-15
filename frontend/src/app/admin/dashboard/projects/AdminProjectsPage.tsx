@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import AdminTable from "@/components/Admin/AdminTable";
 import AdminModal from "@/components/Admin/AdminModal";
+import DeleteConfirmModal from "@/components/Admin/DeleteConfirmModal";
 import {
   getProjects,
   createProject,
@@ -183,7 +184,7 @@ export default function AdminProjectsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Projects</h2>
-            <p className="text-slate-600 dark:text-slate-400">
+            <p style={{ color: 'var(--text-primary)' }}>
               Manage your projects and research work
             </p>
           </div>
@@ -200,13 +201,18 @@ export default function AdminProjectsPage() {
         </div>
 
         {/* Search */}
-        <div className="rounded-lg bg-white p-4 shadow-md dark:bg-slate-800">
+        <div className="rounded-lg p-4 shadow-md" style={{ backgroundColor: 'var(--search-bg)' }}>
           <input
             type="text"
             placeholder="Search projects..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-900 placeholder-slate-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:placeholder-slate-400"
+            className="w-full rounded-md border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            style={{
+              backgroundColor: 'var(--card)',
+              borderColor: 'var(--search-border)',
+              color: 'var(--search-text)'
+            }}
           />
         </div>
 
@@ -233,40 +239,18 @@ export default function AdminProjectsPage() {
         </AdminModal>
 
         {/* Delete Confirmation Modal */}
-        <AdminModal
+        <DeleteConfirmModal
           isOpen={deleteModalOpen}
           onClose={() => {
             setDeleteModalOpen(false);
             setProjectToDelete(null);
           }}
+          onConfirm={confirmDelete}
           title="Delete Project"
-        >
-          <div className="space-y-4">
-            <p>
-              Are you sure you want to delete{" "}
-              <span className="font-semibold">{projectToDelete?.title}</span>?
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setDeleteModalOpen(false);
-                  setProjectToDelete(null);
-                }}
-                className="rounded bg-slate-200 px-4 py-2 text-slate-800 dark:bg-slate-700 dark:text-slate-200"
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-                disabled={isLoading}
-              >
-                {isLoading ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        </AdminModal>
+          message="Are you sure you want to delete this project? This action cannot be undone."
+          itemName={projectToDelete?.title}
+          isDeleting={isLoading}
+        />
       </div>
     </AdminLayout>
   );
@@ -319,35 +303,45 @@ function ProjectForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="mb-2 block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
           Title
         </label>
         <input
           type="text"
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+          className="w-full rounded-md border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
           disabled={isLoading}
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="mb-2 block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
           Description
         </label>
         <textarea
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           rows={3}
-          className="w-full rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+          className="w-full rounded-md border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
           disabled={isLoading}
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="mb-2 block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
           Project Link
         </label>
         <input
@@ -355,17 +349,22 @@ function ProjectForm({
           value={formData.link}
           onChange={(e) => setFormData({ ...formData, link: e.target.value })}
           placeholder="https://example.com/project"
-          className="w-full rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+          className="w-full rounded-md border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
+            borderColor: 'var(--border)'
+          }}
           required
           disabled={isLoading}
         />
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs" style={{ color: 'var(--text-secondary)' }}>
           Enter the URL to your project repository or demo
         </p>
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="mb-2 block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
           Technologies
         </label>
         <div className="mb-2 flex flex-wrap gap-2">
@@ -393,7 +392,12 @@ function ProjectForm({
             onChange={(e) => setTechInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTech())}
             placeholder="Add a technology..."
-            className="flex-1 rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+            className="flex-1 rounded-md border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            style={{
+              backgroundColor: 'var(--card)',
+              color: 'var(--foreground)',
+              borderColor: 'var(--border)'
+            }}
             disabled={isLoading}
           />
           <button

@@ -197,16 +197,17 @@ export default function NotepadPage() {
       <Toaster position="top-right" />
       
       {/* Header */}
-      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3">
+      <header className="border-b border-slate-200 dark:border-slate-700 px-4 py-3" style={{ backgroundColor: 'var(--card)' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors md:hidden"
+              style={{ color: 'var(--foreground)' }}
             >
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+            <h1 className="text-xl font-semibold" style={{ color: 'var(--foreground)' }}>
               Notepad
             </h1>
           </div>
@@ -217,8 +218,9 @@ export default function NotepadPage() {
               className={`p-2 rounded-lg transition-colors ${
                 isFavorite
                   ? 'text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20'
-                  : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-700'
               }`}
+              style={{ color: isFavorite ? undefined : 'var(--foreground)' }}
               title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
               {isFavorite ? (
@@ -249,7 +251,8 @@ export default function NotepadPage() {
             opacity: sidebarOpen ? 1 : 0
           }}
           transition={{ duration: 0.3 }}
-          className="bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 overflow-hidden"
+          className="border-r border-slate-200 dark:border-slate-700 overflow-hidden"
+          style={{ backgroundColor: 'var(--card)' }}
         >
           <NotepadList
             selectedNoteId={selectedNoteMeta?.id}
@@ -270,15 +273,16 @@ export default function NotepadPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Note title..."
-                  className="w-full text-2xl font-bold bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder-slate-400"
+                  className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-slate-400"
+                  style={{ color: 'var(--foreground)' }}
                 />
               </div>
 
               {/* Tags */}
               <div className="p-4 border-b border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
-                  <Tag className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  <Tag className="w-4 h-4" style={{ color: 'var(--foreground)' }} />
+                  <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
                     Tags
                   </span>
                 </div>

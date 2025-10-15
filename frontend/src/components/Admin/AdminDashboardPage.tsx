@@ -143,15 +143,15 @@ export default function AdminDashboardPage() {
     <AdminLayout title="Dashboard">
       <div className="space-y-8">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-xl p-8 text-white">
+        <div className="rounded-xl p-8" style={{ backgroundColor: 'var(--admin-card-bg)', color: 'var(--admin-card-text)' }}>
           <h2 className="text-3xl font-bold mb-2">Welcome Back!</h2>
-          <p className="text-blue-100 mb-1">
+          <p className="mb-1" style={{ color: 'var(--text-secondary)' }}>
             Hello, {user?.email || 'Admin'} 👋
           </p>
-          <p className="text-blue-100">
+          <p style={{ color: 'var(--text-secondary)' }}>
             Manage your content, monitor activity, and keep your site updated.
           </p>
-          <div className="mt-4 text-sm text-blue-200">
+          <div className="mt-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
             Last login: {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
@@ -163,7 +163,7 @@ export default function AdminDashboardPage() {
 
         {/* Stats Cards */}
         <div>
-          <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">
+          <h3 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
             Content Overview
           </h3>
           {loading ? (
@@ -190,21 +190,22 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
-          <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">
+        <div className="rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300" style={{ backgroundColor: 'var(--admin-quick-actions-bg)' }}>
+          <h3 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
             Quick Actions
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <button 
               onClick={() => handleQuickAction('blog')}
-              className="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              className="flex items-center p-4 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}
             >
               <DocumentTextIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
               <div className="text-left flex-1">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                <p className="font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   New Blog Post
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
+                <p className="text-sm group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   Create a new article
                 </p>
               </div>
@@ -213,14 +214,15 @@ export default function AdminDashboardPage() {
 
             <button 
               onClick={() => handleQuickAction('note')}
-              className="flex items-center p-4 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              className="flex items-center p-4 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}
             >
               <BookOpenIcon className="h-8 w-8 text-green-600 dark:text-green-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
               <div className="text-left flex-1">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-200">
+                <p className="font-semibold group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   Add Note
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
+                <p className="text-sm group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   Write a quick note
                 </p>
               </div>
@@ -229,14 +231,15 @@ export default function AdminDashboardPage() {
 
             <button 
               onClick={() => handleQuickAction('project')}
-              className="flex items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              className="flex items-center p-4 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}
             >
               <FolderIcon className="h-8 w-8 text-yellow-600 dark:text-yellow-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
               <div className="text-left flex-1">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors duration-200">
+                <p className="font-semibold group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   New Project
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
+                <p className="text-sm group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   Add a project
                 </p>
               </div>
@@ -245,14 +248,15 @@ export default function AdminDashboardPage() {
 
             <button 
               onClick={() => handleQuickAction('research')}
-              className="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              className="flex items-center p-4 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+              style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}
             >
               <AcademicCapIcon className="h-8 w-8 text-purple-600 dark:text-purple-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
               <div className="text-left flex-1">
-                <p className="font-semibold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200">
+                <p className="font-semibold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   Research
                 </p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
+                <p className="text-sm group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   Add research item
                 </p>
               </div>
@@ -262,9 +266,9 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+        <div className="rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300" style={{ backgroundColor: 'var(--admin-recent-activity-bg)' }}>
           <div className="mb-6">
-            <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">
+            <h3 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
               Recent Activity
             </h3>
           </div>
@@ -285,10 +289,10 @@ export default function AdminDashboardPage() {
           ) : activities.length > 0 ? (
             <div className="space-y-3">
               {activities.map((activity, index) => (
-                <div key={activity.id || index} className="flex items-start justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 hover:shadow-md transition-all duration-300 group cursor-pointer">
+                <div key={activity.id || index} className="flex items-start justify-between p-4 rounded-lg hover:shadow-md transition-all duration-300 group cursor-pointer" style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                      <p className="font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                         {activity.action}
                       </p>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium transition-all duration-200 group-hover:scale-105 ${
@@ -301,10 +305,10 @@ export default function AdminDashboardPage() {
                         {activity.type}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-1 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200">
+                    <p className="text-sm mb-1 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                       "{activity.title}"
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors duration-200">
+                    <div className="flex items-center gap-2 text-xs group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                       <span>by {activity.user}</span>
                       <span>•</span>
                       <span>{formatTimeAgo(activity.updatedAt)}</span>

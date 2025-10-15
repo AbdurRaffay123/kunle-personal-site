@@ -181,7 +181,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
         {/* Special Markers */}
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleMathBlock().run()}
+          onClick={() => (editor.chain().focus() as any).toggleMathBlock().run()}
           isActive={editor.isActive('mathBlock')}
           title="Mark as Mathematical Expression (will be highlighted specially)"
         >
@@ -189,7 +189,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         </ToolbarButton>
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleSpecialCodeBlock().run()}
+          onClick={() => (editor.chain().focus() as any).toggleSpecialCodeBlock().run()}
           isActive={editor.isActive('specialCodeBlock')}
           title="Mark as Special Code Block (enhanced styling)"
         >

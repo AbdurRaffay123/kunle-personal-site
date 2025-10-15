@@ -36,15 +36,15 @@ export const MathBlock = Node.create({
     return {
       setMathBlock:
         () =>
-        ({ commands }) => {
+        ({ commands }: { commands: any }) => {
           return commands.setNode(this.name);
         },
       toggleMathBlock:
         () =>
-        ({ commands }) => {
+        ({ commands }: { commands: any }) => {
           return commands.toggleNode(this.name, 'paragraph');
         },
-    };
+    } as any;
   },
 });
 

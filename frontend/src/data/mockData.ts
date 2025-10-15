@@ -83,60 +83,44 @@ export const mockNotes: NoteMeta[] = [
 
 export const mockBlogs: BlogMeta[] = [
   {
-    slug: "future-of-llms",
+    _id: "future-of-llms",
     title: "The Future of Large Language Models",
     description:
       "Exploring the next generation of LLMs and their potential impact on AI applications",
-    excerpt:
-      "As we witness the rapid evolution of large language models, it's crucial to understand where this technology is heading and what challenges lie ahead.",
-    tags: ["LLM", "AI", "Future Tech", "Research"],
-    thumbnail: "https://images.unsplash.com/photo-1677756119517-756a188d2d94?w=800",
+    category: "AI",
+    link: "https://example.com/future-of-llms",
     updatedAt: "2025-10-01T10:00:00Z",
     createdAt: "2025-10-01T10:00:00Z",
-    readingTime: 8,
-    author: "Olukunle Owolabi",
   },
   {
-    slug: "ml-production-lessons",
+    _id: "ml-production-lessons",
     title: "Lessons from Deploying ML at Scale",
     description:
       "Real-world insights from building and maintaining production ML systems serving millions of users",
-    excerpt:
-      "After years of deploying ML systems at Meta and beyond, here are the critical lessons I've learned about production ML.",
-    tags: ["ML Engineering", "Production", "Best Practices", "Meta"],
-    thumbnail: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800",
+    category: "ML",
+    link: "https://example.com/ml-production-lessons",
     updatedAt: "2025-09-20T14:00:00Z",
     createdAt: "2025-09-20T14:00:00Z",
-    readingTime: 12,
-    author: "Olukunle Owolabi",
   },
   {
-    slug: "fraud-detection-systems",
+    _id: "fraud-detection-systems",
     title: "Building Real-Time Fraud Detection Systems",
     description:
       "A deep dive into architecting and deploying fraud detection systems that operate at scale",
-    excerpt:
-      "Fraud detection requires a unique combination of speed, accuracy, and adaptability. Here's how to build systems that deliver all three.",
-    tags: ["Fraud Detection", "Real-Time", "ML Systems", "Security"],
-    thumbnail: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800",
+    category: "Security",
+    link: "https://example.com/fraud-detection-systems",
     updatedAt: "2025-08-15T16:00:00Z",
     createdAt: "2025-08-15T16:00:00Z",
-    readingTime: 15,
-    author: "Olukunle Owolabi",
   },
   {
-    slug: "phd-journey-tufts",
+    _id: "phd-journey-tufts",
     title: "My PhD Journey: From Research to Industry",
     description:
       "Reflections on transitioning from academic research at Tufts to applied AI engineering at Meta",
-    excerpt:
-      "The journey from PhD research to industry AI engineering taught me invaluable lessons about bridging theory and practice.",
-    tags: ["PhD", "Career", "Research", "Industry"],
-    thumbnail: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
+    category: "Career",
+    link: "https://example.com/phd-journey-tufts",
     updatedAt: "2025-07-05T10:00:00Z",
     createdAt: "2025-07-05T10:00:00Z",
-    readingTime: 10,
-    author: "Olukunle Owolabi",
   },
 ];
 

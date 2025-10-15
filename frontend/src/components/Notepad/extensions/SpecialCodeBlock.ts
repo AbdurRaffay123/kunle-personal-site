@@ -53,15 +53,15 @@ export const SpecialCodeBlock = Node.create({
     return {
       setSpecialCodeBlock:
         () =>
-        ({ commands }) => {
+        ({ commands }: { commands: any }) => {
           return commands.setNode(this.name);
         },
       toggleSpecialCodeBlock:
         () =>
-        ({ commands }) => {
+        ({ commands }: { commands: any }) => {
           return commands.toggleNode(this.name, 'paragraph');
         },
-    };
+    } as any;
   },
 
   addInputRules() {

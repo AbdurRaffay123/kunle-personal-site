@@ -43,7 +43,8 @@ const researchSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: false  // Disable automatic indexing since we define it explicitly below
   },
   createdAt: {
     type: Date,

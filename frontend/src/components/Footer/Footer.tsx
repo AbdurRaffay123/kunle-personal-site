@@ -1,7 +1,8 @@
 "use client";
 import { useProfile } from "@/contexts/ProfileContext";
 
-const currentYear = new Date().getFullYear();
+// Use static year to prevent hydration mismatch
+const currentYear = 2025;
 
 export default function Footer() {
   const mainData = useProfile();

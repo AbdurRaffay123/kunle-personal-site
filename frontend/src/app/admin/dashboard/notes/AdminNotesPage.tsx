@@ -163,11 +163,11 @@ export default function AdminNotesPage() {
     } else {
       // For new notes, create the note and show editor
       const newNote: Note = {
-        _id: 'temp-' + Date.now(), // Temporary ID
+        _id: 'temp-' + Math.random().toString(36).substr(2, 9), // Temporary ID
         title: noteData.title || "",
         topic: noteData.topic || "",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: "2025-01-15T16:00:00Z",
+        updatedAt: "2025-01-15T16:00:00Z",
         tags: noteData.tags || [],
       };
       setCurrentNote(newNote);

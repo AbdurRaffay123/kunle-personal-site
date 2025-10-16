@@ -123,7 +123,7 @@ export default function AdminTable({
       </div>
 
       {/* Tablet Table View (md to lg) - Condensed with hidden columns */}
-      <div className="hidden md:block lg:hidden bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+      <div className="hidden md:block lg:hidden rounded-lg shadow-md overflow-hidden" style={{ backgroundColor: 'var(--card)' }}>
         <table className="w-full">
           <thead style={{ backgroundColor: 'var(--nav-text)' }}>
             <tr>
@@ -231,7 +231,11 @@ export default function AdminTable({
                 <>
                   {/* Comment Type Badge */}
                   <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--tag-bg)', color: 'var(--tag-text)' }}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      item.parentCommentId 
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' 
+                        : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                    }`}>
                       {item.parentCommentId ? 'Reply' : 'Comment'}
                     </span>
                     {item.createdAt && (
@@ -278,7 +282,7 @@ export default function AdminTable({
                   {/* Secondary Info */}
                   <div className="flex flex-wrap items-center gap-4 mb-3">
                     {item.category && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--tag-bg)', color: 'var(--tag-text)' }}>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
                         {item.category}
                       </span>
                     )}
@@ -317,7 +321,7 @@ export default function AdminTable({
               
               {/* Actions */}
               {showActions && (
-                <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
                   {onEdit && (
                     <button
                       onClick={() => onEdit(item)}

@@ -42,21 +42,17 @@ const columns = [
   { 
     key: "link", 
     label: "Link",
-    render: (value: string | undefined | null) => {
-      const safeValue = value || '';
-      
-      return (
-        <a 
-          href={safeValue || '#'} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-xs block"
-          title={safeValue}
-        >
-          {safeValue.length > 30 ? `${safeValue.substring(0, 30)}...` : safeValue || 'No link'}
-        </a>
-      );
-    }
+    render: (value: string) => (
+      <a 
+        href={value} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-xs block"
+        title={value}
+      >
+        {value.length > 30 ? `${value.substring(0, 30)}...` : value}
+      </a>
+    )
   },
   { key: "createdAt", label: "Created" },
 ];

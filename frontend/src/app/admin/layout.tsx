@@ -11,7 +11,7 @@ export default function AdminLayout({
 }) {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
         {children}
       </div>
     </AuthProvider>

@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useProfile } from "@/contexts/ProfileContext";
+import TypingAnimation from "@/components/UI/TypingAnimation";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -91,7 +92,13 @@ export default function Hero() {
             >
               Hi, I&apos;m
               <br />
-              <span style={{ color: 'var(--hero-name)' }}>{profile?.name || "Your Name"}</span>
+              <TypingAnimation
+                text={profile?.name || "Raffay"}
+                speed={150}
+                delay={1000}
+                className="font-extrabold"
+                style={{ color: 'var(--hero-name)' }}
+              />
             </motion.h1>
 
             {profile?.designation && (

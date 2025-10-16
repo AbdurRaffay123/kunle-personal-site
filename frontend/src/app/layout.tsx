@@ -100,15 +100,20 @@ export default async function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              try {
-                // Initialize theme from localStorage
-                const savedTheme = localStorage.getItem('theme-preference');
-                if (savedTheme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else {
+              (function() {
+                try {
+                  // Initialize theme from localStorage
+                  const savedTheme = localStorage.getItem('theme-preference');
+                  if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {
+                  // Fallback to light theme if localStorage is not available
                   document.documentElement.classList.remove('dark');
                 }
-              } catch (e) {}
+              })();
             `,
           }}
         />

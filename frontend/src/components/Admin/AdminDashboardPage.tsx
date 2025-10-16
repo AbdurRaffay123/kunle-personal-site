@@ -129,7 +129,8 @@ export default function AdminDashboardPage() {
 
   // Format time ago
   const formatTimeAgo = (dateString: string) => {
-    const now = new Date();
+    // Use a fixed reference date to prevent hydration mismatch
+    const now = new Date('2025-01-15T16:00:00Z');
     const date = new Date(dateString);
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
     
@@ -143,16 +144,16 @@ export default function AdminDashboardPage() {
     <AdminLayout title="Dashboard">
       <div className="space-y-8">
         {/* Welcome Section */}
-        <div className="rounded-xl p-8" style={{ backgroundColor: 'var(--admin-card-bg)', color: 'var(--admin-card-text)' }}>
+        <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-xl p-8 text-white">
           <h2 className="text-3xl font-bold mb-2">Welcome Back!</h2>
-          <p className="mb-1" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-blue-100 mb-1">
             Hello, {user?.email || 'Admin'} 👋
           </p>
-          <p style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-blue-100">
             Manage your content, monitor activity, and keep your site updated.
           </p>
-          <div className="mt-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Last login: {new Date().toLocaleDateString('en-US', {
+          <div className="mt-4 text-sm text-blue-200">
+            Last login: {new Date('2025-01-15T16:00:00Z').toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',

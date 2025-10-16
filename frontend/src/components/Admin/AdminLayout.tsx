@@ -45,7 +45,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+    <div className="flex min-h-screen text-slate-800 dark:text-slate-100" style={{ backgroundColor: 'var(--background)' }}>
       {/* Sidebar */}
       <AdminSidebar
         isOpen={sidebarOpen}

@@ -47,14 +47,14 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-16 md:w-20 lg:w-64 transform transition-all duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-16 md:w-20 lg:w-64 text-slate-200 transform transition-all duration-300 ease-in-out md:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{ backgroundColor: 'var(--surface)', color: 'var(--foreground)' }}
+        style={{ backgroundColor: 'var(--surface)' }}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-center h-16 px-2 md:px-4 lg:px-6 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center justify-center h-16 px-2 md:px-4 lg:px-6 border-b border-slate-700">
             <h2 className="hidden lg:block text-xl font-bold bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">
               Admin Panel
             </h2>
@@ -77,10 +77,11 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                   onClick={onClose}
                   className={`flex items-center px-2 md:px-3 lg:px-4 py-3 rounded-md text-base font-medium transition-all group relative ${
                     isActive
-                      ? "bg-blue-700 shadow-md"
+                      ? "shadow-md"
                       : "hover:bg-slate-700"
                   }`}
                   style={{
+                    backgroundColor: isActive ? 'var(--nav-text)' : 'transparent',
                     color: isActive ? 'white' : 'var(--text-primary)'
                   }}
                   title={item.name} // Tooltip for icon-only mode
@@ -98,8 +99,8 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </nav>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t" style={{ borderColor: 'var(--border)' }}>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          <div className="px-6 py-4 border-t border-slate-700">
+            <p className="text-sm text-slate-400">
               Admin Panel v1.0
             </p>
           </div>

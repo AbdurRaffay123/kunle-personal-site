@@ -5,20 +5,9 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
-  useEffect(() => {
-    // Initialize theme from localStorage or default to light
-    const savedTheme = localStorage.getItem('theme-preference');
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme-preference', 'light');
-    }
-  }, []);
-
   return (
     <NextThemesProvider 
       attribute="class" 

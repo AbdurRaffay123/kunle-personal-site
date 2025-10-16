@@ -41,13 +41,14 @@ export default function AdminModal({ isOpen, onClose, title, children }: AdminMo
         {/* Modal */}
         <div className="relative rounded-lg md:rounded-xl shadow-xl w-full max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto" style={{ backgroundColor: 'var(--card)' }}>
           {/* Header */}
-          <div className="flex items-center justify-between p-4 md:p-6 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center justify-between p-4 md:p-6 border-b" style={{ borderColor: 'var(--border)' }}>
             <h3 className="text-lg md:text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
               {title}
             </h3>
             <button
               onClick={onClose}
               className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md transition-colors"
+              style={{ color: 'var(--text-primary)' }}
             >
               <XMarkIcon className="h-5 w-5" />
             </button>

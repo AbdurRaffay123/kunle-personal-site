@@ -31,10 +31,13 @@ app.use(cors({
   origin: [
     process.env.CLIENT_URL || 'http://localhost:3000',
     'https://kunle-personal-site-frontend.onrender.com', // Render frontend URL
+    'https://website-2025-backend-1.onrender.com', // Actual frontend URL from your deployment
     'http://localhost:3000', // Local development
     'http://localhost:3001' // Fallback for local development
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -54,6 +57,30 @@ app.use('/api/research', researchRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/main', mainPageRoutes);
+
+// Root route
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    success: true,
+    message: 'Backend API is running!',
+    data: {
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      availableEndpoints: [
+        '/api/auth',
+        '/api/notes',
+        '/api/profile',
+        '/api/blogs',
+        '/api/projects',
+        '/api/research',
+        '/api/comments',
+        '/api/dashboard',
+        '/api/main',
+        '/health'
+      ]
+    }
+  });
+});
 
 // Health check route
 app.get('/health', (req, res) => {

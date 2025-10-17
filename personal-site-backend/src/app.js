@@ -71,8 +71,8 @@ app.use(cookieParser());
 // Serve static files
 app.use('/stored-files', express.static(path.join(__dirname, '../stored-files')));
 
-// Handle preflight requests manually
-app.options('*', (req, res) => {
+  // Handle preflight requests manually
+app.options('/*', (req, res) => {
   console.log('Handling preflight request for:', req.path);
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');

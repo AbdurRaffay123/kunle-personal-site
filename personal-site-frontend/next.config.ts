@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // Remove standalone output for Render compatibility
+  // output: 'standalone',
   outputFileTracingRoot: undefined, // Let Next.js auto-detect
   images: {
     remotePatterns: [

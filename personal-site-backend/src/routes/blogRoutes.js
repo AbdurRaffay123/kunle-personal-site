@@ -64,13 +64,16 @@ const validateBlogUpdate = [
     .trim()
 ];
 
+// Public routes (no auth required)
 router.get('/', blogController.getBlogs);   
+router.get('/:id', blogController.getBlogById);                             // GET /api/blogs/:id
+
+// Protected routes (auth required)
 router.use(authMiddleware);
 
 // Blog CRUD routes
 router.post('/', validateBlog, blogController.createBlog); // POST /api/blogs
 router.get('/stats', blogController.getBlogStats);                          // GET /api/blogs/stats
-router.get('/:id', blogController.getBlogById);                             // GET /api/blogs/:id
 router.put('/:id', validateBlogUpdate, blogController.updateBlog); // PUT /api/blogs/:id
 router.delete('/:id', blogController.deleteBlog);                           // DELETE /api/blogs/:id
 

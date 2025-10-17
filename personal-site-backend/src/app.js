@@ -3,7 +3,10 @@ const cors = require('cors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-require('dotenv').config();
+
+// Load environment variables
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+console.log('Environment loaded from:', path.join(__dirname, '../.env'));
 
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
@@ -29,18 +32,38 @@ connectDB();
 app.use(morgan('combined'));
 // CORS configuration
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:3000',
-  'https://kunle-personal-site-frontend.onrender.com',
   'https://website-2025-backend-1.onrender.com',
+  'https://kunle-personal-site-frontend.onrender.com',
   'http://localhost:3000',
   'http://localhost:3001'
 ];
 
 // Log allowed origins for debugging
 console.log('Allowed CORS origins:', allowedOrigins);
+console.log('Environment variables:', {
+  NODE_ENV: process.env.NODE_ENV,
+  CLIENT_URL: process.env.CLIENT_URL,
+  MONGODB_URI: process.env.MONGODB_URI ? 'Set' : 'Not set'
+});
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    console.log('CORS request from origin:', origin);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('No origin provided, allowing request');
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      console.log('Origin allowed:', origin);
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With', 'Accept', 'Origin'],

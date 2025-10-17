@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  outputFileTracingRoot: undefined, // Let Next.js auto-detect
   images: {
     remotePatterns: [
       {
@@ -11,7 +13,12 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
       },
+      {
+        protocol: "https",
+        hostname: "kunle-personal-site-backend.onrender.com",
+      },
     ],
+    unoptimized: true, // For static export compatibility
   },
   
   // Enable strict mode for better development experience
@@ -20,6 +27,7 @@ const nextConfig: NextConfig = {
   // Environment variables that should be available on the client side
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_GISCUS_REPO: process.env.NEXT_PUBLIC_GISCUS_REPO,
     NEXT_PUBLIC_GISCUS_REPO_ID: process.env.NEXT_PUBLIC_GISCUS_REPO_ID,

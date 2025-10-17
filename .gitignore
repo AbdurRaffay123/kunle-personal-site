@@ -4,3 +4,7 @@ backend/node_modules/
 backend/.env
 frontend/node_modules/
 frontend/.env
+personal-site-backend/node_modules/
+personal-site-backend/.env
+personal-site-frontend/node_modules/
+personal-site-frontend/.env

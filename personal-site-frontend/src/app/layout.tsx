@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
 import ThemeProvider from "@/providers/ThemeProvider";
 import { getMainPageData } from "@/apis/About/api";
 import { ProfileProvider } from "@/contexts/ProfileContext";
@@ -7,17 +6,11 @@ import { ImageProvider } from "@/contexts/ImageContext";
 import ConditionalLayout from "@/components/Layout/ConditionalLayout";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-  display: "swap",
-});
+// Use system fonts for better deployment reliability
+const fontVariables = {
+  inter: "--font-inter",
+  lora: "--font-lora",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -119,10 +112,11 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${lora.variable} font-sans antialiased`}
+        className="font-sans antialiased"
         style={{
           backgroundColor: 'var(--background)',
-          color: 'var(--foreground)'
+          color: 'var(--foreground)',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
         }}
       >
         <ThemeProvider>

@@ -28,7 +28,12 @@ connectDB();
 // Middlewares
 app.use(morgan('combined'));
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3001',
+  origin: [
+    process.env.CLIENT_URL || 'http://localhost:3000',
+    'https://kunle-personal-site-frontend.onrender.com', // Render frontend URL
+    'http://localhost:3000', // Local development
+    'http://localhost:3001' // Fallback for local development
+  ],
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));

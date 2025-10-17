@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* System Font Stack for better deployment reliability */
+:root {
+  --font-inter: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-lora: Georgia, "Times New Roman", Times, serif;
+}
+
 /* CSS Variables for light theme - Optimized for coding sessions */
 :root {
   /* Main Backgrounds - Subtle off-white/cream to reduce eye strain */

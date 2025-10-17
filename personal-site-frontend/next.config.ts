@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "website-2025-backend-1.onrender.com",
+        hostname: "website-2025-backend.onrender.com",
       },
     ],
     unoptimized: true, // For static export compatibility

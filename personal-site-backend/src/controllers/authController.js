@@ -21,8 +21,8 @@ const login = async (req, res) => {
       secure: process.env.NODE_ENV === 'production', // HTTPS only in production
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // Allow cross-site in production
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      path: '/',               // Available throughout the app
-      domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined // Allow subdomain sharing in production
+      path: '/'               // Available throughout the app
+      // Removed domain restriction to allow cross-subdomain cookies
     });
 
     // Return response without token (since it's in cookie)
@@ -69,8 +69,8 @@ const logout = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      path: '/',
-      domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
+      path: '/'
+      // Removed domain restriction to match cookie setting
     });
 
     res.status(200).json({

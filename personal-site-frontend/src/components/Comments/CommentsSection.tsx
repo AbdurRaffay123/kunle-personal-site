@@ -146,28 +146,33 @@ export default function CommentsSection({ postId, postType }: CommentsSectionPro
 
   // Socket.io real-time updates
   useEffect(() => {
-    // Join the post's comment room
-    socket.emit('join-post', postId);
+    // Only connect socket if we need real-time updates
+    // For now, disable socket to prevent connection errors
+    // TODO: Re-enable when backend socket.io is properly configured
+    
+    // socket.connect();
+    // socket.emit('join-post', postId);
 
-    // Listen for new comments
-    socket.on('new-comment', (newComment: Comment) => {
-      if (newComment.postId === postId) {
-        fetchComments();
-      }
-    });
+    // // Listen for new comments
+    // socket.on('new-comment', (newComment: Comment) => {
+    //   if (newComment.postId === postId) {
+    //     fetchComments();
+    //   }
+    // });
 
-    // Listen for deleted comments
-    socket.on('delete-comment', ({ commentId }: { commentId: string }) => {
-      // Refresh comments to handle cascade deletion properly
-      fetchComments();
-    });
+    // // Listen for deleted comments
+    // socket.on('delete-comment', ({ commentId }: { commentId: string }) => {
+    //   // Refresh comments to handle cascade deletion properly
+    //   fetchComments();
+    // });
 
-    // Cleanup
-    return () => {
-      socket.emit('leave-post', postId);
-      socket.off('new-comment');
-      socket.off('delete-comment');
-    };
+    // // Cleanup
+    // return () => {
+    //   socket.emit('leave-post', postId);
+    //   socket.off('new-comment');
+    //   socket.off('delete-comment');
+    //   socket.disconnect();
+    // };
   }, [postId, fetchComments]);
 
   // Initial fetch

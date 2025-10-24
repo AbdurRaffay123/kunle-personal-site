@@ -4,7 +4,7 @@
 
 import { notFound } from "next/navigation";
 import Container from "@/components/UI/Container";
-import TwoColumn from "@/components/Layout/TwoColumn";
+import ResponsiveThreeColumn from "@/components/Layout/ResponsiveThreeColumn";
 import NotesHtmlRenderer from "@/components/Markdown/NotesHtmlRenderer";
 import Tag from "@/components/UI/Tag";
 import NoteCard from "@/components/Card/NoteCard";
@@ -63,71 +63,54 @@ export default async function NotePage({ params }: NotePageProps) {
   // Extract headings for table of contents
   const headings = extractHeadings(note.content);
 
-  // Sidebar content
-  const sidebar = (
-    <div className="space-y-8">
-      {/* Metadata */}
-      <div className="rounded-lg border p-6" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
-        <h3 className="mb-4 text-lg font-semibold" style={{ color: 'var(--nav-text)' }}>
-          Metadata
-        </h3>
-        <dl className="space-y-2 text-sm">
+  // Metadata content
+  const metadata = (
+    <div className="rounded-lg border p-4 md:p-5 lg:p-6" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+      <h3 className="mb-3 md:mb-4 text-sm md:text-base lg:text-lg font-semibold" style={{ color: 'var(--nav-text)' }}>
+        Metadata
+      </h3>
+      <dl className="space-y-2 md:space-y-3 text-xs md:text-sm">
+        <div>
+          <dt className="font-medium text-xs md:text-sm" style={{ color: 'var(--nav-text)' }}>
+            Updated
+          </dt>
+          <dd className="text-gray-600 dark:text-gray-400 text-xs md:text-sm">
+            {formatDate(note.updatedAt)}
+          </dd>
+        </div>
+        {note.readingTime && (
           <div>
-            <dt className="font-medium" style={{ color: 'var(--nav-text)' }}>
-              Updated
+            <dt className="font-medium text-xs md:text-sm" style={{ color: 'var(--nav-text)' }}>
+              Reading Time
             </dt>
-            <dd className="text-gray-600 dark:text-gray-400">
-              {formatDate(note.updatedAt)}
+            <dd className="text-gray-600 dark:text-gray-400 text-xs md:text-sm">
+              {note.readingTime} min
             </dd>
           </div>
-          {note.readingTime && (
-            <div>
-              <dt className="font-medium" style={{ color: 'var(--nav-text)' }}>
-                Reading Time
-              </dt>
-              <dd className="text-gray-600 dark:text-gray-400">
-                {note.readingTime} min
-              </dd>
-            </div>
-          )}
-          {note.topic && (
-            <div>
-              <dt className="font-medium" style={{ color: 'var(--nav-text)' }}>
-                Topic
-              </dt>
-              <dd className="text-blue-700 dark:text-blue-400">{note.topic}</dd>
-            </div>
-          )}
-        </dl>
-      </div>
-
-      {/* Table of Contents */}
-      {headings.length > 0 && (
-        <TableOfContents headings={headings} />
-      )}
-
-      {/* Related notes */}
-      {relatedNotes.length > 0 && (
-        <div>
-          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-            Related Notes
-          </h3>
-          <div className="space-y-4">
-            {relatedNotes.map((relatedNote) => (
-              <NoteCard key={relatedNote._id} note={relatedNote} />
-            ))}
+        )}
+        {note.topic && (
+          <div>
+            <dt className="font-medium text-xs md:text-sm" style={{ color: 'var(--nav-text)' }}>
+              Topic
+            </dt>
+            <dd className="text-blue-700 dark:text-blue-400 text-xs md:text-sm">{note.topic}</dd>
           </div>
-        </div>
-      )}
+        )}
+      </dl>
     </div>
   );
+
+  // Table of Contents content
+  const toc = headings.length > 0 ? (
+    <TableOfContents headings={headings} />
+  ) : null;
 
   // Main content
   const main = (
     <article>
       {/* Breadcrumb */}
-      <nav className="mb-6 text-sm text-gray-600 dark:text-gray-400">
-        <Link href="/notes" className="hover:text-primary">
+      <nav className="mb-4 md:mb-6 text-xs md:text-sm text-gray-600 dark:text-gray-400">
+        <Link href="/notes" className="hover:text-primary p-2 -m-2 rounded-md transition-colors">
           Notes
         </Link>
         {note.topic && (
@@ -141,7 +124,7 @@ export default async function NotePage({ params }: NotePageProps) {
       </nav>
 
       {/* Title */}
-      <h1 className="mb-4 text-4xl font-bold md:text-5xl" style={{ color: 'var(--nav-text)' }}>
+      <h1 className="mb-4 text-2xl md:text-4xl lg:text-5xl font-bold leading-tight" style={{ color: 'var(--nav-text)' }}>
         {note.title}
       </h1>
 
@@ -157,12 +140,26 @@ export default async function NotePage({ params }: NotePageProps) {
       )}
 
       {/* Content */}
-      <div className="mt-8">
+      <div className="mt-6 md:mt-8">
         <NotesHtmlRenderer content={note.content} />
       </div>
 
+      {/* Related Notes - Mobile Only */}
+      {relatedNotes.length > 0 && (
+        <div className="mt-8 md:hidden">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            Related Notes
+          </h3>
+          <div className="space-y-4">
+            {relatedNotes.map((relatedNote) => (
+              <NoteCard key={relatedNote._id} note={relatedNote} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Comments */}
-      <div className="mt-16">
+      <div className="mt-12 md:mt-16">
         <CommentsSection postId={id} postType="note" />
       </div>
     </article>
@@ -171,11 +168,11 @@ export default async function NotePage({ params }: NotePageProps) {
   return (
     <div>
       <Container>
-        <div className="flex justify-start mb-6 pt-24 md:pt-28">
+        <div className="flex justify-start mb-4 md:mb-6 pt-20 md:pt-24 lg:pt-28">
           <BackButton />
         </div>
       </Container>
-      <TwoColumn main={main} sidebar={sidebar} />
+      <ResponsiveThreeColumn main={main} metadata={metadata} toc={toc} />
     </div>
   );
 }

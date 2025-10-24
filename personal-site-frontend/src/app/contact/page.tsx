@@ -1,5 +1,5 @@
 /**
- * About/Contact page with premium design
+ * Contact page with premium design
  */
 
 "use client";
@@ -27,7 +27,7 @@ interface ProfileData {
   };
 }
 
-export default function AboutPage() {
+export default function ContactPage() {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<ContactFormData>({
@@ -98,10 +98,10 @@ export default function AboutPage() {
           className="mb-16 text-center"
         >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4" style={{ color: 'var(--nav-text)' }}>
-            About Me
+            Contact Me
           </h1>
           <p className="text-lg sm:text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            Get in touch and learn more about my work and background.
+            Get in touch and let's discuss your next project or collaboration.
           </p>
         </motion.div>
 

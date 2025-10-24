@@ -170,7 +170,7 @@ export default function Hero() {
 
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
-                  href="/about"
+                  href="/contact"
                   className="inline-flex items-center px-8 py-4 text-lg font-semibold backdrop-blur-sm border-2 rounded-full transition-all duration-300"
                   style={{
                     backgroundColor: 'var(--contact-bg)',

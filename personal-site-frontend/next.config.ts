@@ -25,6 +25,50 @@ const nextConfig: NextConfig = {
   // Enable strict mode for better development experience
   reactStrictMode: true,
 
+  // Experimental features for better stability
+  experimental: {
+    // Optimize memory usage
+    optimizePackageImports: ['framer-motion', 'lucide-react', '@heroicons/react'],
+  },
+
+  // Turbopack configuration (moved from experimental)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
+
+  // Webpack configuration for better memory management
+  webpack: (config, { dev, isServer }) => {
+    // Optimize for development
+    if (dev) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+      };
+    }
+
+    // Memory optimization
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      },
+    };
+
+    return config;
+  },
+
   // Environment variables that should be available on the client side
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,

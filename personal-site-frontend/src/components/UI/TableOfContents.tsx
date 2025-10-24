@@ -31,8 +31,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         });
       },
       {
-        rootMargin: '-100px 0px -80% 0px', // Trigger when heading is near top of viewport
-        threshold: 1.0,
+        rootMargin: '-120px 0px -80% 0px', // Account for fixed navbar
+        threshold: 0.1,
       }
     );
 
@@ -51,16 +51,40 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
+    
+    // Try to find the element
     const element = document.getElementById(id);
     if (element) {
-      // Smooth scroll to element
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
+      // Calculate offset for fixed navbar
+      const navbarHeight = 90;
+      const elementPosition = element.offsetTop - navbarHeight;
+      
+      // Smooth scroll to element with offset
+      window.scrollTo({
+        top: Math.max(0, elementPosition),
+        behavior: 'smooth'
       });
-      // Update URL hash without jumping
+      
+      // Update URL hash
       window.history.pushState(null, '', `#${id}`);
       setActiveId(id);
+    } else {
+      // Fallback: try to find the element after a short delay
+      setTimeout(() => {
+        const delayedElement = document.getElementById(id);
+        if (delayedElement) {
+          const navbarHeight = 90;
+          const elementPosition = delayedElement.offsetTop - navbarHeight;
+          
+          window.scrollTo({
+            top: Math.max(0, elementPosition),
+            behavior: 'smooth'
+          });
+          
+          window.history.pushState(null, '', `#${id}`);
+          setActiveId(id);
+        }
+      }, 100);
     }
   };
 
@@ -69,35 +93,34 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   }
 
   return (
-    <div className="rounded-lg border p-6 sticky top-24" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
-      <h3 className="mb-4 text-lg font-semibold" style={{ color: 'var(--nav-text)' }}>
+    <div className="rounded-lg border p-4 md:p-5 lg:p-6 lg:sticky lg:top-24" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+      <h3 className="mb-4 text-sm md:text-base lg:text-lg font-semibold" style={{ color: 'var(--nav-text)' }}>
         Table of Contents
       </h3>
       <nav>
-        <ul className="space-y-2 text-sm list-disc pl-5">
+        <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm list-disc pl-4 md:pl-5">
           {headings.map((heading) => {
             const isActive = activeId === heading.id;
-            // Calculate additional padding for nested levels (after the bullet)
-            const paddingLeft = `${(heading.level - 1) * 1}rem`;
+            // Calculate additional padding for nested levels
+            const paddingLeft = `${(heading.level - 1) * 0.75}rem`;
             
             return (
               <li
                 key={heading.id}
                 style={{ paddingLeft }}
-                className={`transition-all duration-200 ${
-                  isActive
-                    ? 'marker:text-blue-600 dark:marker:text-blue-400'
-                    : 'marker:text-gray-400 dark:marker:text-gray-600'
-                }`}
+                className="transition-all duration-200"
               >
                 <a
                   href={`#${heading.id}`}
                   onClick={(e) => handleClick(e, heading.id)}
-                  className={`transition-all duration-200 ${
+                  className={`block transition-all duration-200 p-1 -m-1 rounded-md cursor-pointer ${
                     isActive
-                      ? 'text-blue-600 dark:text-blue-400 font-medium'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline'
+                      ? 'font-medium'
+                      : 'hover:underline'
                   }`}
+                  style={{
+                    color: 'var(--text-secondary)'
+                  }}
                 >
                   {heading.text}
                 </a>

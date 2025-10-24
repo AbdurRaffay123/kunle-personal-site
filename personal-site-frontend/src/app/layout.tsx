@@ -89,7 +89,12 @@ export default async function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#2563eb" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="format-detection" content="telephone=no" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/og-image.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="google-site-verification" content={process.env.GOOGLE_SITE_VERIFICATION || ""} />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -127,7 +132,7 @@ export default async function RootLayout({
           </ImageProvider>
         </ThemeProvider>
 
-        {/* Schema.org structured data */}
+        {/* Enhanced Schema.org structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -136,26 +141,58 @@ export default async function RootLayout({
               "@type": "Person",
               name: "Olukunle Owolabi",
               jobTitle: "Lead AI Engineer & Applied Scientist",
-              description:
-                "Lead AI Engineer & Applied Scientist with 7+ years of End-to-End AI & ML experience.",
+              description: "Lead AI Engineer & Applied Scientist with 7+ years of End-to-End AI & ML experience. Ex Meta Engineer, PhD at Tufts.",
               url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+              image: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/og-image.png`,
+              sameAs: [
+                "https://linkedin.com/in/olukunle-owolabi",
+                "https://github.com/olukunle",
+                "https://twitter.com/olukunle"
+              ],
               alumniOf: {
                 "@type": "Organization",
                 name: "Tufts University",
+                url: "https://tufts.edu"
               },
               worksFor: {
                 "@type": "Organization",
                 name: "Meta (Former)",
+                url: "https://meta.com"
               },
               knowsAbout: [
                 "Machine Learning",
                 "Large Language Models",
-                "Recommender Systems",
+                "Recommender Systems", 
                 "Anomaly Detection",
                 "Fraud Detection",
                 "Forecasting",
                 "Optimization",
+                "Deep Learning",
+                "Natural Language Processing"
               ],
+              hasOccupation: {
+                "@type": "Occupation",
+                name: "Lead AI Engineer",
+                description: "Leading AI and Machine Learning initiatives"
+              }
+            }),
+          }}
+        />
+        
+        {/* Website structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Olukunle Owolabi",
+              url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+              description: "Personal website of Olukunle Owolabi, Lead AI Engineer & Applied Scientist",
+              author: {
+                "@type": "Person",
+                name: "Olukunle Owolabi"
+              }
             }),
           }}
         />

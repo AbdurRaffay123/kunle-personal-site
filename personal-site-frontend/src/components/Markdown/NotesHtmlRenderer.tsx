@@ -37,16 +37,17 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
       const id = slugify(text);
       if (id && !heading.id) {
         heading.id = id;
+        // Set scroll margin to account for fixed navbar (90px) plus some padding
         (heading as HTMLElement).style.scrollMarginTop = '100px';
       }
     });
 
-    // Enhance images with captions and zoom functionality
-    const images = contentRef.current.querySelectorAll('img');
-    images.forEach((img) => {
-      if (!img.parentElement?.classList.contains('image-wrapper')) {
-        const wrapper = document.createElement('figure');
-        wrapper.className = 'image-wrapper group relative my-8 mx-auto max-w-3xl';
+        // Enhance images with captions and zoom functionality
+        const images = contentRef.current.querySelectorAll('img');
+        images.forEach((img) => {
+          if (!img.parentElement?.classList.contains('image-wrapper')) {
+            const wrapper = document.createElement('figure');
+            wrapper.className = 'image-wrapper group relative my-4 md:my-8 mx-auto max-w-full md:max-w-3xl overflow-hidden rounded-lg';
         
         // Clone and enhance the image
         const enhancedImg = img.cloneNode(true) as HTMLImageElement;
@@ -88,12 +89,12 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
       }
     });
 
-    // Enhance code blocks with copy button and language label
-    const codeBlocks = contentRef.current.querySelectorAll('pre');
-    codeBlocks.forEach((pre) => {
-      if (!pre.parentElement?.classList.contains('code-block-wrapper')) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'code-block-wrapper relative my-6 group';
+        // Enhance code blocks with copy button and language label
+        const codeBlocks = contentRef.current.querySelectorAll('pre');
+        codeBlocks.forEach((pre) => {
+          if (!pre.parentElement?.classList.contains('code-block-wrapper')) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper relative my-4 md:my-6 group overflow-hidden rounded-lg';
         
         // Check if this is a special code block (explicitly marked by user)
         const isSpecialCode = pre.getAttribute('data-type') === 'special-code' || pre.getAttribute('data-enhanced') === 'true';
@@ -116,7 +117,7 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
         } else {
           // Add language label for regular code blocks
           const langLabel = document.createElement('div');
-          langLabel.className = 'absolute top-3 left-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide bg-gray-800/50 dark:bg-gray-900/50 px-2 py-1 rounded z-10';
+          langLabel.className = 'absolute top-3 left-3 text-xs font-semibold text-gray-400 dark:text-black uppercase tracking-wide bg-gray-800/50 dark:bg-gray-900/50 px-2 py-1 rounded z-10';
           langLabel.textContent = language;
           wrapper.appendChild(langLabel);
         }
@@ -154,10 +155,10 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
         
         // Enhance pre element with special styling for marked code
         if (isSpecialCode) {
-          pre.className = 'bg-gradient-to-br from-gray-900 via-gray-950 to-black dark:from-black dark:via-gray-950 dark:to-gray-900 text-gray-100 px-6 pt-16 pb-6 rounded-lg overflow-x-auto border-2 border-green-500/50 dark:border-green-400/50 shadow-2xl shadow-green-500/20';
+          pre.className = 'bg-gradient-to-br from-gray-900 via-gray-950 to-black dark:from-black dark:via-gray-950 dark:to-gray-900 text-gray-100 px-3 md:px-6 pt-12 md:pt-16 pb-4 md:pb-6 rounded-lg overflow-x-auto border-2 border-green-500/50 dark:border-green-400/50 shadow-2xl shadow-green-500/20 text-xs md:text-sm';
         } else {
-          pre.className = 'bg-gray-900 dark:bg-gray-950 text-gray-100 px-6 pb-6 rounded-lg overflow-x-auto border-2 border-gray-700 dark:border-gray-800 shadow-lg';
-          pre.style.paddingTop = '50px';
+          pre.className = 'bg-gray-900 dark:bg-gray-950 text-gray-100 px-3 md:px-6 pb-4 md:pb-6 rounded-lg overflow-x-auto border-2 border-gray-700 dark:border-gray-800 shadow-lg text-xs md:text-sm';
+          pre.style.paddingTop = '40px';
         }
         
         pre.parentNode?.insertBefore(wrapper, pre);
@@ -259,22 +260,27 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
     <>
       <div 
         ref={contentRef}
-        className={`prose prose-lg dark:prose-invert max-w-none 
+        className={`prose prose-sm md:prose-lg dark:prose-invert max-w-none 
           prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-slate-100
-          prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed
-          prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+          prose-h1:text-2xl md:prose-h1:text-3xl lg:prose-h1:text-4xl
+          prose-h2:text-xl md:prose-h2:text-2xl lg:prose-h2:text-3xl
+          prose-h3:text-lg md:prose-h3:text-xl lg:prose-h3:text-2xl
+          prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-p:text-sm md:prose-p:text-base
+          prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:p-1 prose-a:-m-1 prose-a:rounded
           prose-strong:text-slate-900 dark:prose-strong:text-slate-100 prose-strong:font-semibold
           prose-em:text-slate-700 dark:prose-em:text-slate-300
           prose-blockquote:border-l-blue-600 dark:prose-blockquote:border-l-blue-400 
-          prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-slate-800/50 prose-blockquote:py-2 prose-blockquote:px-4
-          prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4
-          prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4
-          prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-li:my-1 prose-li:leading-relaxed
+          prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-slate-800/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:text-sm md:prose-blockquote:text-base
+          prose-ul:list-disc prose-ul:pl-4 md:prose-ul:pl-6 prose-ul:my-4
+          prose-ol:list-decimal prose-ol:pl-4 md:prose-ol:pl-6 prose-ol:my-4
+          prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-li:my-1 prose-li:leading-relaxed prose-li:text-sm md:prose-li:text-base
           prose-li:marker:text-slate-500 dark:prose-li:marker:text-slate-400
-          prose-table:border-collapse prose-table:w-full
+          prose-table:border-collapse prose-table:w-full prose-table:text-xs md:prose-table:text-sm
           prose-th:bg-slate-100 dark:prose-th:bg-slate-800 prose-th:p-2 prose-th:border prose-th:border-slate-300 dark:prose-th:border-slate-600
           prose-td:p-2 prose-td:border prose-td:border-slate-300 dark:prose-td:border-slate-600
           prose-hr:border-slate-300 dark:prose-hr:border-slate-700
+          prose-pre:overflow-x-auto prose-pre:text-xs md:prose-pre:text-sm
+          prose-code:text-xs md:prose-code:text-sm
           ${className}`}
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />

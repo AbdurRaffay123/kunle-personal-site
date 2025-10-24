@@ -96,9 +96,9 @@ export default function Home() {
                 gradient: "from-blue-700 to-sky-700",
               },
               {
-                title: "About",
-                description: "Get to know more about me",
-                href: "/about",
+                title: "Contact",
+                description: "Get in touch and connect with me",
+                href: "/contact",
                 icon: "👋",
                 gradient: "from-sky-700 to-blue-900",
               },

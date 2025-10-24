@@ -109,25 +109,18 @@ export default function Footer() {
         {/* Secondary Links */}
         <div className="flex justify-center items-center space-x-6 mt-6">
           <a
-            href="/privacy"
+            href="/contact"
             className="text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             style={{ color: 'var(--text-primary)' }}
           >
             Privacy
           </a>
           <a
-            href="/terms"
+            href="/contact"
             className="text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             style={{ color: 'var(--text-primary)' }}
           >
             Terms
-          </a>
-          <a
-            href="/admin/login"
-            className="text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Admin
           </a>
         </div>
       </div>

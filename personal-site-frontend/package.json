@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:stable": "node scripts/dev-stable.js",
+    "dev:turbo": "next dev --turbopack",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",

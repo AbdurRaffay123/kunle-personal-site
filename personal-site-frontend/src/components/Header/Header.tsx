@@ -16,10 +16,10 @@ import ThemeToggle from "@/components/UI/ThemeToggle";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Projects", href: "/project" },
-  { name: "Researches", href: "/research" },
+  { name: "Research", href: "/research" },
   { name: "Notes", href: "/notes" },
   { name: "Blog", href: "/blog" },
-  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Header() {
@@ -50,7 +50,7 @@ export default function Header() {
           opacity: scrolled ? 0.95 : 0.9
         }}
     >
-      <nav className="max-w-screen-2xl mx-auto flex items-center justify-between py-5 px-[35px]">
+      <nav className="max-w-screen-2xl mx-auto flex items-center justify-between py-3 md:py-5 px-4 md:px-[35px]">
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -59,7 +59,7 @@ export default function Header() {
           className="flex items-center space-x-3"
         >
           <Link href="/">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-blue-500 dark:to-sky-400 bg-clip-text text-transparent hover:from-blue-700 hover:to-blue-500 dark:hover:from-blue-300 dark:hover:to-sky-300 transition-all duration-300 cursor-pointer">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-blue-500 dark:to-sky-400 bg-clip-text text-transparent hover:from-blue-700 hover:to-blue-500 dark:hover:from-blue-300 dark:hover:to-sky-300 transition-all duration-300 cursor-pointer">
               Olukunle O.
             </h1>
           </Link>
@@ -120,25 +120,6 @@ export default function Header() {
           {/* Enhanced Theme Toggle */}
           <ThemeToggle variant="default" />
 
-          {/* Admin Login Link - Only show on public routes */}
-          {mounted && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="hidden md:block"
-            >
-              <Link href="/admin/login">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
-                >
-                  Admin
-                </motion.button>
-              </Link>
-            </motion.div>
-          )}
 
           {/* Mobile Menu Button */}
           <motion.button
@@ -184,7 +165,7 @@ export default function Header() {
             className="md:hidden backdrop-blur-md border-t border-slate-200 dark:border-slate-700 shadow-lg"
             style={{ backgroundColor: 'var(--background)' }}
           >
-            <div className="max-w-screen-2xl mx-auto px-8 py-6 space-y-4">
+            <div className="max-w-screen-2xl mx-auto px-4 md:px-8 py-4 md:py-6 space-y-3 md:space-y-4">
               {navigation.map((item, index) => {
                 const isActive =
                   pathname === item.href ||
@@ -200,7 +181,7 @@ export default function Header() {
                     <Link
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`block text-lg font-medium py-3 px-4 rounded-lg transition-all ${
+                      className={`block text-base md:text-lg font-medium py-4 px-4 rounded-lg transition-all ${
                         isActive
                           ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md"
                           : "hover:bg-slate-100 dark:hover:bg-slate-800"

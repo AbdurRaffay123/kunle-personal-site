@@ -196,23 +196,6 @@ export default function Header() {
                 );
               })}
               
-              {/* Mobile Admin Link */}
-              {mounted && (
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: navigation.length * 0.1 }}
-                  className="pt-4 border-t border-slate-200 dark:border-slate-700"
-                >
-                  <Link
-                    href="/admin/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block w-full text-center text-lg font-medium py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md hover:from-blue-700 hover:to-sky-600 transition-all duration-300 cursor-pointer"
-                  >
-                    Admin
-                  </Link>
-                </motion.div>
-              )}
             </div>
           </motion.div>
         )}

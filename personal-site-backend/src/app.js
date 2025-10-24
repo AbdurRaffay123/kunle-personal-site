@@ -8,7 +8,6 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 console.log('Environment loaded from:', path.join(__dirname, '../.env'));
 
-const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const noteRoutes = require('./routes/noteRoutes');
 const profileRoutes = require('./routes/profileRoutes');
@@ -24,9 +23,6 @@ const mainPageRoutes = require('./routes/mainPageRoutes');
 
 
 const app = express();
-
-// Connect to database
-connectDB();
 
 // Middlewares
 app.use(morgan('combined'));

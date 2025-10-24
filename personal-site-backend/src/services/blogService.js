@@ -1,4 +1,5 @@
 const Blog = require("../models/Blog");
+const mongoose = require('mongoose');
 
 /**
  * Create a new blog
@@ -7,6 +8,11 @@ const Blog = require("../models/Blog");
  */
 const createBlog = async (data) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database not connected');
+    }
+    
     const blog = new Blog(data);
     const savedBlog = await blog.save();
     return savedBlog;
@@ -22,6 +28,11 @@ const createBlog = async (data) => {
  */
 const getAllBlogs = async (options = {}) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database not connected');
+    }
+    
     const { page = 1, limit = 10 } = options;
 
     // Calculate pagination
@@ -58,6 +69,11 @@ const getAllBlogs = async (options = {}) => {
  */
 const getBlogById = async (blogId) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database not connected');
+    }
+    
     const blog = await Blog.findById(blogId);
 
     if (!blog) {

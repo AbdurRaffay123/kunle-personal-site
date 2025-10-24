@@ -1,8 +1,14 @@
 const UserProfile = require('../models/UserProfile');
 const Research = require('../models/Research');
 const Project = require('../models/Project');
+const mongoose = require('mongoose');
 
 const getMainPageData = async () => {
+  // Check if database is connected
+  if (mongoose.connection.readyState !== 1) {
+    throw new Error('Database not connected');
+  }
+
   // Get profile (exclude _id and sensitive fields)
   const profile = await UserProfile.findOne({}, { _id: 0, password: 0 });
 

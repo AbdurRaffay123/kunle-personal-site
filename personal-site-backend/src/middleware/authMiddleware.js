@@ -10,6 +10,16 @@ const authMiddleware = async (req, res, next) => {
       token = req.cookies?.token;
     }
 
+    // Debug logging for production
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Auth middleware debug:', {
+        hasAuthHeader: !!req.header('Authorization'),
+        hasCookies: !!req.cookies,
+        cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
+        tokenPresent: !!token
+      });
+    }
+
     if (!token) {
       return res.status(401).json({
         success: false,

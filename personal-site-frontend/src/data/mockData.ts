@@ -88,7 +88,8 @@ export const mockBlogs: BlogMeta[] = [
     description:
       "Exploring the next generation of LLMs and their potential impact on AI applications",
     category: "AI",
-    link: "https://example.com/future-of-llms",
+    content: "<p>Exploring the next generation of LLMs and their potential impact on AI applications...</p>",
+    fileType: "text",
     updatedAt: "2025-10-01T10:00:00Z",
     createdAt: "2025-10-01T10:00:00Z",
   },
@@ -98,7 +99,8 @@ export const mockBlogs: BlogMeta[] = [
     description:
       "Real-world insights from building and maintaining production ML systems serving millions of users",
     category: "ML",
-    link: "https://example.com/ml-production-lessons",
+    content: "<p>Real-world insights from building and maintaining production ML systems serving millions of users...</p>",
+    fileType: "text",
     updatedAt: "2025-09-20T14:00:00Z",
     createdAt: "2025-09-20T14:00:00Z",
   },
@@ -108,7 +110,8 @@ export const mockBlogs: BlogMeta[] = [
     description:
       "A deep dive into architecting and deploying fraud detection systems that operate at scale",
     category: "Security",
-    link: "https://example.com/fraud-detection-systems",
+    content: "<p>A deep dive into architecting and deploying fraud detection systems that operate at scale...</p>",
+    fileType: "text",
     updatedAt: "2025-08-15T16:00:00Z",
     createdAt: "2025-08-15T16:00:00Z",
   },
@@ -118,7 +121,8 @@ export const mockBlogs: BlogMeta[] = [
     description:
       "Reflections on transitioning from academic research at Tufts to applied AI engineering at Meta",
     category: "Career",
-    link: "https://example.com/phd-journey-tufts",
+    content: "<p>Reflections on transitioning from academic research at Tufts to applied AI engineering at Meta...</p>",
+    fileType: "text",
     updatedAt: "2025-07-05T10:00:00Z",
     createdAt: "2025-07-05T10:00:00Z",
   },

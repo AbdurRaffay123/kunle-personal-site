@@ -114,13 +114,8 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
             <span>Enhanced Code</span>
           `;
           wrapper.appendChild(specialBadge);
-        } else {
-          // Add language label for regular code blocks
-          const langLabel = document.createElement('div');
-          langLabel.className = 'absolute top-3 left-3 text-xs font-semibold text-gray-400 dark:text-black uppercase tracking-wide bg-gray-800/50 dark:bg-gray-900/50 px-2 py-1 rounded z-10';
-          langLabel.textContent = language;
-          wrapper.appendChild(langLabel);
         }
+        // Removed language label - CSS handles the "CODE" badge on the right
         
         // Add copy button
         const copyButton = document.createElement('button');
@@ -175,84 +170,8 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
       }
     });
 
-    // Enhance mathematical expressions (if wrapped in specific tags or classes)
-    const mathElements = contentRef.current.querySelectorAll('.math, .katex, [data-math], [data-type="math-block"], .math-block-content');
-    mathElements.forEach((math) => {
-      if (!math.parentElement?.classList.contains('math-wrapper')) {
-        // Check if this is explicitly marked as math by user
-        const isExplicitMath = math.getAttribute('data-type') === 'math-block' || 
-                               math.classList.contains('math-block-content');
-        
-        if (isExplicitMath) {
-          // Enhanced styling for explicitly marked math - simple and clean
-          const wrapper = document.createElement('div');
-          wrapper.className = 'math-wrapper relative my-6 group';
-          
-          // Add special badge for math
-          const mathBadge = document.createElement('div');
-          mathBadge.className = 'absolute top-3 left-3 text-xs font-bold text-blue-400 dark:text-blue-300 uppercase tracking-wide bg-blue-900/90 dark:bg-blue-800/90 px-3 py-1.5 rounded-md border border-blue-500/50 flex items-center gap-1.5 z-10';
-          mathBadge.innerHTML = `
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            <span>Math Expression</span>
-          `;
-          
-          // Add copy button for math (similar to code blocks)
-          const mathCopyButton = document.createElement('button');
-          mathCopyButton.className = 'absolute top-3 right-3 p-2 bg-blue-700 hover:bg-blue-600 dark:bg-blue-800 dark:hover:bg-blue-700 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-2 text-sm z-10';
-          mathCopyButton.innerHTML = `
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <span>Copy</span>
-          `;
-          
-          mathCopyButton.addEventListener('click', async () => {
-            const mathText = math.textContent || '';
-            await navigator.clipboard.writeText(mathText);
-            mathCopyButton.innerHTML = `
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Copied!</span>
-            `;
-            setTimeout(() => {
-              mathCopyButton.innerHTML = `
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <span>Copy</span>
-              `;
-            }, 2000);
-          });
-          
-          // Create container for math content - simple background
-          const mathContainer = document.createElement('div');
-          mathContainer.className = 'bg-slate-800 dark:bg-slate-900 text-slate-100 dark:text-slate-50 px-6 pb-6 rounded-lg border-2 border-blue-500/50 dark:border-blue-400/50 shadow-2xl shadow-blue-500/20 text-center text-xl font-semibold';
-          mathContainer.style.paddingTop = '50px';
-          mathContainer.appendChild(math.cloneNode(true));
-          
-          math.parentNode?.insertBefore(wrapper, math);
-          wrapper.appendChild(mathBadge);
-          wrapper.appendChild(mathCopyButton);
-          wrapper.appendChild(mathContainer);
-          math.remove();
-        } else {
-          // Regular math styling - simple and clean
-          const wrapper = document.createElement('div');
-          wrapper.className = 'math-wrapper my-6 p-4 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-500 dark:border-purple-400 rounded-r-lg';
-          
-          const label = document.createElement('div');
-          label.className = 'text-xs font-semibold text-purple-600 dark:text-purple-400 mb-2 uppercase tracking-wide';
-          label.textContent = '📐 Mathematical Expression';
-          
-          math.parentNode?.insertBefore(wrapper, math);
-          wrapper.appendChild(label);
-          wrapper.appendChild(math);
-        }
-      }
-    });
+    // Mathematical expressions are now styled with CSS-only approach
+    // No need for JavaScript enhancement - CSS handles all styling
 
   }, [sanitizedContent]);
 
@@ -320,6 +239,174 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
         }
         .animate-fadeIn {
           animation: fadeIn 0.2s ease-in-out;
+        }
+
+        /* Code Block Styling */
+        :global(.prose pre) {
+          background: #1e1e1e !important;
+          border: 1px solid #333 !important;
+          border-radius: 12px !important;
+          padding: 1.25rem !important;
+          margin: 1rem 0 !important;
+          overflow-x: auto !important;
+          position: relative !important;
+        }
+        :global(.prose pre::before) {
+          content: 'CODE' !important;
+          position: absolute !important;
+          top: 0.5rem !important;
+          right: 1rem !important;
+          font-size: 0.75rem !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.05em !important;
+          color: #fff !important;
+          background: #3b82f6 !important;
+          padding: 0.25rem 0.5rem !important;
+          border-radius: 4px !important;
+          text-transform: uppercase !important;
+        }
+        :global(.prose pre code) {
+          color: #fff !important;
+          background: transparent !important;
+          padding: 0 !important;
+          border: none !important;
+          font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+          font-size: 0.875rem !important;
+        }
+        
+        /* Code Block Styling - Light Mode */
+        @media (prefers-color-scheme: light) {
+          :global(.prose pre) {
+            background: #f7f9fc !important;
+            border: 1px solid #e2e8f0 !important;
+          }
+          :global(.prose pre::before) {
+            background: #3b82f6 !important;
+            color: #fff !important;
+          }
+          :global(.prose pre code) {
+            color: #1e293b !important;
+          }
+        }
+
+        /* Blockquote Styling */
+        :global(.prose blockquote) {
+          border-left: 4px solid #6366f1 !important;
+          background: linear-gradient(to right, rgba(99, 102, 241, 0.08), transparent) !important;
+          padding: 1rem 1.5rem !important;
+          margin: 1rem 0 !important;
+          border-radius: 0 8px 8px 0 !important;
+          font-style: italic !important;
+        }
+
+        /* Math Block Styling */
+        :global(.prose [data-type="math-block"]) {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1)) !important;
+          border: 2px solid #8b5cf6 !important;
+          border-radius: 12px !important;
+          padding: 1.25rem !important;
+          margin: 1rem 0 !important;
+          position: relative !important;
+          overflow: hidden !important;
+        }
+        :global(.prose [data-type="math-block"]::before) {
+          content: 'MATH' !important;
+          position: absolute !important;
+          top: 0.5rem !important;
+          right: 1rem !important;
+          font-size: 0.75rem !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.05em !important;
+          color: #fff !important;
+          background: #8b5cf6 !important;
+          padding: 0.25rem 0.5rem !important;
+          border-radius: 4px !important;
+          text-transform: uppercase !important;
+        }
+        :global(.prose [data-type="math-block"] > *) {
+          font-family: 'Georgia', 'Times New Roman', serif !important;
+        }
+
+        /* Math Block - Light Mode */
+        @media (prefers-color-scheme: light) {
+          :global(.prose [data-type="math-block"]) {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.15)) !important;
+            border: 2px solid #8b5cf6 !important;
+          }
+          :global(.prose [data-type="math-block"] > *) {
+            color: #1e293b !important;
+          }
+        }
+
+        /* Special Code Block (HTML) Styling */
+        :global(.prose pre[data-type="special-code"]) {
+          background: #1e1e1e !important;
+          border: 2px solid #10b981 !important;
+          border-radius: 12px !important;
+          padding: 1.25rem !important;
+          margin: 1rem 0 !important;
+          position: relative !important;
+        }
+        :global(.prose pre[data-type="special-code"]::before) {
+          content: 'HTML' !important;
+          position: absolute !important;
+          top: 0.5rem !important;
+          right: 1rem !important;
+          font-size: 0.75rem !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.05em !important;
+          color: #fff !important;
+          background: #10b981 !important;
+          padding: 0.25rem 0.5rem !important;
+          border-radius: 4px !important;
+          text-transform: uppercase !important;
+        }
+        :global(.prose pre[data-type="special-code"] code) {
+          color: #fff !important;
+          font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+          font-size: 0.875rem !important;
+        }
+
+        /* Special Code Block - Light Mode */
+        @media (prefers-color-scheme: light) {
+          :global(.prose pre[data-type="special-code"]) {
+            background: #f0fdf4 !important;
+            border: 2px solid #10b981 !important;
+          }
+          :global(.prose pre[data-type="special-code"] code) {
+            color: #065f46 !important;
+          }
+        }
+
+        /* Table Responsive Styling - Mobile Scroll */
+        :global(.prose table) {
+          display: block !important;
+          width: 100% !important;
+          overflow-x: auto !important;
+          -webkit-overflow-scrolling: touch !important;
+        }
+        :global(.prose table thead),
+        :global(.prose table tbody),
+        :global(.prose table tr) {
+          display: table !important;
+          width: 100% !important;
+          table-layout: fixed !important;
+        }
+        :global(.prose table td),
+        :global(.prose table th) {
+          min-width: 100px !important;
+          white-space: nowrap !important;
+        }
+        /* Hide scrollbar for cleaner look but keep functionality */
+        :global(.prose table)::-webkit-scrollbar {
+          height: 8px !important;
+        }
+        :global(.prose table)::-webkit-scrollbar-track {
+          background: var(--background) !important;
+        }
+        :global(.prose table)::-webkit-scrollbar-thumb {
+          background: var(--border) !important;
+          border-radius: 4px !important;
         }
       `}</style>
     </>

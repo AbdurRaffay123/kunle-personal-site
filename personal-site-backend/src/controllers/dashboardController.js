@@ -4,8 +4,7 @@
 
 const Blog = require('../models/Blog');
 const Note = require('../models/Note');
-const Project = require('../models/Project');
-const Research = require('../models/Research');
+const Portfolio = require('../models/Portfolio');
 const Comment = require('../models/Comment');
 const authMiddleware = require('../middleware/authMiddleware');
 
@@ -15,15 +14,19 @@ const getDashboardStats = async (req, res) => {
     const [
       totalBlogs,
       totalNotes,
-      totalProjects,
-      totalResearch,
+      totalPortfolio,
       totalComments
     ] = await Promise.all([
       Blog.countDocuments(),
       Note.countDocuments(),
-      Project.countDocuments(),
-      Research.countDocuments(),
+      Portfolio.countDocuments(),
       Comment.countDocuments()
+    ]);
+
+    // Get portfolio breakdown
+    const [totalProjects, totalResearch] = await Promise.all([
+      Portfolio.countDocuments({ type: 'project' }),
+      Portfolio.countDocuments({ type: 'research' })
     ]);
 
     res.json({
@@ -31,6 +34,7 @@ const getDashboardStats = async (req, res) => {
       data: {
         totalBlogs,
         totalNotes,
+        totalPortfolio,
         totalProjects,
         totalResearch,
         totalComments
@@ -51,7 +55,7 @@ const getRecentActivity = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     
     // Get recent activities from all collections
-    const [recentBlogs, recentNotes, recentProjects, recentResearch, recentComments] = await Promise.all([
+    const [recentBlogs, recentNotes, recentPortfolio, recentComments] = await Promise.all([
       Blog.find()
         .select('title createdAt updatedAt')
         .sort({ updatedAt: -1 })
@@ -60,14 +64,10 @@ const getRecentActivity = async (req, res) => {
         .select('title createdAt updatedAt')
         .sort({ updatedAt: -1 })
         .limit(5),
-      Project.find()
-        .select('title createdAt updatedAt')
+      Portfolio.find()
+        .select('title type createdAt updatedAt')
         .sort({ updatedAt: -1 })
-        .limit(5),
-      Research.find()
-        .select('title createdAt updatedAt')
-        .sort({ updatedAt: -1 })
-        .limit(5),
+        .limit(10),
       Comment.find()
         .select('content createdAt postId postType')
         .sort({ createdAt: -1 })
@@ -103,28 +103,15 @@ const getRecentActivity = async (req, res) => {
       });
     });
 
-    // Add project activities
-    recentProjects.forEach(project => {
+    // Add portfolio activities
+    recentPortfolio.forEach(item => {
       activities.push({
-        id: project._id,
-        type: 'project',
-        action: 'Project updated',
-        title: project.title,
-        createdAt: project.createdAt,
-        updatedAt: project.updatedAt,
-        user: 'You'
-      });
-    });
-
-    // Add research activities
-    recentResearch.forEach(research => {
-      activities.push({
-        id: research._id,
-        type: 'research',
-        action: 'Research item added',
-        title: research.title,
-        createdAt: research.createdAt,
-        updatedAt: research.updatedAt,
+        id: item._id,
+        type: item.type,
+        action: item.type === 'project' ? 'Project updated' : 'Research item added',
+        title: item.title,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
         user: 'You'
       });
     });

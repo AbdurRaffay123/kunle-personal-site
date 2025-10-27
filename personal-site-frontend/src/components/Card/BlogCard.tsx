@@ -4,6 +4,8 @@
 
 "use client";
 
+import Link from "next/link";
+import { generateSlug } from "@/lib/slug";
 import { motion } from "framer-motion";
 import { BlogMeta } from "@/types";
 import { formatDate } from "@/lib/utils";
@@ -34,18 +36,19 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
   };
 
   return (
-    <motion.div
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      whileHover="hover"
-      className="group relative overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
-      style={{
-        backgroundColor: 'var(--card)',
-        borderColor: 'var(--border)',
-        boxShadow: 'var(--shadow)'
-      }}
-    >
+    <Link href={`/blog/${(blog as any).slug || generateSlug(blog.title)}`}>
+      <motion.div
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        whileHover="hover"
+        className="group relative overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+        style={{
+          backgroundColor: 'var(--card)',
+          borderColor: 'var(--border)',
+          boxShadow: 'var(--shadow)'
+        }}
+      >
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
         <CardImage
@@ -86,18 +89,14 @@ export default function BlogCard({ blog, featured = false, index = 0 }: BlogCard
         </div>
 
         {/* Action Button */}
-        <a
-          href={blog.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
-        >
-          Check Blog
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800">
+          Read More
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </a>
+        </div>
       </div>
     </motion.div>
+    </Link>
   );
 }

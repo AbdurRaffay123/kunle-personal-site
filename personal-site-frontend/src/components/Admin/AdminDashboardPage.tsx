@@ -13,8 +13,7 @@ import { getDashboardStats, getRecentActivity } from "@/lib/api";
 import {
   DocumentTextIcon,
   BookOpenIcon,
-  FolderIcon,
-  AcademicCapIcon,
+  BriefcaseIcon,
   ChatBubbleLeftRightIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
@@ -22,8 +21,9 @@ import {
 interface DashboardStats {
   totalBlogs: number;
   totalNotes: number;
-  totalProjects: number;
-  totalResearch: number;
+  totalProjects?: number;
+  totalResearch?: number;
+  totalPortfolio?: number;
   totalComments: number;
 }
 
@@ -47,6 +47,7 @@ export default function AdminDashboardPage() {
     totalNotes: 0,
     totalProjects: 0,
     totalResearch: 0,
+    totalPortfolio: 0,
     totalComments: 0,
   });
   const [activities, setActivities] = useState<ActivityItem[]>([]);
@@ -88,15 +89,9 @@ export default function AdminDashboardPage() {
       color: "green" as const,
     },
     {
-      title: "Total Projects",
-      value: stats.totalProjects.toString(),
-      icon: <FolderIcon className="h-6 w-6 text-white" />,
-      color: "yellow" as const,
-    },
-    {
-      title: "Research Items",
-      value: stats.totalResearch.toString(),
-      icon: <AcademicCapIcon className="h-6 w-6 text-white" />,
+      title: "Portfolio Items",
+      value: ((stats.totalProjects || 0) + (stats.totalResearch || 0)).toString(),
+      icon: <BriefcaseIcon className="h-6 w-6 text-white" />,
       color: "purple" as const,
     },
     {
@@ -116,11 +111,8 @@ export default function AdminDashboardPage() {
       case 'note':
         router.push('/admin/dashboard/notes');
         break;
-      case 'project':
-        router.push('/admin/dashboard/projects');
-        break;
-      case 'research':
-        router.push('/admin/dashboard/research');
+      case 'portfolio':
+        router.push('/admin/dashboard/portfolio');
         break;
       default:
         break;
@@ -168,15 +160,15 @@ export default function AdminDashboardPage() {
             Content Overview
           </h3>
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-              {[...Array(5)].map((_, index) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, index) => (
                 <div key={index} className="animate-pulse">
                   <div className="bg-slate-200 dark:bg-slate-700 rounded-lg h-24"></div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {statsCards.map((stat, index) => (
                 <AdminCard
                   key={index}
@@ -195,7 +187,7 @@ export default function AdminDashboardPage() {
           <h3 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
             Quick Actions
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <button 
               onClick={() => handleQuickAction('blog')}
               className="flex items-center p-4 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
@@ -231,34 +223,17 @@ export default function AdminDashboardPage() {
             </button>
 
             <button 
-              onClick={() => handleQuickAction('project')}
-              className="flex items-center p-4 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
-              style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}
-            >
-              <FolderIcon className="h-8 w-8 text-yellow-600 dark:text-yellow-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
-              <div className="text-left flex-1">
-                <p className="font-semibold group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
-                  New Project
-                </p>
-                <p className="text-sm group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
-                  Add a project
-                </p>
-              </div>
-              <ArrowRightIcon className="h-5 w-5 text-slate-400 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
-            </button>
-
-            <button 
-              onClick={() => handleQuickAction('research')}
+              onClick={() => handleQuickAction('portfolio')}
               className="flex items-center p-4 hover:shadow-md rounded-lg transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
               style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}
             >
-              <AcademicCapIcon className="h-8 w-8 text-purple-600 dark:text-purple-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
+              <BriefcaseIcon className="h-8 w-8 text-purple-600 dark:text-purple-400 mr-3 group-hover:scale-110 transition-transform duration-200" />
               <div className="text-left flex-1">
                 <p className="font-semibold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
-                  Research
+                  Portfolio
                 </p>
                 <p className="text-sm group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
-                  Add research item
+                  Manage projects & research
                 </p>
               </div>
               <ArrowRightIcon className="h-5 w-5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />

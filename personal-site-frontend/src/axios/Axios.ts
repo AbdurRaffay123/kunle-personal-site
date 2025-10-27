@@ -2,7 +2,7 @@ import axios from "axios";
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
-  timeout: 10000,
+  timeout: 60000, // Increased timeout to 60 seconds for slow MongoDB Atlas
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

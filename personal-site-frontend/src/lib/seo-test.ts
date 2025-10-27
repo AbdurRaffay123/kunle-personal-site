@@ -143,3 +143,9 @@ export function generateSEOTestReport(results: SEOTestResult[]): string {
   return report;
 }
 
+
+
+
+
+
+

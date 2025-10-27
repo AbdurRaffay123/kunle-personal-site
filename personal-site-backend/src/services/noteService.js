@@ -170,6 +170,27 @@ const getPublicNoteById = async (noteId) => {
   }
 };
 
+/**
+ * Get a public note by slug
+ * @param {string} slug - Note slug
+ * @returns {Object} - Note data
+ */
+const getNoteBySlug = async (slug) => {
+  try {
+    const note = await Note.findOne({ slug })
+      .populate('user', 'email')
+      .select('title content topic tags createdAt updatedAt slug'); // Include slug in response
+    
+    if (!note) {
+      throw new Error('Note not found');
+    }
+    
+    return note;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createNote,
   getAllNotes,
@@ -177,5 +198,6 @@ module.exports = {
   updateNote,
   deleteNote,
   getPublicNotes,
-  getPublicNoteById
+  getPublicNoteById,
+  getNoteBySlug
 };

@@ -240,6 +240,36 @@ const getPublicNoteById = async (req, res) => {
   }
 };
 
+/**
+ * Get a public note by slug
+ */
+const getNoteBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    
+    const note = await noteService.getNoteBySlug(slug);
+    
+    if (!note) {
+      return res.status(404).json({
+        success: false,
+        message: 'Note not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { note }
+    });
+
+  } catch (error) {
+    console.error('Error fetching note by slug:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   createNote,
   getAllNotes,
@@ -247,5 +277,6 @@ module.exports = {
   updateNote,
   deleteNote,
   getPublicNotes,
-  getPublicNoteById
+  getPublicNoteById,
+  getNoteBySlug
 };

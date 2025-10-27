@@ -12,12 +12,11 @@ const authRoutes = require('./routes/authRoutes');
 const noteRoutes = require('./routes/noteRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const blogRoutes = require('./routes/blogRoutes');
-const projectRoutes = require('./routes/projectRoutes');
 const articleRoutes = require('./routes/articleRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const uploadErrorHandler = require('./middleware/uploadErrorHandler');
-const researchRoutes = require('./routes/researchRoutes');
+const portfolioRoutes = require('./routes/portfolioRoutes');
 // In app.js or index.js
 const mainPageRoutes = require('./routes/mainPageRoutes');
 
@@ -79,9 +78,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/blogs', blogRoutes);
-app.use('/api/projects', projectRoutes);
 app.use('/api/articles', articleRoutes);
-app.use('/api/research', researchRoutes);
+app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/main', mainPageRoutes);
@@ -99,8 +97,7 @@ app.get('/', (req, res) => {
         '/api/notes',
         '/api/profile',
         '/api/blogs',
-        '/api/projects',
-        '/api/research',
+        '/api/portfolio',
         '/api/comments',
         '/api/dashboard',
         '/api/main',

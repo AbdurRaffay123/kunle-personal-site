@@ -69,17 +69,24 @@ export function NotepadEditor({
         types: ['heading', 'paragraph'],
       }),
       Placeholder.configure({
-        placeholder,
-      }),
-      MathBlock,
-      SpecialCodeBlock,
-    ],
-    content,
-    immediatelyRender: false, // Fix SSR hydration issues
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange?.(html);
-    },
+      placeholder,
+    }),
+    MathBlock,
+    SpecialCodeBlock,
+  ],
+  content,
+  immediatelyRender: false, // Fix SSR hydration issues
+  onCreate: ({ editor }) => {
+    // Store the initial scroll position to prevent auto-scroll on toolbar clicks
+    const editorElement = editor.view.dom;
+    if (editorElement) {
+      (editorElement as HTMLElement).style.scrollBehavior = 'smooth';
+    }
+  },
+  onUpdate: ({ editor }) => {
+    const html = editor.getHTML();
+    onChange?.(html);
+  },
     editorProps: {
       attributes: {
         class: 'prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
@@ -229,13 +236,155 @@ export function NotepadEditor({
           .ProseMirror code {
             color: var(--foreground) !important;
           }
+          /* Code Block Styling */
+          .ProseMirror pre {
+            background: #1e1e1e !important;
+            border: 1px solid #333 !important;
+            border-radius: 12px !important;
+            padding: 1.25rem !important;
+            margin: 1rem 0 !important;
+            overflow-x: auto !important;
+            position: relative !important;
+          }
+          .ProseMirror pre::before {
+            content: 'CODE' !important;
+            position: absolute !important;
+            top: 0.5rem !important;
+            right: 1rem !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.05em !important;
+            color: #fff !important;
+            background: #3b82f6 !important;
+            padding: 0.25rem 0.5rem !important;
+            border-radius: 4px !important;
+            text-transform: uppercase !important;
+          }
+          .ProseMirror pre code {
+            color: #fff !important;
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+            font-size: 0.875rem !important;
+          }
+          
+          /* Code Block Styling - Light Mode */
+          @media (prefers-color-scheme: light) {
+            .ProseMirror pre {
+              background: #f7f9fc !important;
+              border: 1px solid #e2e8f0 !important;
+            }
+            .ProseMirror pre::before {
+              background: #3b82f6 !important;
+              color: #fff !important;
+            }
+            .ProseMirror pre code {
+              color: #1e293b !important;
+            }
+          }
+          
+          /* Blockquote Styling */
+          .ProseMirror blockquote {
+            border-left: 4px solid #6366f1 !important;
+            background: linear-gradient(to right, rgba(99, 102, 241, 0.08), transparent) !important;
+            padding: 1rem 1.5rem !important;
+            margin: 1rem 0 !important;
+            border-radius: 0 8px 8px 0 !important;
+            color: var(--foreground) !important;
+            position: relative !important;
+            font-style: italic !important;
+          }
+          
+          /* Math Block Styling */
+          .ProseMirror div[data-type="math-block"] {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1)) !important;
+            border: 2px solid #8b5cf6 !important;
+            border-radius: 12px !important;
+            padding: 1.25rem !important;
+            margin: 1rem 0 !important;
+            position: relative !important;
+            overflow: hidden !important;
+          }
+          .ProseMirror div[data-type="math-block"]::before {
+            content: 'MATH' !important;
+            position: absolute !important;
+            top: 0.5rem !important;
+            right: 1rem !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.05em !important;
+            color: #fff !important;
+            background: #8b5cf6 !important;
+            padding: 0.25rem 0.5rem !important;
+            border-radius: 4px !important;
+            text-transform: uppercase !important;
+          }
+          .ProseMirror div[data-type="math-block"] > * {
+            color: var(--foreground) !important;
+            font-family: 'Georgia', 'Times New Roman', serif !important;
+          }
+          
+          /* Math Block - Light Mode */
+          @media (prefers-color-scheme: light) {
+            .ProseMirror div[data-type="math-block"] {
+              background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.15)) !important;
+              border: 2px solid #8b5cf6 !important;
+            }
+            .ProseMirror div[data-type="math-block"] > * {
+              color: #1e293b !important;
+            }
+          }
+          
+          /* Special Code Block (HTML) Styling */
+          .ProseMirror pre[data-type="special-code"] {
+            background: #1e1e1e !important;
+            border: 2px solid #10b981 !important;
+            border-radius: 12px !important;
+            padding: 1.25rem !important;
+            margin: 1rem 0 !important;
+            position: relative !important;
+          }
+          .ProseMirror pre[data-type="special-code"]::before {
+            content: 'HTML' !important;
+            position: absolute !important;
+            top: 0.5rem !important;
+            right: 1rem !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.05em !important;
+            color: #fff !important;
+            background: #10b981 !important;
+            padding: 0.25rem 0.5rem !important;
+            border-radius: 4px !important;
+            text-transform: uppercase !important;
+          }
+          .ProseMirror pre[data-type="special-code"] code {
+            color: #fff !important;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+            font-size: 0.875rem !important;
+          }
+          
+          /* Special Code Block - Light Mode */
+          @media (prefers-color-scheme: light) {
+            .ProseMirror pre[data-type="special-code"] {
+              background: #f0fdf4 !important;
+              border: 2px solid #10b981 !important;
+            }
+            .ProseMirror pre[data-type="special-code"] code {
+              color: #065f46 !important;
+            }
+          }
         `
       }} />
-      <NotepadToolbar editor={editor} />
+      <div className="sticky top-0 z-50 bg-[var(--card)] border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        <NotepadToolbar editor={editor} />
+      </div>
       <div className="relative">
         <EditorContent 
           editor={editor} 
-          className="min-h-[400px] focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-opacity-50 rounded-b-lg"
+          className="min-h-[400px] focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-opacity-50 rounded-b-lg overflow-auto max-h-[calc(100vh-300px)]"
+          style={{ scrollBehavior: 'auto' }}
         />
         
         {/* Drag and drop overlay */}

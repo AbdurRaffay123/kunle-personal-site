@@ -15,8 +15,8 @@ const createBlog = async (req, res) => {
       });
     }
 
-    const { title, description, category, link } = req.body;
-    const blogData = { title, description, category, link };
+    const { title, description, category, content, tags, fileType, fileUrl, fileName, fileSize } = req.body;
+    const blogData = { title, description, category, content, tags, fileType, fileUrl, fileName, fileSize };
 
     const blog = await blogService.createBlog(blogData);
 
@@ -118,12 +118,17 @@ const updateBlog = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { title, description, category, link } = req.body;
+    const { title, description, category, content, tags, fileType, fileUrl, fileName, fileSize } = req.body;
     const updateData = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (category) updateData.category = category;
-    if (link) updateData.link = link;
+    if (content) updateData.content = content;
+    if (tags) updateData.tags = tags;
+    if (fileType) updateData.fileType = fileType;
+    if (fileUrl) updateData.fileUrl = fileUrl;
+    if (fileName) updateData.fileName = fileName;
+    if (fileSize) updateData.fileSize = fileSize;
 
     const blog = await blogService.updateBlog(id, updateData);
 
@@ -209,11 +214,74 @@ const getBlogStats = async (req, res) => {
   }
 };
 
+/**
+ * Get a blog by slug
+ */
+const getBlogBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    
+    const blog = await blogService.getBlogBySlug(slug);
+    
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: 'Blog not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { blog }
+    });
+
+  } catch (error) {
+    console.error('Error fetching blog by slug:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Like a blog
+ */
+const likeBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await blogService.likeBlog(id);
+    
+    res.status(200).json({
+      success: true,
+      message: 'Blog liked successfully',
+      data: { likes: result.likes }
+    });
+
+  } catch (error) {
+    if (error.message === 'Blog not found') {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+
+    console.error('Error liking blog:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   createBlog,
   getBlogs,
   getBlogById,
+  getBlogBySlug,
   updateBlog,
   deleteBlog,
-  getBlogStats
+  getBlogStats,
+  likeBlog
 };

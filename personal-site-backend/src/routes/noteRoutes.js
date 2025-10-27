@@ -7,6 +7,7 @@ const router = express.Router();
 // Public routes (no authentication required)
 router.get('/public', noteController.getPublicNotes);           // GET /api/notes/public
 router.get('/public/:id', noteController.getPublicNoteById);    // GET /api/notes/public/:id
+router.get('/slug/:slug', noteController.getNoteBySlug);        // GET /api/notes/slug/:slug
 
 // Protected routes (authentication required)
 router.use(authMiddleware);

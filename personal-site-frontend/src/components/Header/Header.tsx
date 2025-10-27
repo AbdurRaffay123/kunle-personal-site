@@ -15,8 +15,7 @@ import ThemeToggle from "@/components/UI/ThemeToggle";
 
 const navigation = [
   { name: "Home", href: "/" },
-  { name: "Projects", href: "/project" },
-  { name: "Research", href: "/research" },
+  { name: "Projects & Research", href: "/portfolio" },
   { name: "Notes", href: "/notes" },
   { name: "Blog", href: "/blog" },
   { name: "Contact", href: "/contact" },
@@ -165,7 +164,7 @@ export default function Header() {
             className="md:hidden backdrop-blur-md border-t border-slate-200 dark:border-slate-700 shadow-lg"
             style={{ backgroundColor: 'var(--background)' }}
           >
-            <div className="max-w-screen-2xl mx-auto px-4 md:px-8 py-4 md:py-6 space-y-3 md:space-y-4">
+            <div className="max-w-screen-2xl mx-auto px-4 md:px-8 py-4 md:py-6 space-y-2">
               {navigation.map((item, index) => {
                 const isActive =
                   pathname === item.href ||
@@ -181,7 +180,7 @@ export default function Header() {
                     <Link
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`block text-base md:text-lg font-medium py-4 px-4 rounded-lg transition-all ${
+                      className={`block text-sm sm:text-base font-medium py-3 px-3 rounded-lg transition-all ${
                         isActive
                           ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md"
                           : "hover:bg-slate-100 dark:hover:bg-slate-800"

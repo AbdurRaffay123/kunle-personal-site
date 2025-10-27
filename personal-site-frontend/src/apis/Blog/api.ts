@@ -6,7 +6,12 @@ interface BlogData {
   title: string;
   description: string;
   category: string;
-  link: string;
+  content: string;
+  tags?: string[];
+  fileType?: 'text' | 'pdf' | 'doc';
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
 }
 
 // Create a new blog
@@ -34,6 +39,22 @@ export const getBlogs = async (page = 1, limit = 100) => {
 // Get a single blog by ID
 export const getBlogById = async (id: string) => {
   const response = await instance.get(`${API_BASE_URL}/${id}`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+// Get a blog by slug
+export const getBlogBySlug = async (slug: string) => {
+  const response = await instance.get(`${API_BASE_URL}/slug/${slug}`, {
+    withCredentials: true,
+  });
+  return response.data.data.blog;
+};
+
+// Like a blog
+export const likeBlog = async (id: string) => {
+  const response = await instance.post(`${API_BASE_URL}/${id}/like`, {}, {
     withCredentials: true,
   });
   return response.data;

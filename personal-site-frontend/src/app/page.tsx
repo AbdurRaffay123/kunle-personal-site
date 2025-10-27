@@ -12,8 +12,9 @@ import BlogCard from "@/components/Card/BlogCard";
 import ProjectCard from "@/components/Card/ProjectCard";
 import ResearchCard from "@/components/Card/ResearchCard";
 import { getNotes } from "@/lib/api";
-import { getBlogs } from "@/apis/Blog/api"; // <-- Use the new blog API
-import { getMainPageData } from "@/apis/About/api"; // <-- Import your profile API
+import { getBlogs } from "@/apis/Blog/api";
+import { getMainPageData } from "@/apis/About/api";
+import { getPortfolioItems } from "@/apis/Portfolio/api";
 import type { BlogMeta } from "@/types";
 
 export default function Home() {
@@ -40,11 +41,15 @@ export default function Home() {
         const notes = await getNotes();
         setLatestNotes(notes.slice(0, 3));
 
-        // Fetch user profile (which includes projects and research)
-        const profileRes = await getMainPageData();
-        const profile = profileRes?.data || {};
-        setFeaturedProjects(profile.projects?.slice(0, 3) || []);
-        setLatestResearch(profile.research?.slice(0, 3) || []);
+        // Fetch portfolio items (projects and research)
+        const portfolioRes = await getPortfolioItems({ limit: 6 });
+        if (portfolioRes.success) {
+          const portfolioItems = portfolioRes.data || [];
+          const projects = portfolioItems.filter(item => item.type === 'project').slice(0, 3);
+          const research = portfolioItems.filter(item => item.type === 'research').slice(0, 3);
+          setFeaturedProjects(projects);
+          setLatestResearch(research);
+        }
         
       } catch (error) {
         console.error('Home page: Error fetching data:', error);
@@ -75,9 +80,9 @@ export default function Home() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
-                title: "Projects",
-                description: "Explore my research and development work",
-                href: "/project",
+                title: "Portfolio",
+                description: "Explore my projects and research work",
+                href: "/portfolio",
                 icon: "🚀",
                 gradient: "from-blue-600 to-blue-800",
               },
@@ -134,21 +139,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Projects */}
-      {featuredProjects.length > 0 && (
+      {/* Featured Portfolio */}
+      {(featuredProjects.length > 0 || latestResearch.length > 0) && (
         <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="max-w-screen-2xl mx-auto">
             <div className="mb-12 flex items-center justify-between">
               <div>
                 <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 dark:text-blue-400 mb-2">
-                  Featured Projects
+                  Projects & Research
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-400">
-                  Showcasing my latest work in AI/ML
+                  Recent work in AI/ML and software engineering
                 </p>
               </div>
               <Link
-                href="/project"
+                href="/portfolio"
                 className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
                 View All
@@ -158,39 +163,12 @@ export default function Home() {
               </Link>
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-              {featuredProjects.map((project: any, index: number) => (
+              {/* Featured Projects */}
+              {featuredProjects.slice(0, 2).map((project: any, index: number) => (
                 <ProjectCard key={project._id || `project-${index}`} project={project} index={index} />
               ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Latest Research */}
-      {latestResearch.length > 0 && (
-        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--background)' }}>
-          <div className="max-w-screen-2xl mx-auto">
-            <div className="mb-12 flex items-center justify-between">
-              <div>
-                <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 dark:text-blue-400 mb-2">
-                  Latest Research
-                </h2>
-                <p className="text-lg text-slate-600 dark:text-slate-400">
-                  Recent technical insights and learning resources
-                </p>
-              </div>
-              <Link
-                href="/research"
-                className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-              >
-                View All
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-            </div>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {latestResearch.map((research: any, index: number) => (
+              {/* Latest Research */}
+              {latestResearch.slice(0, 1).map((research: any, index: number) => (
                 <ResearchCard key={research._id || `research-${index}`} research={research} index={index} />
               ))}
             </div>

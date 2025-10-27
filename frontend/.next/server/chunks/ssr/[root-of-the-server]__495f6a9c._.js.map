@@ -1,8 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 22, "column": 0}, "map": {"version":3,"sources":["file:///var/www/PersonalProjects/web_blog/kunle-personal-site/frontend/src/app/admin/dashboard/page.tsx"],"sourcesContent":["import AdminDashboardPage from './AdminDashboardPage';\n\nexport default AdminDashboardPage;"],"names":[],"mappings":";;;;AAAA;;uCAEe,8KAAkB","debugId":null}}]
-}

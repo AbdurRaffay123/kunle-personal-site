@@ -77,10 +77,24 @@ export default async function RootLayout({
 }>) {
   let mainData = { profile: null, research: [], projects: [] };
   try {
-    const res = await getMainPageData();
-    console.log(res);
-    mainData = res?.data || mainData;
-  } catch {
+    // Use direct fetch for server-side rendering
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    const response = await fetch(`${baseUrl}/api/main`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (response.ok) {
+      const res = await response.json();
+      console.log('Layout: getMainPageData response:', res);
+      mainData = res?.data || mainData;
+      console.log('Layout: final mainData:', mainData);
+    } else {
+      console.error('Layout: API response not ok:', response.status);
+    }
+  } catch (error) {
+    console.error('Layout: Error fetching main page data:', error);
     // fallback to empty data
   }
 

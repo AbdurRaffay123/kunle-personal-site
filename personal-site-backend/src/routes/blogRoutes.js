@@ -25,12 +25,18 @@ const validateBlog = [
     .isLength({ max: 100 })
     .withMessage('Category cannot exceed 100 characters')
     .trim(),
-  body('link')
+  body('content')
     .notEmpty()
-    .withMessage('Link is required')
-    .isURL()
-    .withMessage('Link must be a valid URL')
-    .trim()
+    .withMessage('Content is required')
+    .trim(),
+  body('tags')
+    .optional()
+    .isArray()
+    .withMessage('Tags must be an array'),
+  body('fileType')
+    .optional()
+    .isIn(['text', 'pdf', 'doc'])
+    .withMessage('File type must be text, pdf, or doc')
 ];
 
 const validateBlogUpdate = [
@@ -55,18 +61,26 @@ const validateBlogUpdate = [
     .isLength({ max: 100 })
     .withMessage('Category cannot exceed 100 characters')
     .trim(),
-  body('link')
+  body('content')
     .optional()
     .notEmpty()
-    .withMessage('Link cannot be empty')
-    .isURL()
-    .withMessage('Link must be a valid URL')
-    .trim()
+    .withMessage('Content cannot be empty')
+    .trim(),
+  body('tags')
+    .optional()
+    .isArray()
+    .withMessage('Tags must be an array'),
+  body('fileType')
+    .optional()
+    .isIn(['text', 'pdf', 'doc'])
+    .withMessage('File type must be text, pdf, or doc')
 ];
 
 // Public routes (no auth required)
 router.get('/', blogController.getBlogs);   
+router.get('/slug/:slug', blogController.getBlogBySlug);                      // GET /api/blogs/slug/:slug
 router.get('/:id', blogController.getBlogById);                             // GET /api/blogs/:id
+router.post('/:id/like', blogController.likeBlog);                          // POST /api/blogs/:id/like
 
 // Protected routes (auth required)
 router.use(authMiddleware);

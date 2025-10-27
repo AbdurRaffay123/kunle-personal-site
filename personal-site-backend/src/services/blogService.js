@@ -156,11 +156,64 @@ const getBlogStats = async () => {
   }
 };
 
+/**
+ * Get a blog by slug
+ * @param {string} slug - Blog slug
+ * @returns {Object} - Blog object
+ */
+const getBlogBySlug = async (slug) => {
+  try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database not connected');
+    }
+    
+    const blog = await Blog.findOne({ slug })
+      .select('title description category content slug likes tags fileType fileUrl fileName fileSize createdAt updatedAt image');
+    
+    if (!blog) {
+      throw new Error('Blog not found');
+    }
+    
+    return blog;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Like a blog
+ * @param {string} blogId - Blog ID
+ * @returns {Object} - Updated blog with likes count
+ */
+const likeBlog = async (blogId) => {
+  try {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      { $inc: { likes: 1 } },
+      { new: true }
+    );
+
+    if (!blog) {
+      throw new Error('Blog not found');
+    }
+
+    return { likes: blog.likes };
+  } catch (error) {
+    if (error.name === 'CastError') {
+      throw new Error('Invalid blog ID');
+    }
+    throw error;
+  }
+};
+
 module.exports = {
   createBlog,
   getAllBlogs,
   getBlogById,
+  getBlogBySlug,
   updateBlog,
   deleteBlog,
   getBlogStats,
+  likeBlog
 };

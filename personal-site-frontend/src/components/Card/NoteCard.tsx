@@ -8,6 +8,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { NoteMeta } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { generateSlug } from "@/lib/slug";
 import CardImage from "@/components/UI/CardImage";
 
 interface NoteCardProps {
@@ -52,7 +53,7 @@ export default function NoteCard({ note, index = 0 }: NoteCardProps) {
       }}
     >
       <Link
-        href={`/notes/${note._id}`}
+        href={`/notes/${(note as any).slug || generateSlug(note.title)}`}
         className="group block h-full overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
         style={{
           backgroundColor: 'var(--card)',

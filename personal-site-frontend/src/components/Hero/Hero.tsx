@@ -148,7 +148,7 @@ export default function Hero() {
             >
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
-                  href="/project"
+                  href="/portfolio"
                   className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
                 >
                   View Projects
@@ -221,39 +221,6 @@ export default function Hero() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/10 via-transparent to-transparent dark:from-blue-900/20" />
               </div>
-              {/* Floating tech badges */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.2, duration: 0.6 }}
-                className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg border-2 border-white/20"
-              >
-                <span className="text-2xl">🤖</span>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.4, duration: 0.6 }}
-                className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-gradient-to-br from-sky-600 to-sky-800 flex items-center justify-center shadow-lg border-2 border-white/20"
-              >
-                <span className="text-2xl">📊</span>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.6, duration: 0.6 }}
-                className="absolute top-1/2 -left-8 w-12 h-12 rounded-full bg-gradient-to-br from-blue-700 to-sky-700 flex items-center justify-center shadow-lg border-2 border-white/20"
-              >
-                <span className="text-lg">🔍</span>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.8, duration: 0.6 }}
-                className="absolute top-1/2 -right-8 w-12 h-12 rounded-full bg-gradient-to-br from-sky-700 to-blue-900 flex items-center justify-center shadow-lg border-2 border-white/20"
-              >
-                <span className="text-lg">📈</span>
-              </motion.div>
             </motion.div>
           </motion.div>
         </motion.div>

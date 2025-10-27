@@ -8,35 +8,112 @@ import ResponsiveThreeColumn from "@/components/Layout/ResponsiveThreeColumn";
 import NotesHtmlRenderer from "@/components/Markdown/NotesHtmlRenderer";
 import Tag from "@/components/UI/Tag";
 import NoteCard from "@/components/Card/NoteCard";
-import CommentsSection from "@/components/Comments/CommentsSection";
 import TableOfContents from "@/components/UI/TableOfContents";
-import { getNoteBySlug, getNotes } from "@/lib/api";
+import { getNoteBySlug, getNoteById, getNotes } from "@/lib/api";
 import { formatDate, extractHeadings } from "@/lib/utils";
+import { generateSlug } from "@/lib/slug";
 import { generateMetadata as genMeta } from "@/components/SEO/SEO";
 import Link from "next/link";
 import BackButton from "@/components/UI/BackButton";
+import type { Metadata } from "next";
 
 interface NotePageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: NotePageProps) {
-  const { id } = await params;
+// Find note by slug or ID (fallback to ID if slug not found)
+async function findNoteBySlugOrId(identifier: string) {
   try {
-    const note = await getNoteBySlug(id);
-    return genMeta({
-      title: note.title,
-      description: note.excerpt || note.title,
-      path: `/notes/${id}`,
-      date: note.updatedAt,
-      tags: note.tags,
-      type: "article",
-    });
-  } catch {
-    return genMeta({
-      title: "Note Not Found",
-      description: "The requested note could not be found.",
-    });
+    // First try to find by slug using the new API
+    try {
+      const note = await getNoteBySlug(identifier);
+      return note;
+    } catch (slugError) {
+      // If slug not found, try by ID (for backward compatibility)
+      try {
+        const note = await getNoteById(identifier);
+        return note;
+      } catch (idError) {
+        throw new Error("Note not found");
+      }
+    }
+  } catch (error) {
+    throw new Error("Note not found");
+  }
+}
+
+export async function generateMetadata({ params }: NotePageProps): Promise<Metadata> {
+  const { id } = await params;
+  
+  try {
+    const note = await findNoteBySlugOrId(id);
+    
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://olukunleowolabi.com';
+    const noteUrl = `${siteUrl}/notes/${note.slug || id}`;
+    
+    // Generate description from content or excerpt
+    const description = note.excerpt || 
+      note.content?.replace(/<[^>]*>/g, '').substring(0, 160) + '...' || 
+      note.title;
+    
+    return {
+      title: `${note.title} | Olukunle Owolabi`,
+      description,
+      keywords: note.tags?.join(', ') || '',
+      authors: [{ name: 'Olukunle Owolabi' }],
+      creator: 'Olukunle Owolabi',
+      
+      // Open Graph metadata
+      openGraph: {
+        type: 'article',
+        title: note.title,
+        description,
+        url: noteUrl,
+        siteName: 'Olukunle Owolabi',
+        locale: 'en_US',
+        publishedTime: note.createdAt,
+        modifiedTime: note.updatedAt,
+        authors: ['Olukunle Owolabi'],
+        tags: note.tags,
+        images: [
+          {
+            url: `${siteUrl}/og-image.png`,
+            width: 1200,
+            height: 630,
+            alt: note.title,
+          },
+        ],
+      },
+      
+      // Twitter Card metadata
+      twitter: {
+        card: 'summary_large_image',
+        title: note.title,
+        description,
+        images: [`${siteUrl}/og-image.png`],
+        creator: '@olukunle',
+        site: '@olukunle',
+      },
+      
+      // Additional metadata
+      alternates: {
+        canonical: noteUrl,
+      },
+      
+      // Article metadata
+      other: {
+        'article:author': 'Olukunle Owolabi',
+        'article:published_time': note.createdAt,
+        'article:modified_time': note.updatedAt,
+        'article:section': note.topic || 'Technology',
+        'article:tag': note.tags?.join(',') || '',
+      },
+    };
+  } catch (error) {
+    return {
+      title: 'Note Not Found | Olukunle Owolabi',
+      description: 'The requested note could not be found.',
+    };
   }
 }
 
@@ -45,7 +122,7 @@ export default async function NotePage({ params }: NotePageProps) {
 
   let note;
   try {
-    note = await getNoteBySlug(id);
+    note = await findNoteBySlugOrId(id);
   } catch {
     notFound();
   }
@@ -158,10 +235,6 @@ export default async function NotePage({ params }: NotePageProps) {
         </div>
       )}
 
-      {/* Comments */}
-      <div className="mt-12 md:mt-16">
-        <CommentsSection postId={id} postType="note" />
-      </div>
     </article>
   );
 

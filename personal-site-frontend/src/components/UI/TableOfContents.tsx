@@ -18,74 +18,72 @@ interface TableOfContentsProps {
 }
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {
-  const [activeId, setActiveId] = useState<string>('');
+  const [activeHeading, setActiveHeading] = useState<string>('');
 
   useEffect(() => {
-    // Track which section is currently in view
+    // Track which section is currently in view using Intersection Observer
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
+            const headingText = entry.target.textContent?.trim() || '';
+            setActiveHeading(headingText);
           }
         });
       },
       {
-        rootMargin: '-120px 0px -80% 0px', // Account for fixed navbar
-        threshold: 0.1,
+        rootMargin: '-90px 0px -80% 0px',
+        threshold: 0.2,
       }
     );
 
-    // Observe all heading elements
-    headings.forEach((heading) => {
-      const element = document.getElementById(heading.id);
-      if (element) {
-        observer.observe(element);
-      }
-    });
+    // Wait for content to be rendered, then observe all headings
+    const timeoutId = setTimeout(() => {
+      const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      allHeadings.forEach((heading) => {
+        observer.observe(heading);
+      });
+    }, 100);
 
     return () => {
+      clearTimeout(timeoutId);
       observer.disconnect();
     };
-  }, [headings]);
+  }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, text: string, id: string) => {
     e.preventDefault();
     
-    // Try to find the element
-    const element = document.getElementById(id);
-    if (element) {
-      // Calculate offset for fixed navbar
-      const navbarHeight = 90;
-      const elementPosition = element.offsetTop - navbarHeight;
-      
-      // Smooth scroll to element with offset
-      window.scrollTo({
-        top: Math.max(0, elementPosition),
-        behavior: 'smooth'
-      });
-      
-      // Update URL hash
-      window.history.pushState(null, '', `#${id}`);
-      setActiveId(id);
-    } else {
-      // Fallback: try to find the element after a short delay
-      setTimeout(() => {
-        const delayedElement = document.getElementById(id);
-        if (delayedElement) {
-          const navbarHeight = 90;
-          const elementPosition = delayedElement.offsetTop - navbarHeight;
-          
-          window.scrollTo({
-            top: Math.max(0, elementPosition),
-            behavior: 'smooth'
+    // Find the heading element by ID
+    const targetElement = document.getElementById(id);
+    
+    if (!targetElement) {
+      console.warn('Could not find element with id:', id);
+      // Fallback: Try to find by text
+      const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      for (const heading of Array.from(allHeadings)) {
+        if (heading.textContent?.trim() === text.trim()) {
+          // Use native scrollIntoView which respects scroll-margin-top
+          (heading as HTMLElement).scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
           });
-          
-          window.history.pushState(null, '', `#${id}`);
-          setActiveId(id);
+          setActiveHeading(text);
+          return;
         }
-      }, 100);
+      }
+      return;
     }
+    
+    // Headings already have scroll-margin-top set to 100px in NotesHtmlRenderer
+    // So we can use the simple native scrollIntoView
+    targetElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+    
+    // Update active heading
+    setActiveHeading(text);
   };
 
   if (headings.length === 0) {
@@ -93,14 +91,14 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   }
 
   return (
-    <div className="rounded-lg border p-4 md:p-5 lg:p-6 lg:sticky lg:top-24" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
-      <h3 className="mb-4 text-sm md:text-base lg:text-lg font-semibold" style={{ color: 'var(--nav-text)' }}>
+    <div className="rounded-lg border p-4 md:p-5 lg:p-6 lg:sticky lg:top-24 max-h-[400px] md:max-h-none overflow-y-auto" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+      <h3 className="mb-4 text-sm md:text-base lg:text-lg font-semibold sticky top-0 bg-[var(--card)] pb-2" style={{ color: 'var(--nav-text)' }}>
         Table of Contents
       </h3>
       <nav>
         <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm list-disc pl-4 md:pl-5">
           {headings.map((heading) => {
-            const isActive = activeId === heading.id;
+            const isActive = activeHeading === heading.text;
             // Calculate additional padding for nested levels
             const paddingLeft = `${(heading.level - 1) * 0.75}rem`;
             
@@ -112,14 +110,14 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
               >
                 <a
                   href={`#${heading.id}`}
-                  onClick={(e) => handleClick(e, heading.id)}
+                  onClick={(e) => handleClick(e, heading.text, heading.id)}
                   className={`block transition-all duration-200 p-1 -m-1 rounded-md cursor-pointer ${
                     isActive
-                      ? 'font-medium'
+                      ? 'font-medium text-blue-600 dark:text-blue-400'
                       : 'hover:underline'
                   }`}
                   style={{
-                    color: 'var(--text-secondary)'
+                    color: isActive ? undefined : 'var(--text-secondary)'
                   }}
                 >
                   {heading.text}

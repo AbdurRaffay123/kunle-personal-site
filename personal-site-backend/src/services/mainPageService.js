@@ -1,6 +1,5 @@
 const UserProfile = require('../models/UserProfile');
-const Research = require('../models/Research');
-const Project = require('../models/Project');
+const Portfolio = require('../models/Portfolio');
 const mongoose = require('mongoose');
 
 const getMainPageData = async () => {
@@ -12,17 +11,16 @@ const getMainPageData = async () => {
   // Get profile (exclude _id and sensitive fields)
   const profile = await UserProfile.findOne({}, { _id: 0, password: 0 });
 
-  // Get latest 3 research items (if Research has isPublished)
-  const research = await Research.find({ isPublished: true })
+  // Get latest portfolio items (mix of projects and research) - OPTIMIZED
+  const portfolioItems = await Portfolio.find({})
     .sort({ createdAt: -1 })
-    .limit(3)
-    .select('-_id -author');
+    .limit(6)
+    .lean() // Use lean() for better performance
+    .select('title description type technologies tags category githubUrl researchLink image createdAt updatedAt');
 
-  // Get latest 3 projects (no isPublished filter)
-  const projects = await Project.find({})
-    .sort({ createdAt: -1 })
-    .limit(3)
-    .select('-_id');
+  // Separate projects and research
+  const projects = portfolioItems.filter(item => item.type === 'project').slice(0, 3);
+  const research = portfolioItems.filter(item => item.type === 'research').slice(0, 3);
 
   return { profile, research, projects };
 };

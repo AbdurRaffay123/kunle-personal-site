@@ -11,8 +11,7 @@ import {
   HomeIcon,
   DocumentTextIcon,
   BookOpenIcon,
-  FolderIcon,
-  AcademicCapIcon,
+  BriefcaseIcon,
   ChatBubbleLeftRightIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
@@ -26,8 +25,7 @@ const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
   { name: "Blogs", href: "/admin/dashboard/blogs", icon: DocumentTextIcon },
   { name: "Notes", href: "/admin/dashboard/notes", icon: BookOpenIcon },
-  { name: "Projects", href: "/admin/dashboard/projects", icon: FolderIcon },
-  { name: "Research", href: "/admin/dashboard/research", icon: AcademicCapIcon },
+  { name: "Portfolio", href: "/admin/dashboard/portfolio", icon: BriefcaseIcon },
   { name: "Comments", href: "/admin/dashboard/comments", icon: ChatBubbleLeftRightIcon },
   { name: "About", href: "/admin/dashboard/about", icon: UserIcon },
 ];

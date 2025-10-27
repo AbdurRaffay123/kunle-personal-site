@@ -4,6 +4,7 @@
 
 import type { APIResponse, NoteMeta, Note, BlogMeta, Blog, Project, ContactFormData } from "@/types";
 import { mockNotes, mockBlogs, mockProjects } from "@/data/mockData";
+import { generateSlug } from "@/lib/slug";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
@@ -84,7 +85,35 @@ export async function getNotes(): Promise<NoteMeta[]> {
   }
 }
 
-export async function getNoteBySlug(id: string): Promise<Note> {
+export async function getNoteBySlug(slug: string): Promise<Note> {
+  logMockDataStatus();
+  
+  if (USE_MOCK_DATA) {
+    const note = mockNotes.find((n) => generateSlug(n.title) === slug);
+    if (!note) throw new Error("Note not found");
+    return {
+      ...note,
+      content: generateMockContent(note.title),
+    };
+  }
+  
+  try {
+    const response = await fetchAPI<{ success: boolean; data: { note: Note } }>(`/api/notes/slug/${slug}`, {
+      cache: "no-store",
+    });
+    return response.data.note;
+  } catch (error) {
+    // Silent fallback to mock data
+    const note = mockNotes.find((n) => generateSlug(n.title) === slug);
+    if (!note) throw error;
+    return {
+      ...note,
+      content: generateMockContent(note.title),
+    };
+  }
+}
+
+export async function getNoteById(id: string): Promise<Note> {
   logMockDataStatus();
   
   if (USE_MOCK_DATA) {
@@ -121,7 +150,7 @@ export async function getBlogs(): Promise<BlogMeta[]> {
   }
   
   try {
-    const response = await fetchAPI<APIResponse<BlogMeta[]>>("/api/v1/blogs", {
+    const response = await fetchAPI<APIResponse<BlogMeta[]>>("/api/blogs", {
       cache: "no-store",
     });
     return response.data;
@@ -131,8 +160,61 @@ export async function getBlogs(): Promise<BlogMeta[]> {
   }
 }
 
-// Note: getBlogBySlug function removed since blogs now link directly to external sites
-// No blog detail pages are needed anymore
+export async function getBlogBySlug(slug: string): Promise<Blog> {
+  logMockDataStatus();
+  
+  if (USE_MOCK_DATA) {
+    const blog = mockBlogs.find((b) => generateSlug(b.title) === slug);
+    if (!blog) throw new Error("Blog not found");
+    return {
+      ...blog,
+      content: generateMockContent(blog.title),
+    };
+  }
+  
+  try {
+    const response = await fetchAPI<{ success: boolean; data: { blog: Blog } }>(`/api/blogs/slug/${slug}`, {
+      cache: "no-store",
+    });
+    return response.data.blog;
+  } catch (error) {
+    // Silent fallback to mock data
+    const blog = mockBlogs.find((b) => generateSlug(b.title) === slug);
+    if (!blog) throw error;
+    return {
+      ...blog,
+      content: generateMockContent(blog.title),
+    };
+  }
+}
+
+export async function getBlogById(id: string): Promise<Blog> {
+  logMockDataStatus();
+  
+  if (USE_MOCK_DATA) {
+    const blog = mockBlogs.find((b) => b._id === id);
+    if (!blog) throw new Error("Blog not found");
+    return {
+      ...blog,
+      content: generateMockContent(blog.title),
+    };
+  }
+  
+  try {
+    const response = await fetchAPI<{ success: boolean; data: Blog }>(`/api/blogs/${id}`, {
+      cache: "no-store",
+    });
+    return response.data;
+  } catch (error) {
+    // Silent fallback to mock data
+    const blog = mockBlogs.find((b) => b._id === id);
+    if (!blog) throw error;
+    return {
+      ...blog,
+      content: generateMockContent(blog.title),
+    };
+  }
+}
 
 // Projects API
 export async function getProjects(): Promise<Project[]> {
@@ -143,7 +225,7 @@ export async function getProjects(): Promise<Project[]> {
   }
   
   try {
-    const response = await fetchAPI<APIResponse<Project[]>>("/api/v1/projects", {
+    const response = await fetchAPI<APIResponse<Project[]>>("/api/portfolio", {
       cache: "no-store",
     });
     return response.data;
@@ -192,7 +274,7 @@ export async function submitContact(data: ContactFormData): Promise<{ message: s
     return { message: "Thank you for your message! (Demo mode - message not sent)" };
   }
   
-  const response = await fetchAPI<{ message: string }>("/api/v1/contact", {
+  const response = await fetchAPI<{ message: string }>("/api/contact", {
     method: "POST",
     body: JSON.stringify(data),
   });

@@ -30,8 +30,15 @@ export interface BlogMeta {
   title: string;
   description: string;
   category: string;
-  link: string;
   image?: string;
+  slug?: string;
+  tags?: string[];
+  likes?: number;
+  content?: string;
+  fileType?: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
   createdAt: string;
   updatedAt: string;
 }

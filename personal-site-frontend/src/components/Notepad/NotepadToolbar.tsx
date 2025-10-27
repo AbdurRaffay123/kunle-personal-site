@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { ImageInsertModal } from './ImageInsertModal';
+import { TableInsertModal } from './TableInsertModal';
 
 interface NotepadToolbarProps {
   editor: Editor | null;
@@ -39,6 +40,7 @@ interface NotepadToolbarProps {
 
 export function NotepadToolbar({ editor }: NotepadToolbarProps) {
   const [showImageModal, setShowImageModal] = useState(false);
+  const [showTableModal, setShowTableModal] = useState(false);
 
   if (!editor) {
     return null;
@@ -58,7 +60,12 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
     title: string;
   }) => (
     <button
-      onClick={onClick}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      }}
+      onMouseDown={(e) => e.preventDefault()}
       disabled={disabled}
       title={title}
       className={`p-2 rounded-md transition-colors ${
@@ -79,7 +86,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-1 p-3 border-b border-slate-200 dark:border-slate-700" style={{ backgroundColor: 'var(--card)' }}>
+      <div className="flex flex-wrap items-center gap-1 p-3" style={{ backgroundColor: 'var(--card)' }}>
         {/* Text Formatting */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -111,11 +118,12 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         <select
           value={editor.getAttributes('heading').level || 'paragraph'}
           onChange={(e) => {
+            e.stopPropagation();
             const level = e.target.value;
             if (level === 'paragraph') {
-              editor.chain().focus().setParagraph().run();
+              editor.chain().setParagraph().run();
             } else {
-              editor.chain().focus().toggleHeading({ level: parseInt(level) as 1 | 2 | 3 | 4 | 5 | 6 }).run();
+              editor.chain().toggleHeading({ level: parseInt(level) as 1 | 2 | 3 | 4 | 5 | 6 }).run();
             }
           }}
           className="px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded"
@@ -135,12 +143,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
         {/* Lists */}
         <ToolbarButton
-          onClick={() => {
-            console.log('Bullet list clicked');
-            console.log('Current HTML:', editor.getHTML());
-            editor.chain().focus().toggleBulletList().run();
-            console.log('After bullet list HTML:', editor.getHTML());
-          }}
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
           isActive={editor.isActive('bulletList')}
           title="Bullet List"
         >
@@ -148,12 +151,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         </ToolbarButton>
 
         <ToolbarButton
-          onClick={() => {
-            console.log('Ordered list clicked');
-            console.log('Current HTML:', editor.getHTML());
-            editor.chain().focus().toggleOrderedList().run();
-            console.log('After ordered list HTML:', editor.getHTML());
-          }}
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
           isActive={editor.isActive('orderedList')}
           title="Numbered List"
         >
@@ -239,13 +237,16 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         <div className="flex items-center gap-1">
           <input
             type="color"
-            onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+            onChange={(e) => {
+              e.stopPropagation();
+              editor.chain().setColor(e.target.value).run();
+            }}
             value={editor.getAttributes('textStyle').color || '#000000'}
             className="w-8 h-8 border border-slate-300 dark:border-slate-600 rounded cursor-pointer"
             title="Text Color"
           />
           <ToolbarButton
-            onClick={() => editor.chain().focus().unsetColor().run()}
+            onClick={() => editor.chain().unsetColor().run()}
             title="Remove Text Color"
           >
             <Palette className="w-4 h-4" />
@@ -255,13 +256,16 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         <div className="flex items-center gap-1">
           <input
             type="color"
-            onChange={(e) => editor.chain().focus().setHighlight({ color: e.target.value }).run()}
+            onChange={(e) => {
+              e.stopPropagation();
+              editor.chain().setHighlight({ color: e.target.value }).run();
+            }}
             value={editor.getAttributes('highlight').color || '#ffff00'}
             className="w-8 h-8 border border-slate-300 dark:border-slate-600 rounded cursor-pointer"
             title="Highlight Color"
           />
           <ToolbarButton
-            onClick={() => editor.chain().focus().unsetHighlight().run()}
+            onClick={() => editor.chain().unsetHighlight().run()}
             title="Remove Highlight"
           >
             <Highlighter className="w-4 h-4" />
@@ -292,7 +296,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         </ToolbarButton>
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          onClick={() => setShowTableModal(true)}
           title="Insert Table"
         >
           <Table className="w-4 h-4" />
@@ -325,6 +329,15 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         onInsert={(src, alt) => {
           editor.chain().focus().setImage({ src, alt }).run();
           setShowImageModal(false);
+        }}
+      />
+
+      {/* Table Insert Modal */}
+      <TableInsertModal
+        isOpen={showTableModal}
+        onClose={() => setShowTableModal(false)}
+        onConfirm={(rows, cols, withHeader) => {
+          editor.chain().focus().insertTable({ rows, cols, withHeaderRow: withHeader }).run();
         }}
       />
     </>

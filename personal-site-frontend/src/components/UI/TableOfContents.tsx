@@ -1,6 +1,6 @@
 /**
- * Table of Contents Component
- * Displays clickable links to headings with smooth scroll and active highlighting
+ * Table of Contents Component - Redesigned for reliability
+ * Simple, clean implementation that works on all devices
  */
 
 "use client";
@@ -20,164 +20,107 @@ interface TableOfContentsProps {
 export default function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeHeading, setActiveHeading] = useState<string>('');
 
+  // Simple intersection observer for active heading tracking
   useEffect(() => {
-    console.log('🔍 TOC Debug: Component mounted, headings:', headings);
-    console.log('🔍 TOC Debug: Screen size:', window.innerWidth, 'x', window.innerHeight);
-    
-    // Track which section is currently in view using Intersection Observer
     const observer = new IntersectionObserver(
       (entries) => {
-        console.log('🔍 TOC Debug: Intersection Observer triggered with', entries.length, 'entries');
         entries.forEach((entry) => {
-          console.log('🔍 TOC Debug: Entry:', {
-            target: entry.target,
-            text: entry.target.textContent?.trim(),
-            isIntersecting: entry.isIntersecting,
-            intersectionRatio: entry.intersectionRatio,
-            boundingClientRect: entry.boundingClientRect
-          });
-          
           if (entry.isIntersecting) {
             const headingText = entry.target.textContent?.trim() || '';
-            console.log('🔍 TOC Debug: Setting active heading to:', headingText);
             setActiveHeading(headingText);
           }
         });
       },
       {
-        rootMargin: '-90px 0px -80% 0px',
-        threshold: 0.2,
+        rootMargin: '-100px 0px -50% 0px',
+        threshold: 0.1,
       }
     );
 
-    // Wait for content to be rendered, then observe all headings
+    // Observe all headings after a short delay
     const timeoutId = setTimeout(() => {
       const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      console.log('🔍 TOC Debug: Found', allHeadings.length, 'headings in DOM');
-      
-      allHeadings.forEach((heading, index) => {
-        console.log(`🔍 TOC Debug: Heading ${index}:`, {
-          tagName: heading.tagName,
-          text: heading.textContent?.trim(),
-          id: heading.id,
-          className: heading.className,
-          offsetTop: (heading as HTMLElement).offsetTop,
-          offsetParent: (heading as HTMLElement).offsetParent,
-          getBoundingClientRect: heading.getBoundingClientRect(),
-          computedStyle: {
-            position: getComputedStyle(heading).position,
-            top: getComputedStyle(heading).top,
-            transform: getComputedStyle(heading).transform
-          }
-        });
+      allHeadings.forEach((heading) => {
         observer.observe(heading);
       });
-      
-      console.log('🔍 TOC Debug: Observer setup complete');
-    }, 100);
+    }, 200);
 
     return () => {
-      console.log('🔍 TOC Debug: Component unmounting, cleaning up observer');
       clearTimeout(timeoutId);
       observer.disconnect();
     };
   }, []);
 
+  // Alternative scroll method using manual calculation
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, text: string, id: string) => {
-    console.log('🔍 TOC Debug: Click event triggered', { text, id, screenWidth: window.innerWidth });
     e.preventDefault();
     
-    // Find the heading element by ID
+    // Find the target element
     const targetElement = document.getElementById(id);
-    console.log('🔍 TOC Debug: Target element found by ID:', targetElement);
     
     if (!targetElement) {
-      console.warn('🔍 TOC Debug: Could not find element with id:', id);
-      // Fallback: Try to find by text
+      // Fallback: find by text content
       const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      console.log('🔍 TOC Debug: Searching through', allHeadings.length, 'headings by text');
-      
       for (const heading of Array.from(allHeadings)) {
-        console.log('🔍 TOC Debug: Checking heading:', {
-          text: heading.textContent?.trim(),
-          targetText: text.trim(),
-          matches: heading.textContent?.trim() === text.trim()
-        });
-        
         if (heading.textContent?.trim() === text.trim()) {
-          console.log('🔍 TOC Debug: Found heading by text, scrolling...');
-          // Use native scrollIntoView which respects scroll-margin-top
-          (heading as HTMLElement).scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
+          scrollToElement(heading as HTMLElement);
           setActiveHeading(text);
-          console.log('🔍 TOC Debug: Scroll completed, active heading set to:', text);
           return;
         }
       }
-      console.log('🔍 TOC Debug: No heading found by text either');
       return;
     }
     
-    console.log('🔍 TOC Debug: Scrolling to element with ID:', id);
-    
-    // Use the simple and correct scrollIntoView method for all screen sizes
-    // This respects scroll-margin-top and works with ResponsiveThreeColumn layout
-    targetElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-    
-    // Update active heading
+    // Use our custom scroll method
+    scrollToElement(targetElement);
     setActiveHeading(text);
-    console.log('🔍 TOC Debug: Scroll completed, active heading set to:', text);
+  };
+
+  // Custom scroll function that works reliably
+  const scrollToElement = (element: HTMLElement) => {
+    // Get element position
+    const rect = element.getBoundingClientRect();
+    const elementTop = rect.top + window.pageYOffset;
+    
+    // Calculate scroll position with offset for navbar
+    const offsetTop = 100; // Account for navbar height
+    const scrollTo = elementTop - offsetTop;
+    
+    // Smooth scroll to calculated position
+    window.scrollTo({
+      top: Math.max(0, scrollTo),
+      behavior: 'smooth'
+    });
   };
 
   if (headings.length === 0) {
-    console.log('🔍 TOC Debug: No headings provided, returning null');
     return null;
   }
 
-  console.log('🔍 TOC Debug: Rendering TOC with', headings.length, 'headings, active:', activeHeading);
-  console.log('🔍 TOC Debug: Current screen width:', window.innerWidth);
-
   return (
-    <div className="rounded-lg border p-4 md:p-5 lg:p-6 lg:sticky lg:top-24 max-h-[400px] md:max-h-none overflow-y-auto" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
-      <h3 className="mb-4 text-sm md:text-base lg:text-lg font-semibold sticky top-0 bg-[var(--card)] pb-2" style={{ color: 'var(--nav-text)' }}>
+    <div className="rounded-lg border p-4 md:p-5 lg:p-6 lg:sticky lg:top-24 max-h-[400px] md:max-h-none overflow-y-auto" 
+         style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+      
+      <h3 className="mb-4 text-sm md:text-base lg:text-lg font-semibold sticky top-0 bg-[var(--card)] pb-2" 
+          style={{ color: 'var(--nav-text)' }}>
         Table of Contents
       </h3>
+      
       <nav>
-        <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm list-disc pl-4 md:pl-5">
+        <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
           {headings.map((heading, index) => {
             const isActive = activeHeading === heading.text;
-            // Calculate additional padding for nested levels
             const paddingLeft = `${(heading.level - 1) * 0.75}rem`;
             
-            console.log('🔍 TOC Debug: Rendering heading:', {
-              id: heading.id,
-              text: heading.text,
-              level: heading.level,
-              isActive,
-              paddingLeft
-            });
-            
             return (
-              <li
-                key={`${heading.id}-${index}`}
-                style={{ paddingLeft }}
-                className="transition-all duration-200"
-              >
+              <li key={`${heading.id}-${index}`} style={{ paddingLeft }}>
                 <a
                   href={`#${heading.id}`}
-                  onClick={(e) => {
-                    console.log('🔍 TOC Debug: Link clicked for:', heading.text);
-                    handleClick(e, heading.text, heading.id);
-                  }}
+                  onClick={(e) => handleClick(e, heading.text, heading.id)}
                   className={`block transition-all duration-200 p-1 -m-1 rounded-md cursor-pointer ${
                     isActive
-                      ? 'font-medium text-blue-600 dark:text-blue-400'
-                      : 'hover:underline'
+                      ? 'font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                      : 'hover:underline hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                   style={{
                     color: isActive ? undefined : 'var(--text-secondary)'

@@ -6,12 +6,8 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import Container from "@/components/UI/Container";
-import Spinner from "@/components/UI/Spinner";
 import EmptyState from "@/components/UI/EmptyState";
 import ErrorState from "@/components/UI/ErrorState";
-import Tag from "@/components/UI/Tag";
-import { debounce } from "@/lib/utils";
 import { useFetch } from "@/hooks/useFetch";
 import { getPortfolioItems, type PortfolioItem } from "@/apis/Portfolio/api";
 import ProjectCard from "@/components/Card/ProjectCard";
@@ -93,15 +89,8 @@ const FALLBACK_DATA: PortfolioItem[] = [
   }
 ];
 
-const TYPE_FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'project', label: 'Projects' },
-  { id: 'research', label: 'Research' }
-];
 
 export default function PortfolioPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('all');
   const [useFallback, setUseFallback] = useState(false); // Use real API
 
   // Create a stable fetcher function that doesn't depend on selectedFilter
@@ -129,50 +118,18 @@ export default function PortfolioPage() {
   // Don't refetch when filter changes if using fallback data
   // The filtering is handled client-side for fallback data
 
-  // Debounced search
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      setSearchQuery(query);
-    }, 300),
-    []
-  );
 
-  // Filter items based on type and search query
+  // Show all items without filtering
   const filteredItems = useMemo(() => {
-    if (!portfolioItems) return [];
-    
-    // First filter by type
-    let filtered = portfolioItems;
-    if (selectedFilter !== 'all') {
-      filtered = portfolioItems.filter(item => item.type === selectedFilter);
-    }
-    
-    // Then filter by search query
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.type === 'project' ? item.technologies : item.tags)?.some(tech =>
-          tech.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
-    
-    return filtered;
-  }, [portfolioItems, selectedFilter, searchQuery]);
+    return portfolioItems || [];
+  }, [portfolioItems]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  // Remove loading state - show content immediately
 
   // Show error only if we're not using fallback data
   if (error && !useFallback) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--background)' }}>
         <ErrorState
           title="Failed to load portfolio"
           message="There was an error loading the portfolio items. Please try again later."
@@ -230,48 +187,14 @@ export default function PortfolioPage() {
           )}
         </motion.div>
 
-        {/* Search and Filters */}
-        <div className="mb-8">
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search projects & research..."
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              onChange={(e) => debouncedSearch(e.target.value)}
-            />
-          </div>
-
-          {/* Filter Buttons */}
-          <div className="flex flex-wrap gap-3 justify-center">
-            {TYPE_FILTERS.map((filter) => (
-              <button
-                key={filter.id}
-                onClick={() => setSelectedFilter(filter.id)}
-                className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-                  selectedFilter === filter.id
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Removed Search and Filters section */}
 
         {/* Portfolio Grid */}
         {filteredItems.length === 0 ? (
           <EmptyState
             title="No items found"
-            description={searchQuery ? "No items match your search criteria." : "No portfolio items available."}
-            actionLabel={searchQuery ? "Clear search" : "Add new item"}
-            onAction={searchQuery ? () => setSearchQuery('') : undefined}
+            description="No portfolio items available."
+            actionLabel="Add new item"
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

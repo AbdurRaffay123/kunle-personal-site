@@ -60,7 +60,15 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
           tagName: heading.tagName,
           text: heading.textContent?.trim(),
           id: heading.id,
-          className: heading.className
+          className: heading.className,
+          offsetTop: (heading as HTMLElement).offsetTop,
+          offsetParent: (heading as HTMLElement).offsetParent,
+          getBoundingClientRect: heading.getBoundingClientRect(),
+          computedStyle: {
+            position: getComputedStyle(heading).position,
+            top: getComputedStyle(heading).top,
+            transform: getComputedStyle(heading).transform
+          }
         });
         observer.observe(heading);
       });
@@ -141,14 +149,33 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     console.log('🔍 TOC Debug: Using scroll method for:', isDesktop ? 'Desktop' : 'Mobile');
     
     if (isDesktop) {
-      // For desktop, try manual scroll calculation
-      const targetScrollY = targetElement.offsetTop - 100; // Account for scroll-margin-top
-      console.log('🔍 TOC Debug: Desktop scroll target:', targetScrollY);
-      
-      window.scrollTo({
-        top: Math.max(0, targetScrollY),
-        behavior: 'smooth'
+      // For desktop, try different scroll approaches
+      console.log('🔍 TOC Debug: Document structure analysis:', {
+        documentHeight: document.documentElement.scrollHeight,
+        documentScrollHeight: document.documentElement.scrollHeight,
+        bodyHeight: document.body.scrollHeight,
+        windowHeight: window.innerHeight,
+        elementOffsetTop: targetElement.offsetTop,
+        elementOffsetParent: targetElement.offsetParent,
+        elementParentElement: targetElement.parentElement?.tagName
       });
+      
+      // Try to find the actual scrollable container
+      let scrollContainer = document.documentElement;
+      let targetScrollY = targetElement.offsetTop - 100;
+      
+      // Check if there's a specific scrollable container
+      const possibleContainers = document.querySelectorAll('[style*="overflow"], [class*="overflow"]');
+      console.log('🔍 TOC Debug: Found scrollable containers:', possibleContainers.length);
+      
+      // Try scrollIntoView with different options
+      console.log('🔍 TOC Debug: Trying scrollIntoView with block: center');
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+      
     } else {
       // For mobile, use native scrollIntoView
       targetElement.scrollIntoView({
@@ -190,7 +217,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       </h3>
       <nav>
         <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm list-disc pl-4 md:pl-5">
-          {headings.map((heading) => {
+          {headings.map((heading, index) => {
             const isActive = activeHeading === heading.text;
             // Calculate additional padding for nested levels
             const paddingLeft = `${(heading.level - 1) * 0.75}rem`;
@@ -205,7 +232,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
             
             return (
               <li
-                key={heading.id}
+                key={`${heading.id}-${index}`}
                 style={{ paddingLeft }}
                 className="transition-all duration-200"
               >

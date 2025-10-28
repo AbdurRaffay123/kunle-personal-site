@@ -42,6 +42,9 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
       console.log('🔍 TOC: Observing', allHeadings.length, 'headings');
       allHeadings.forEach((heading) => {
+        const text = heading.textContent?.trim() || '';
+        const id = heading.id;
+        console.log('🔍 TOC: Found heading:', `"${text}"`, 'ID:', `"${id}"`);
         observer.observe(heading);
       });
     };

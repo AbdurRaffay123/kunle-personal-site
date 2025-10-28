@@ -32,9 +32,13 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
 
     // Add IDs to headings for TOC linking - do this immediately
     const headings = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    console.log('🔍 NotesHtmlRenderer: Processing', headings.length, 'headings');
     headings.forEach((heading) => {
-      const text = heading.textContent || '';
+      // Extract text the same way as extractHeadings() function
+      // Strip HTML tags to match the TOC generation logic
+      const text = heading.innerHTML.replace(/<[^>]*>/g, '').trim();
       const id = slugify(text);
+      console.log('🔍 NotesHtmlRenderer: Heading text:', `"${text}"`, '-> ID:', `"${id}"`);
       if (id && !heading.id) {
         heading.id = id;
         // Set scroll margin to account for fixed navbar (90px) plus some padding
@@ -43,8 +47,8 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
     });
 
     // Dispatch custom event to notify TOC that headings are ready
-    const event = new CustomEvent('headingsReady', { 
-      detail: { headingsCount: headings.length } 
+    const event = new CustomEvent('headingsReady', {
+      detail: { headingsCount: headings.length }
     });
     window.dispatchEvent(event);
 

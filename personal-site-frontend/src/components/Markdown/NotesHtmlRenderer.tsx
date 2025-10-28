@@ -30,7 +30,7 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
   useEffect(() => {
     if (!contentRef.current) return;
 
-    // Add IDs to headings for TOC linking
+    // Add IDs to headings for TOC linking - do this immediately
     const headings = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
     headings.forEach((heading) => {
       const text = heading.textContent || '';
@@ -41,6 +41,12 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
         (heading as HTMLElement).style.scrollMarginTop = '100px';
       }
     });
+
+    // Dispatch custom event to notify TOC that headings are ready
+    const event = new CustomEvent('headingsReady', { 
+      detail: { headingsCount: headings.length } 
+    });
+    window.dispatchEvent(event);
 
         // Enhance images with captions and zoom functionality
         const images = contentRef.current.querySelectorAll('img');

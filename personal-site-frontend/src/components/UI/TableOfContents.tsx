@@ -37,17 +37,30 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       }
     );
 
-    // Observe all headings after a short delay
-    const timeoutId = setTimeout(() => {
+    // Function to observe headings
+    const observeHeadings = () => {
       const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      console.log('🔍 TOC: Observing', allHeadings.length, 'headings');
       allHeadings.forEach((heading) => {
         observer.observe(heading);
       });
-    }, 200);
+    };
+
+    // Initial observation after delay
+    const timeoutId = setTimeout(observeHeadings, 200);
+
+    // Listen for headings ready event from NotesHtmlRenderer
+    const handleHeadingsReady = () => {
+      console.log('🔍 TOC: Headings ready event received');
+      observeHeadings();
+    };
+
+    window.addEventListener('headingsReady', handleHeadingsReady);
 
     return () => {
       clearTimeout(timeoutId);
       observer.disconnect();
+      window.removeEventListener('headingsReady', handleHeadingsReady);
     };
   }, []);
 
@@ -56,8 +69,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     console.log('🔍 TOC Click:', { text, id });
     e.preventDefault();
     
-    // Wait a bit for DOM to be ready
-    setTimeout(() => {
+    // Function to attempt scrolling
+    const attemptScroll = () => {
       // Find the target element
       const targetElement = document.getElementById(id);
       console.log('🔍 Target element found:', targetElement);
@@ -85,7 +98,13 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       // Use our custom scroll method
       scrollToElement(targetElement);
       setActiveHeading(text);
-    }, 100);
+    };
+    
+    // Try immediately
+    attemptScroll();
+    
+    // Also try after a delay in case DOM isn't ready
+    setTimeout(attemptScroll, 100);
   };
 
   // Custom scroll function that works reliably

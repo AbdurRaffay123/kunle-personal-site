@@ -11,11 +11,53 @@ import NoteCard from "@/components/Card/NoteCard";
 import BlogCard from "@/components/Card/BlogCard";
 import ProjectCard from "@/components/Card/ProjectCard";
 import ResearchCard from "@/components/Card/ResearchCard";
+import Spinner from "@/components/UI/Spinner";
 import { getNotes } from "@/lib/api";
 import { getBlogs } from "@/apis/Blog/api";
 import { getMainPageData } from "@/apis/About/api";
 import { getPortfolioItems } from "@/apis/Portfolio/api";
 import type { BlogMeta } from "@/types";
+
+// Skeleton loading components
+const PortfolioSkeleton = () => (
+  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="animate-pulse">
+        <div className="rounded-xl h-64 mb-4" style={{ backgroundColor: 'var(--card)' }}></div>
+        <div className="rounded h-4 mb-2" style={{ backgroundColor: 'var(--card)' }}></div>
+        <div className="rounded h-3 w-3/4 mb-2" style={{ backgroundColor: 'var(--card)' }}></div>
+        <div className="flex gap-2">
+          <div className="rounded-full h-6 w-16" style={{ backgroundColor: 'var(--card)' }}></div>
+          <div className="rounded-full h-6 w-20" style={{ backgroundColor: 'var(--card)' }}></div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const NotesSkeleton = () => (
+  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="animate-pulse">
+        <div className="rounded-xl h-48 mb-4" style={{ backgroundColor: 'var(--card)' }}></div>
+        <div className="rounded h-4 mb-2" style={{ backgroundColor: 'var(--card)' }}></div>
+        <div className="rounded h-3 w-2/3" style={{ backgroundColor: 'var(--card)' }}></div>
+      </div>
+    ))}
+  </div>
+);
+
+const BlogsSkeleton = () => (
+  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="animate-pulse">
+        <div className="rounded-xl h-64 mb-4" style={{ backgroundColor: 'var(--card)' }}></div>
+        <div className="rounded h-4 mb-2" style={{ backgroundColor: 'var(--card)' }}></div>
+        <div className="rounded h-3 w-3/4" style={{ backgroundColor: 'var(--card)' }}></div>
+      </div>
+    ))}
+  </div>
+);
 
 export default function Home() {
   // State for data
@@ -140,28 +182,31 @@ export default function Home() {
       </section>
 
       {/* Featured Portfolio */}
-      {(featuredProjects.length > 0 || latestResearch.length > 0) && (
-        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
-          <div className="max-w-screen-2xl mx-auto">
-            <div className="mb-12 flex items-center justify-between">
-              <div>
-                <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 dark:text-blue-400 mb-2">
-                  Projects & Research
-                </h2>
-                <p className="text-lg text-slate-600 dark:text-slate-400">
-                  Recent work in AI/ML and software engineering
-                </p>
-              </div>
-              <Link
-                href="/portfolio"
-                className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-              >
-                View All
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
+      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="mb-12 flex items-center justify-between">
+            <div>
+              <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 dark:text-blue-400 mb-2">
+                Projects & Research
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Recent work in AI/ML and software engineering
+              </p>
             </div>
+            <Link
+              href="/portfolio"
+              className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+            >
+              View All
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
+          
+          {loading ? (
+            <PortfolioSkeleton />
+          ) : (featuredProjects.length > 0 || latestResearch.length > 0) ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
               {/* Featured Projects */}
               {featuredProjects.slice(0, 2).map((project: any, index: number) => (
@@ -172,42 +217,57 @@ export default function Home() {
                 <ResearchCard key={research._id || `research-${index}`} research={research} index={index} />
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-slate-600 dark:text-slate-400 text-lg">
+                No portfolio items available at the moment.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Latest Notes */}
-      {latestNotes.length > 0 && (
-        <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
-          <div className="max-w-screen-2xl mx-auto">
-            <div className="mb-12 flex items-center justify-between">
-              <div>
-                <h2 className="text-4xl sm:text-5xl font-bold mb-2" style={{ color: 'var(--nav-text)' }}>
-                  Latest Notes
-                </h2>
-                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                  Quick thoughts and technical notes
-                </p>
-              </div>
-              <Link
-                href="/notes"
-                className="hidden sm:inline-flex items-center gap-2 px-6 py-3 font-semibold transition-colors"
-                style={{ color: 'var(--nav-text)' }}
-              >
-                View All
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
+      <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="mb-12 flex items-center justify-between">
+            <div>
+              <h2 className="text-4xl sm:text-5xl font-bold mb-2" style={{ color: 'var(--nav-text)' }}>
+                Latest Notes
+              </h2>
+              <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+                Quick thoughts and technical notes
+              </p>
             </div>
+            <Link
+              href="/notes"
+              className="hidden sm:inline-flex items-center gap-2 px-6 py-3 font-semibold transition-colors"
+              style={{ color: 'var(--nav-text)' }}
+            >
+              View All
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
+          
+          {loading ? (
+            <NotesSkeleton />
+          ) : latestNotes.length > 0 ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {latestNotes.map((note: any, index: number) => (
                 <NoteCard key={note._id || `note-${index}`} note={note} index={index} />
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-slate-600 dark:text-slate-400 text-lg">
+                No notes available at the moment.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Latest Blog Posts */}
       <section className="py-24 px-8 sm:px-12 lg:px-16 xl:px-24" style={{ backgroundColor: 'var(--surface)' }}>
@@ -233,15 +293,7 @@ export default function Home() {
           </div>
           
           {loading ? (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-slate-200 dark:bg-slate-700 rounded-xl h-64 mb-4"></div>
-                  <div className="bg-slate-200 dark:bg-slate-700 rounded h-4 mb-2"></div>
-                  <div className="bg-slate-200 dark:bg-slate-700 rounded h-3 w-3/4"></div>
-                </div>
-              ))}
-            </div>
+            <BlogsSkeleton />
           ) : latestBlogs.length > 0 ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {latestBlogs.map((blog: BlogMeta, index: number) => (

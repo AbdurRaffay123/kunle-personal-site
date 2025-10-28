@@ -113,17 +113,62 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     }
     
     console.log('🔍 TOC Debug: Scrolling to element with ID:', id);
-    console.log('🔍 TOC Debug: Element position:', {
+    
+    const rect = targetElement.getBoundingClientRect();
+    const scrollY = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    
+    console.log('🔍 TOC Debug: Element position details:', {
       offsetTop: targetElement.offsetTop,
-      getBoundingClientRect: targetElement.getBoundingClientRect()
+      getBoundingClientRect: rect,
+      scrollY: scrollY,
+      viewportHeight: viewportHeight,
+      elementTopFromViewport: rect.top,
+      elementTopFromDocument: rect.top + scrollY,
+      scrollMarginTop: getComputedStyle(targetElement).scrollMarginTop
     });
     
-    // Headings already have scroll-margin-top set to 100px in NotesHtmlRenderer
-    // So we can use the simple native scrollIntoView
-    targetElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
+    // Check if element is already visible
+    const isVisible = rect.top >= 0 && rect.top <= viewportHeight;
+    console.log('🔍 TOC Debug: Element visibility:', {
+      isVisible,
+      needsScroll: !isVisible,
+      currentScrollPosition: scrollY
     });
+    
+    // Try different scroll methods based on screen size
+    const isDesktop = window.innerWidth >= 1024;
+    console.log('🔍 TOC Debug: Using scroll method for:', isDesktop ? 'Desktop' : 'Mobile');
+    
+    if (isDesktop) {
+      // For desktop, try manual scroll calculation
+      const targetScrollY = targetElement.offsetTop - 100; // Account for scroll-margin-top
+      console.log('🔍 TOC Debug: Desktop scroll target:', targetScrollY);
+      
+      window.scrollTo({
+        top: Math.max(0, targetScrollY),
+        behavior: 'smooth'
+      });
+    } else {
+      // For mobile, use native scrollIntoView
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    
+    // Check scroll position after scroll attempt
+    setTimeout(() => {
+      const newScrollY = window.scrollY;
+      const newRect = targetElement.getBoundingClientRect();
+      console.log('🔍 TOC Debug: After scroll attempt:', {
+        newScrollY: newScrollY,
+        scrollDelta: newScrollY - scrollY,
+        newElementPosition: newRect.top,
+        scrollMarginTop: getComputedStyle(targetElement).scrollMarginTop,
+        methodUsed: isDesktop ? 'Desktop Manual' : 'Mobile Native'
+      });
+    }, 100);
     
     // Update active heading
     setActiveHeading(text);

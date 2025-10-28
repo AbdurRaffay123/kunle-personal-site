@@ -82,7 +82,6 @@ const portfolioSchema = new mongoose.Schema({
 portfolioSchema.index({ type: 1, createdAt: -1 });
 portfolioSchema.index({ category: 1 });
 portfolioSchema.index({ createdAt: -1 }); // For sorting
-portfolioSchema.index({ title: 'text', description: 'text' }); // Text search index
 portfolioSchema.index({ technologies: 1 }); // For technology filtering
 portfolioSchema.index({ tags: 1 }); // For tag filtering
 

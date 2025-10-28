@@ -12,8 +12,8 @@ const { portfolioValidation, updatePortfolioValidation } = require('../middlewar
 const auth = require('../middleware/authMiddleware');
 const { cacheMiddleware, clearCache } = require('../middleware/cacheMiddleware');
 
-// Public routes (no authentication required) - with caching
-router.get('/', cacheMiddleware(300), getAllPortfolioItems); // 5 min cache
+// Public routes (no authentication required) - temporarily disable caching for debugging
+router.get('/', getAllPortfolioItems); // Temporarily disable cache
 router.get('/stats', cacheMiddleware(600), getPortfolioStats); // 10 min cache
 router.get('/:id', cacheMiddleware(300), getPortfolioItem); // 5 min cache
 

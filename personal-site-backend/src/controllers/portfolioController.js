@@ -4,6 +4,7 @@ const { validationResult } = require('express-validator');
 // Get all portfolio items
 const getAllPortfolioItems = async (req, res) => {
   try {
+    const startTime = Date.now();
     const { type, search, page = 1, limit = 10 } = req.query;
     
     // Build filter object
@@ -12,32 +13,32 @@ const getAllPortfolioItems = async (req, res) => {
       filter.type = type;
     }
     if (search) {
-      try {
-        // Try optimized text search using MongoDB text index
-        filter.$text = { $search: search };
-      } catch (error) {
-        // Fallback to regex search if text index is not available
-        console.log('Text search not available, using regex fallback');
-        filter.$or = [
-          { title: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } }
-        ];
-      }
+      // Use simple regex search for better performance
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
     }
 
     const skip = (page - 1) * limit;
     const limitNum = parseInt(limit);
     
+    console.log('Portfolio query filter:', filter);
+    console.log('Portfolio query started at:', new Date().toISOString());
+    
     // Execute queries in parallel for better performance
     const [portfolioItems, total] = await Promise.all([
       Portfolio.find(filter)
-        .sort(search && filter.$text ? { score: { $meta: 'textScore' }, createdAt: -1 } : { createdAt: -1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNum)
         .lean() // Use lean() for better performance
         .select('title description type technologies tags category githubUrl researchLink image createdAt updatedAt'),
       Portfolio.countDocuments(filter) // Proper count query
     ]);
+
+    const endTime = Date.now();
+    console.log(`Portfolio query completed in ${endTime - startTime}ms`);
 
     res.status(200).json({
       success: true,

@@ -81,8 +81,10 @@ const portfolioSchema = new mongoose.Schema({
 // Indexes for better performance
 portfolioSchema.index({ type: 1, createdAt: -1 });
 portfolioSchema.index({ category: 1 });
-portfolioSchema.index({ title: 1 }); // Simple index instead of text index
 portfolioSchema.index({ createdAt: -1 }); // For sorting
+portfolioSchema.index({ title: 'text', description: 'text' }); // Text search index
+portfolioSchema.index({ technologies: 1 }); // For technology filtering
+portfolioSchema.index({ tags: 1 }); // For tag filtering
 
 // Virtual for formatted date - DISABLED for performance
 // portfolioSchema.virtual('formattedDate').get(function() {

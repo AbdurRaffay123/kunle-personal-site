@@ -8,17 +8,17 @@ const getMainPageData = async () => {
     throw new Error('Database not connected');
   }
 
-  // Get profile (exclude _id and sensitive fields)
-  const profile = await UserProfile.findOne({}, { _id: 0, password: 0 });
+  // Execute queries in parallel for better performance
+  const [profile, portfolioItems] = await Promise.all([
+    UserProfile.findOne({}, { _id: 0, password: 0 }).lean(),
+    Portfolio.find({})
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .lean() // Use lean() for better performance
+      .select('title description type technologies tags category githubUrl researchLink image createdAt updatedAt')
+  ]);
 
-  // Get latest portfolio items (mix of projects and research) - OPTIMIZED
-  const portfolioItems = await Portfolio.find({})
-    .sort({ createdAt: -1 })
-    .limit(6)
-    .lean() // Use lean() for better performance
-    .select('title description type technologies tags category githubUrl researchLink image createdAt updatedAt');
-
-  // Separate projects and research
+  // Separate projects and research efficiently
   const projects = portfolioItems.filter(item => item.type === 'project').slice(0, 3);
   const research = portfolioItems.filter(item => item.type === 'research').slice(0, 3);
 

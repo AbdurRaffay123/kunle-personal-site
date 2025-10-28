@@ -73,26 +73,10 @@ const portfolioValidation = [
   // Common validations
   body('image')
     .optional()
-    .custom((value) => {
-      if (!value) return true; // Allow empty
-      
-      // Check if it's a valid URL
-      if (value.startsWith('http://') || value.startsWith('https://')) {
-        try {
-          new URL(value);
-          return true;
-        } catch {
-          throw new Error('Image must be a valid URL');
-        }
-      }
-      
-      // Check if it's base64 data
-      if (value.startsWith('data:image/')) {
-        return true;
-      }
-      
-      throw new Error('Image must be a valid URL or base64 data');
-    }),
+    .isString()
+    .withMessage('Image must be a string')
+    .isLength({ max: 1000 })
+    .withMessage('Image URL too long'),
   
 ];
 
@@ -159,26 +143,10 @@ const updatePortfolioValidation = [
   
   body('image')
     .optional()
-    .custom((value) => {
-      if (!value) return true; // Allow empty
-      
-      // Check if it's a valid URL
-      if (value.startsWith('http://') || value.startsWith('https://')) {
-        try {
-          new URL(value);
-          return true;
-        } catch {
-          throw new Error('Image must be a valid URL');
-        }
-      }
-      
-      // Check if it's base64 data
-      if (value.startsWith('data:image/')) {
-        return true;
-      }
-      
-      throw new Error('Image must be a valid URL or base64 data');
-    }),
+    .isString()
+    .withMessage('Image must be a string')
+    .isLength({ max: 1000 })
+    .withMessage('Image URL too long'),
   
 ];
 

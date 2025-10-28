@@ -12,32 +12,39 @@ const getAllPortfolioItems = async (req, res) => {
       filter.type = type;
     }
     if (search) {
-      // Use simple regex search instead of text search for better performance
-      filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
-      ];
+      try {
+        // Try optimized text search using MongoDB text index
+        filter.$text = { $search: search };
+      } catch (error) {
+        // Fallback to regex search if text index is not available
+        console.log('Text search not available, using regex fallback');
+        filter.$or = [
+          { title: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } }
+        ];
+      }
     }
 
     const skip = (page - 1) * limit;
+    const limitNum = parseInt(limit);
     
-    // Highly optimized query for production
-    const portfolioItems = await Portfolio.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit))
-      .lean() // Use lean() for better performance
-      .select('title description type technologies tags category githubUrl researchLink image createdAt updatedAt');
-
-    // Skip count for now to improve performance
-    const total = portfolioItems.length; // Temporary fix
+    // Execute queries in parallel for better performance
+    const [portfolioItems, total] = await Promise.all([
+      Portfolio.find(filter)
+        .sort(search && filter.$text ? { score: { $meta: 'textScore' }, createdAt: -1 } : { createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .lean() // Use lean() for better performance
+        .select('title description type technologies tags category githubUrl researchLink image createdAt updatedAt'),
+      Portfolio.countDocuments(filter) // Proper count query
+    ]);
 
     res.status(200).json({
       success: true,
       data: portfolioItems,
       pagination: {
         current: parseInt(page),
-        pages: Math.ceil(total / limit),
+        pages: Math.ceil(total / limitNum),
         total
       }
     });
@@ -56,7 +63,7 @@ const getPortfolioItem = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const portfolioItem = await Portfolio.findById(id);
+    const portfolioItem = await Portfolio.findById(id).lean();
     
     if (!portfolioItem) {
       return res.status(404).json({
@@ -191,29 +198,37 @@ const deletePortfolioItem = async (req, res) => {
   }
 };
 
-// Get portfolio statistics
+// Get portfolio statistics - Optimized with single aggregation
 const getPortfolioStats = async (req, res) => {
   try {
-    const totalItems = await Portfolio.countDocuments();
-    const projectsCount = await Portfolio.countDocuments({ type: 'project' });
-    const researchCount = await Portfolio.countDocuments({ type: 'research' });
-    
-    const typeStats = await Portfolio.aggregate([
+    // Single aggregation query for all stats
+    const stats = await Portfolio.aggregate([
       {
         $group: {
-          _id: '$type',
-          count: { $sum: 1 }
+          _id: null,
+          total: { $sum: 1 },
+          projects: {
+            $sum: { $cond: [{ $eq: ['$type', 'project'] }, 1, 0] }
+          },
+          research: {
+            $sum: { $cond: [{ $eq: ['$type', 'research'] }, 1, 0] }
+          }
         }
       }
     ]);
 
+    const result = stats[0] || { total: 0, projects: 0, research: 0 };
+
     res.status(200).json({
       success: true,
       data: {
-        total: totalItems,
-        projects: projectsCount,
-        research: researchCount,
-        typeBreakdown: typeStats
+        total: result.total,
+        projects: result.projects,
+        research: result.research,
+        typeBreakdown: [
+          { _id: 'project', count: result.projects },
+          { _id: 'research', count: result.research }
+        ]
       }
     });
   } catch (error) {

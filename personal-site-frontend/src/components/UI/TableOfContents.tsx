@@ -122,80 +122,12 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     
     console.log('🔍 TOC Debug: Scrolling to element with ID:', id);
     
-    const rect = targetElement.getBoundingClientRect();
-    const scrollY = window.scrollY;
-    const viewportHeight = window.innerHeight;
-    
-    console.log('🔍 TOC Debug: Element position details:', {
-      offsetTop: targetElement.offsetTop,
-      getBoundingClientRect: rect,
-      scrollY: scrollY,
-      viewportHeight: viewportHeight,
-      elementTopFromViewport: rect.top,
-      elementTopFromDocument: rect.top + scrollY,
-      scrollMarginTop: getComputedStyle(targetElement).scrollMarginTop
+    // Use the simple and correct scrollIntoView method for all screen sizes
+    // This respects scroll-margin-top and works with ResponsiveThreeColumn layout
+    targetElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
     });
-    
-    // Check if element is already visible
-    const isVisible = rect.top >= 0 && rect.top <= viewportHeight;
-    console.log('🔍 TOC Debug: Element visibility:', {
-      isVisible,
-      needsScroll: !isVisible,
-      currentScrollPosition: scrollY
-    });
-    
-    // Try different scroll methods based on screen size
-    const isDesktop = window.innerWidth >= 1024;
-    console.log('🔍 TOC Debug: Using scroll method for:', isDesktop ? 'Desktop' : 'Mobile');
-    
-    if (isDesktop) {
-      // For desktop, try different scroll approaches
-      console.log('🔍 TOC Debug: Document structure analysis:', {
-        documentHeight: document.documentElement.scrollHeight,
-        documentScrollHeight: document.documentElement.scrollHeight,
-        bodyHeight: document.body.scrollHeight,
-        windowHeight: window.innerHeight,
-        elementOffsetTop: targetElement.offsetTop,
-        elementOffsetParent: targetElement.offsetParent,
-        elementParentElement: targetElement.parentElement?.tagName
-      });
-      
-      // Try to find the actual scrollable container
-      let scrollContainer = document.documentElement;
-      let targetScrollY = targetElement.offsetTop - 100;
-      
-      // Check if there's a specific scrollable container
-      const possibleContainers = document.querySelectorAll('[style*="overflow"], [class*="overflow"]');
-      console.log('🔍 TOC Debug: Found scrollable containers:', possibleContainers.length);
-      
-      // Try scrollIntoView with different options
-      console.log('🔍 TOC Debug: Trying scrollIntoView with block: center');
-      targetElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest'
-      });
-      
-    } else {
-      // For mobile, use native scrollIntoView
-      targetElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-    
-    // Check scroll position after scroll attempt
-    setTimeout(() => {
-      const newScrollY = window.scrollY;
-      const newRect = targetElement.getBoundingClientRect();
-      console.log('🔍 TOC Debug: After scroll attempt:', {
-        newScrollY: newScrollY,
-        scrollDelta: newScrollY - scrollY,
-        newElementPosition: newRect.top,
-        scrollMarginTop: getComputedStyle(targetElement).scrollMarginTop,
-        methodUsed: isDesktop ? 'Desktop Manual' : 'Mobile Native'
-      });
-    }, 100);
     
     // Update active heading
     setActiveHeading(text);

@@ -53,24 +53,33 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   // Alternative scroll method using manual calculation
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, text: string, id: string) => {
+    console.log('🔍 TOC Click:', { text, id });
     e.preventDefault();
     
     // Find the target element
     const targetElement = document.getElementById(id);
+    console.log('🔍 Target element found:', targetElement);
     
     if (!targetElement) {
+      console.log('🔍 Element not found by ID, trying text search...');
       // Fallback: find by text content
       const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      console.log('🔍 Found headings:', allHeadings.length);
+      
       for (const heading of Array.from(allHeadings)) {
+        console.log('🔍 Checking heading:', heading.textContent?.trim(), 'vs', text.trim());
         if (heading.textContent?.trim() === text.trim()) {
+          console.log('🔍 Found by text, scrolling...');
           scrollToElement(heading as HTMLElement);
           setActiveHeading(text);
           return;
         }
       }
+      console.log('🔍 No heading found by text either');
       return;
     }
     
+    console.log('🔍 Scrolling to element...');
     // Use our custom scroll method
     scrollToElement(targetElement);
     setActiveHeading(text);
@@ -78,19 +87,35 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   // Custom scroll function that works reliably
   const scrollToElement = (element: HTMLElement) => {
+    console.log('🔍 ScrollToElement called for:', element);
+    
     // Get element position
     const rect = element.getBoundingClientRect();
     const elementTop = rect.top + window.pageYOffset;
     
+    console.log('🔍 Element position:', {
+      rect: rect,
+      elementTop: elementTop,
+      currentScrollY: window.pageYOffset
+    });
+    
     // Calculate scroll position with offset for navbar
     const offsetTop = 100; // Account for navbar height
     const scrollTo = elementTop - offsetTop;
+    
+    console.log('🔍 Scroll calculation:', {
+      offsetTop: offsetTop,
+      scrollTo: scrollTo,
+      finalScrollTo: Math.max(0, scrollTo)
+    });
     
     // Smooth scroll to calculated position
     window.scrollTo({
       top: Math.max(0, scrollTo),
       behavior: 'smooth'
     });
+    
+    console.log('🔍 Scroll command executed');
   };
 
   if (headings.length === 0) {

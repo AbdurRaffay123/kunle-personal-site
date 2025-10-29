@@ -57,7 +57,8 @@ const portfolioSchema = new mongoose.Schema({
   // Common fields
   image: {
     type: String,
-    trim: true
+    trim: true,
+    maxlength: [10000000, 'Image URL/data is too large. Consider using a smaller image or external URL.']
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

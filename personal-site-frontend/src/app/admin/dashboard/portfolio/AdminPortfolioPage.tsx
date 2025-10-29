@@ -79,27 +79,53 @@ export default function AdminPortfolioPage() {
   const handleSave = async (data: Partial<PortfolioItem>) => {
     setIsLoading(true);
     try {
-      // Ensure technologies and tags are arrays and clean the data
-      const processedData = {
-        ...data,
-        // Clean and validate technologies/tags
-        technologies: Array.isArray(data.technologies) 
-          ? data.technologies.filter(tech => tech && tech.trim() !== '')
-          : [],
-        tags: Array.isArray(data.tags) 
-          ? data.tags.filter(tag => tag && tag.trim() !== '')
-          : [],
-        // Ensure required fields are present
+      // Clean and validate the data based on type
+      const processedData: any = {
         title: data.title?.trim() || '',
         description: data.description?.trim() || '',
         type: data.type || 'project',
-        // Clean URLs
-        githubUrl: data.githubUrl?.trim() || undefined,
-        researchLink: data.researchLink?.trim() || undefined,
-        image: data.image?.trim() || undefined,
       };
+
+      // Add type-specific fields
+      if (data.type === 'project') {
+        processedData.technologies = Array.isArray(data.technologies) 
+          ? data.technologies.filter(tech => tech && tech.trim() !== '')
+          : [];
+        processedData.githubUrl = data.githubUrl?.trim() || undefined;
+        // Remove research-specific fields
+        delete processedData.tags;
+        delete processedData.category;
+        delete processedData.researchLink;
+      } else if (data.type === 'research') {
+        processedData.tags = Array.isArray(data.tags) 
+          ? data.tags.filter(tag => tag && tag.trim() !== '')
+          : [];
+        processedData.category = data.category?.trim() || undefined;
+        processedData.researchLink = data.researchLink?.trim() || undefined;
+        // Remove project-specific fields
+        delete processedData.technologies;
+        delete processedData.githubUrl;
+      }
+
+      // Add common optional fields - only if image URL is not too long
+      if (data.image?.trim()) {
+        const imageUrl = data.image.trim();
+        console.log('Image URL length:', imageUrl.length);
+        
+        if (imageUrl.length <= 10000000) {
+          processedData.image = imageUrl;
+          console.log('Image included in update');
+        } else {
+          console.warn('Image URL too long, removing from update:', imageUrl.length);
+          console.warn('Max allowed length: 10,000,000');
+          // Don't include image in the update if it's too long
+          // This allows the user to keep the existing image
+        }
+      }
       
       console.log('Processed data being sent:', processedData);
+      console.log('Image URL length:', data.image?.length);
+      console.log('Image URL included:', !!processedData.image);
       
       if (editingItem) {
         // Update existing item
@@ -126,7 +152,18 @@ export default function AdminPortfolioPage() {
       setIsModalOpen(false);
       setEditingItem(null);
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save portfolio item.');
+      console.error('Full error object:', error);
+      console.error('Error response:', error.response?.data);
+      if (error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        console.error('Validation errors:', errors);
+        console.error('Full validation errors details:', JSON.stringify(errors, null, 2));
+        errors.forEach((err: any) => {
+          toast.error(`${err.path || err.param}: ${err.msg || err.message}`);
+        });
+      } else {
+        toast.error(error.response?.data?.message || error.message || 'Failed to save portfolio item.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -228,7 +265,6 @@ export default function AdminPortfolioPage() {
                     backgroundColor: activeType === filter.value ? 'var(--primary)' : 'transparent'
                   }}
                 >
-                  {filter.label}
                   {activeType === filter.value && (
                     <motion.div
                       layoutId="activeFilter"
@@ -429,6 +465,8 @@ function PortfolioItemForm({
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [tagsInput, setTagsInput] = useState<string>('');
+  const [technologiesInput, setTechnologiesInput] = useState<string>('');
 
   useEffect(() => {
     setFormData({
@@ -442,6 +480,15 @@ function PortfolioItemForm({
       image: '',
       ...item,
     });
+    
+    // Initialize tags and technologies input
+    if (item) {
+      setTagsInput((item.tags || []).join(', '));
+      setTechnologiesInput((item.technologies || []).join(', '));
+    } else {
+      setTagsInput('');
+      setTechnologiesInput('');
+    }
     
     // Set image preview if item has an image
     if (item?.image) {
@@ -472,15 +519,21 @@ function PortfolioItemForm({
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setTagsInput(value);
+    
+    // Update formData with parsed tags
     const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
     setFormData(prev => ({ 
       ...prev, 
-      [prev.type === 'project' ? 'technologies' : 'tags']: tags 
+      tags: tags 
     }));
   };
 
   const handleTechnologiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setTechnologiesInput(value);
+    
+    // Update formData with parsed technologies
     const technologies = value.split(',').map(tech => tech.trim()).filter(tech => tech !== '');
     setFormData(prev => ({ 
       ...prev, 
@@ -497,9 +550,9 @@ function PortfolioItemForm({
         return;
       }
       
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
+      // Validate file size (max 7MB - becomes ~9.3MB as base64, safely under 10MB limit)
+      if (file.size > 7 * 1024 * 1024) {
+        alert('Image file is too large. Please use a smaller image (under 7MB) or upload it to an image hosting service.');
         return;
       }
       
@@ -527,13 +580,46 @@ function PortfolioItemForm({
     let finalFormData = { ...formData };
     
     if (imageFile) {
+      // New image file selected - convert to base64
       try {
         const base64 = await convertFileToBase64(imageFile);
+        
+        // Check if the base64 string is too long (max 10MB data, ~13.3MB base64 string)
+        if (base64.length > 10000000) {
+          alert('Image file is too large. Please use a smaller image (under 10MB) or upload it to an image hosting service.');
+          return;
+        }
+        
         finalFormData.image = base64;
       } catch (error) {
         console.error('Error converting image to base64:', error);
         alert('Error processing image. Please try again.');
         return;
+      }
+    } else {
+      // No new image file selected
+      if (item) {
+        // Editing existing item
+        if (finalFormData.image === '') {
+          // User explicitly cleared the image - include empty string to remove it
+          finalFormData.image = '';
+        } else if (finalFormData.image === item.image) {
+          // Image unchanged - don't include it in update to avoid re-sending large data
+          delete finalFormData.image;
+        } else {
+          // Image was manually changed (unlikely but handle it)
+          if (finalFormData.image && finalFormData.image.length > 10000000) {
+            alert('Image URL is too long. Please use a shorter URL or remove the image.');
+            return;
+          }
+          // Include the changed image
+        }
+      } else {
+        // New item - check image length if provided (must be a URL string, not a file)
+        if (finalFormData.image && finalFormData.image.length > 10000000) {
+          alert('Image URL is too long. Please use a shorter URL or remove the image.');
+          return;
+        }
       }
     }
     
@@ -626,7 +712,7 @@ function PortfolioItemForm({
             </label>
             <input
               type="text"
-              value={(formData.technologies || formData.tags || []).join(', ')}
+              value={formData.type === 'project' ? technologiesInput : tagsInput}
               onChange={formData.type === 'project' ? handleTechnologiesChange : handleTagsChange}
               placeholder="React, Node.js, MongoDB"
               className="w-full rounded-md border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"

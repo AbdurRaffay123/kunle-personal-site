@@ -96,6 +96,8 @@ export const createPortfolioItem = async (data: Partial<PortfolioItem>): Promise
     return response.data;
   } catch (error: any) {
     console.error('Error creating portfolio item:', error);
+    console.error('Error response data:', error.response?.data);
+    
     if (error.response?.data?.errors) {
       console.error('Validation errors:', error.response.data.errors);
       // Log each validation error individually
@@ -107,6 +109,14 @@ export const createPortfolioItem = async (data: Partial<PortfolioItem>): Promise
         });
       });
     }
+    
+    // Preserve the full error object so the component can access response.data.errors
+    if (error.response?.data) {
+      const apiError = new Error(error.response.data.message || 'Failed to create portfolio item');
+      (apiError as any).response = error.response;
+      throw apiError;
+    }
+    
     throw new Error(error.response?.data?.message || 'Failed to create portfolio item');
   }
 };
@@ -118,6 +128,15 @@ export const updatePortfolioItem = async (id: string, data: Partial<PortfolioIte
     return response.data;
   } catch (error: any) {
     console.error('Error updating portfolio item:', error);
+    console.error('Error response data:', error.response?.data);
+    
+    // Preserve the full error object so the component can access response.data.errors
+    if (error.response?.data) {
+      const apiError = new Error(error.response.data.message || 'Failed to update portfolio item');
+      (apiError as any).response = error.response;
+      throw apiError;
+    }
+    
     throw new Error(error.response?.data?.message || 'Failed to update portfolio item');
   }
 };

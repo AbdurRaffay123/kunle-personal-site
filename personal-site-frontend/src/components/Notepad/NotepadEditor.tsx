@@ -233,147 +233,167 @@ export function NotepadEditor({
           .ProseMirror em {
             color: var(--foreground) !important;
           }
-          .ProseMirror code {
-            color: var(--foreground) !important;
-          }
-          /* Code Block Styling */
-          .ProseMirror pre {
-            background: #1e1e1e !important;
-            border: 1px solid #333 !important;
-            border-radius: 12px !important;
-            padding: 1.25rem !important;
-            margin: 1rem 0 !important;
-            overflow-x: auto !important;
-            position: relative !important;
-          }
-          .ProseMirror pre::before {
-            content: 'CODE' !important;
-            position: absolute !important;
-            top: 0.5rem !important;
-            right: 1rem !important;
-            font-size: 0.75rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.05em !important;
-            color: #fff !important;
-            background: #3b82f6 !important;
-            padding: 0.25rem 0.5rem !important;
-            border-radius: 4px !important;
-            text-transform: uppercase !important;
-          }
-          .ProseMirror pre code {
-            color: #fff !important;
+          /* Inline Code Styling - Only for highlighted text */
+          .ProseMirror code:not(pre code) {
+            color: #111111 !important;
             background: transparent !important;
             padding: 0 !important;
             border: none !important;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-            font-size: 0.875rem !important;
+            font-size: 1.125rem !important;
+            display: inline !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .ProseMirror.dark code:not(pre code) {
+            color: #e5e7eb !important;
+          }
+          /* Code Block Styling - Clean Academic Style */
+          .ProseMirror pre {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0.75rem 0 !important;
+            margin: 1rem auto !important;
+            overflow-x: auto !important;
+            position: relative !important;
+            display: block !important;
+            text-align: center !important;
+          }
+          .ProseMirror pre code {
+            color: #111111 !important;
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+            font-size: 1.125rem !important;
+            display: inline-block !important;
+            text-align: center !important;
           }
           
-          /* Code Block Styling - Light Mode */
-          @media (prefers-color-scheme: light) {
-            .ProseMirror pre {
-              background: #f7f9fc !important;
-              border: 1px solid #e2e8f0 !important;
-            }
-            .ProseMirror pre::before {
-              background: #3b82f6 !important;
-              color: #fff !important;
-            }
-            .ProseMirror pre code {
-              color: #1e293b !important;
-            }
+          .ProseMirror.dark pre,
+          .ProseMirror.dark pre code {
+            color: #e5e7eb !important;
           }
           
-          /* Blockquote Styling */
+          /* Blockquote Styling - Clean Academic Style */
           .ProseMirror blockquote {
-            border-left: 4px solid #6366f1 !important;
-            background: linear-gradient(to right, rgba(99, 102, 241, 0.08), transparent) !important;
-            padding: 1rem 1.5rem !important;
-            margin: 1rem 0 !important;
-            border-radius: 0 8px 8px 0 !important;
-            color: var(--foreground) !important;
+            border-left: 1px solid #d1d5db !important;
+            background: transparent !important;
+            padding: 0.5rem 0 0.5rem 1rem !important;
+            margin: 1rem auto !important;
+            border-radius: 0 !important;
+            color: #111111 !important;
             position: relative !important;
             font-style: italic !important;
+            display: block !important;
+            text-align: center !important;
+            max-width: 800px !important;
+            font-size: 1.125rem !important;
+          }
+          .ProseMirror.dark blockquote {
+            border-left-color: #4b5563 !important;
+            color: #e5e7eb !important;
           }
           
-          /* Math Block Styling */
+          /* Math Block Styling - Clean Academic Style */
           .ProseMirror div[data-type="math-block"] {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1)) !important;
-            border: 2px solid #8b5cf6 !important;
-            border-radius: 12px !important;
-            padding: 1.25rem !important;
-            margin: 1rem 0 !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0.75rem 0 !important;
+            margin: 1rem auto !important;
             position: relative !important;
-            overflow: hidden !important;
-          }
-          .ProseMirror div[data-type="math-block"]::before {
-            content: 'MATH' !important;
-            position: absolute !important;
-            top: 0.5rem !important;
-            right: 1rem !important;
-            font-size: 0.75rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.05em !important;
-            color: #fff !important;
-            background: #8b5cf6 !important;
-            padding: 0.25rem 0.5rem !important;
-            border-radius: 4px !important;
-            text-transform: uppercase !important;
+            overflow: visible !important;
+            display: block !important;
+            text-align: center !important;
+            max-width: 800px !important;
           }
           .ProseMirror div[data-type="math-block"] > * {
-            color: var(--foreground) !important;
+            color: #111111 !important;
             font-family: 'Georgia', 'Times New Roman', serif !important;
+            font-size: 1.125rem !important;
+          }
+          .ProseMirror.dark div[data-type="math-block"] > * {
+            color: #e5e7eb !important;
           }
           
-          /* Math Block - Light Mode */
-          @media (prefers-color-scheme: light) {
-            .ProseMirror div[data-type="math-block"] {
-              background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.15)) !important;
-              border: 2px solid #8b5cf6 !important;
-            }
-            .ProseMirror div[data-type="math-block"] > * {
-              color: #1e293b !important;
-            }
-          }
-          
-          /* Special Code Block (HTML) Styling */
+          /* Special Code Block (HTML) Styling - Clean Academic Style */
           .ProseMirror pre[data-type="special-code"] {
-            background: #1e1e1e !important;
-            border: 2px solid #10b981 !important;
-            border-radius: 12px !important;
-            padding: 1.25rem !important;
-            margin: 1rem 0 !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0.75rem 0 !important;
+            margin: 1rem auto !important;
             position: relative !important;
-          }
-          .ProseMirror pre[data-type="special-code"]::before {
-            content: 'HTML' !important;
-            position: absolute !important;
-            top: 0.5rem !important;
-            right: 1rem !important;
-            font-size: 0.75rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.05em !important;
-            color: #fff !important;
-            background: #10b981 !important;
-            padding: 0.25rem 0.5rem !important;
-            border-radius: 4px !important;
-            text-transform: uppercase !important;
+            display: block !important;
+            text-align: center !important;
           }
           .ProseMirror pre[data-type="special-code"] code {
-            color: #fff !important;
+            color: #111111 !important;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-            font-size: 0.875rem !important;
+            font-size: 1.125rem !important;
+            display: inline-block !important;
+            text-align: center !important;
+          }
+          .ProseMirror.dark pre[data-type="special-code"] code {
+            color: #e5e7eb !important;
           }
           
-          /* Special Code Block - Light Mode */
-          @media (prefers-color-scheme: light) {
-            .ProseMirror pre[data-type="special-code"] {
-              background: #f0fdf4 !important;
-              border: 2px solid #10b981 !important;
-            }
-            .ProseMirror pre[data-type="special-code"] code {
-              color: #065f46 !important;
-            }
+          /* Table Styling - Prevent Cell Overflow */
+          .ProseMirror table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+            table-layout: auto !important;
+            margin: 1rem 0 !important;
+          }
+          .ProseMirror table td,
+          .ProseMirror table th {
+            padding: 0.75rem 1rem !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+            vertical-align: top !important;
+            border: 1px solid #d1d5db !important;
+            max-width: 0 !important;
+          }
+          .ProseMirror.dark table td,
+          .ProseMirror.dark table th {
+            border-color: #4b5563 !important;
+          }
+          
+          /* Inline Math Styling - Only for highlighted text */
+          .ProseMirror span[data-type="math-inline"],
+          .ProseMirror span[data-type="math"],
+          .ProseMirror .math-inline {
+            color: #111111 !important;
+            font-family: 'Georgia', 'Times New Roman', serif !important;
+            font-size: 1.125rem !important;
+            display: inline !important;
+            white-space: nowrap !important;
+          }
+          .ProseMirror.dark span[data-type="math-inline"],
+          .ProseMirror.dark span[data-type="math"],
+          .ProseMirror.dark .math-inline {
+            color: #e5e7eb !important;
+          }
+          
+          /* Inline HTML/Special Code Styling - Only for highlighted text */
+          .ProseMirror span[data-type="html-inline"],
+          .ProseMirror span[data-type="special-code-inline"] {
+            color: #111111 !important;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+            font-size: 1.125rem !important;
+            display: inline !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .ProseMirror.dark span[data-type="html-inline"],
+          .ProseMirror.dark span[data-type="special-code-inline"] {
+            color: #e5e7eb !important;
           }
         `
       }} />

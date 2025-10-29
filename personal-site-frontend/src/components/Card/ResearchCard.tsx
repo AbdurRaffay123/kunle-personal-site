@@ -37,7 +37,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
           y: -4,
           transition: { duration: 0.3 },
         }}
-        className="group overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
+        className="group overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col"
         style={{
           backgroundColor: 'var(--card)',
           borderColor: 'var(--border)',
@@ -66,12 +66,12 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-1">
         <h2 className="text-xl font-bold mb-3 transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
           {research.title}
         </h2>
         
-        <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3 leading-relaxed">
+        <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3 leading-relaxed min-h-[3.5rem] md:min-h-[4.5rem]">
           {research.description}
         </p>
 
@@ -99,7 +99,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 mt-auto">
           {/* Preview Button */}
         <button
           onClick={(e) => {

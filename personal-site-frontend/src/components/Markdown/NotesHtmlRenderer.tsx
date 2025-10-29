@@ -99,85 +99,61 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
       }
     });
 
-        // Enhance code blocks with copy button and language label
+        // Remove all wrapper enhancements for clean academic style
+        // Code blocks will be styled with CSS only - no JavaScript wrappers or badges
         const codeBlocks = contentRef.current.querySelectorAll('pre');
         codeBlocks.forEach((pre) => {
-          if (!pre.parentElement?.classList.contains('code-block-wrapper')) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'code-block-wrapper relative my-4 md:my-6 group overflow-hidden rounded-lg';
-        
-        // Check if this is a special code block (explicitly marked by user)
-        const isSpecialCode = pre.getAttribute('data-type') === 'special-code' || pre.getAttribute('data-enhanced') === 'true';
-        
-        // Detect language (if available)
-        const code = pre.querySelector('code');
-        const language = code?.className?.match(/language-(\w+)/)?.[1] || 'code';
-        
-        // Add special badge for explicitly marked code
-        if (isSpecialCode) {
-          const specialBadge = document.createElement('div');
-          specialBadge.className = 'absolute top-3 left-3 text-xs font-bold text-green-400 dark:text-green-300 uppercase tracking-wide bg-green-900/90 dark:bg-green-800/90 px-3 py-1.5 rounded-md border border-green-500/50 flex items-center gap-1.5 z-10';
-          specialBadge.innerHTML = `
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-            </svg>
-            <span>Enhanced Code</span>
-          `;
-          wrapper.appendChild(specialBadge);
-        }
-        // Removed language label - CSS handles the "CODE" badge on the right
-        
-        // Add copy button
-        const copyButton = document.createElement('button');
-        copyButton.className = 'absolute top-3 right-3 p-2 bg-gray-700 hover:bg-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-2 text-sm z-10';
-        copyButton.innerHTML = `
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <span>Copy</span>
-        `;
-        
-        copyButton.addEventListener('click', async () => {
-          const codeText = pre.textContent || '';
-          await navigator.clipboard.writeText(codeText);
-          setCopiedCode(language);
-          copyButton.innerHTML = `
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Copied!</span>
-          `;
-          setTimeout(() => {
-            setCopiedCode('');
-            copyButton.innerHTML = `
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              <span>Copy</span>
-            `;
-          }, 2000);
+          // Remove any existing wrappers
+          if (pre.parentElement?.classList.contains('code-block-wrapper')) {
+            const wrapper = pre.parentElement;
+            const parent = wrapper.parentElement;
+            if (parent) {
+              parent.insertBefore(pre, wrapper);
+              parent.removeChild(wrapper);
+            }
+          }
+          
+          // Ensure clean styling - CSS will handle appearance
+          pre.className = 'overflow-x-auto text-xs md:text-sm';
+          pre.style.background = 'transparent';
+          pre.style.border = 'none';
+          pre.style.borderRadius = '0';
+          pre.style.padding = '0';
+          pre.style.margin = '0';
         });
-        
-        // Enhance pre element with special styling for marked code
-        if (isSpecialCode) {
-          pre.className = 'bg-gradient-to-br from-gray-900 via-gray-950 to-black dark:from-black dark:via-gray-950 dark:to-gray-900 text-gray-100 px-3 md:px-6 pt-12 md:pt-16 pb-4 md:pb-6 rounded-lg overflow-x-auto border-2 border-green-500/50 dark:border-green-400/50 shadow-2xl shadow-green-500/20 text-xs md:text-sm';
-        } else {
-          pre.className = 'bg-gray-900 dark:bg-gray-950 text-gray-100 px-3 md:px-6 pb-4 md:pb-6 rounded-lg overflow-x-auto border-2 border-gray-700 dark:border-gray-800 shadow-lg text-xs md:text-sm';
-          pre.style.paddingTop = '40px';
-        }
-        
-        pre.parentNode?.insertBefore(wrapper, pre);
-        wrapper.appendChild(copyButton);
-        wrapper.appendChild(pre);
-      }
-    });
 
-    // Enhance inline code
+    // Clean inline code styling - inline only, dark black in light mode
     const inlineCodes = contentRef.current.querySelectorAll('code:not(pre code)');
     inlineCodes.forEach((code) => {
       if (!code.classList.contains('enhanced-inline-code')) {
-        code.className = 'enhanced-inline-code bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded font-mono text-sm border border-blue-200 dark:border-blue-800';
+        code.className = 'enhanced-inline-code font-mono';
+        const codeElement = code as HTMLElement;
+        codeElement.style.background = 'transparent';
+        codeElement.style.border = 'none';
+        codeElement.style.padding = '0';
+        codeElement.style.display = 'inline';
+        // Color will be handled by CSS (dark mode detection)
+        codeElement.style.fontSize = '1.125rem';
       }
+    });
+
+    // Handle inline math expressions
+    const inlineMathElements = contentRef.current.querySelectorAll('[data-type="math-inline"], [data-type="math"]:not([data-type="math-block"]), .math-inline');
+    inlineMathElements.forEach((math) => {
+      const mathElement = math as HTMLElement;
+      mathElement.style.display = 'inline';
+      mathElement.style.whiteSpace = 'nowrap';
+      // Color will be handled by CSS (dark mode detection)
+      mathElement.style.fontSize = '1.125rem';
+    });
+
+    // Handle inline HTML/special code
+    const inlineHtmlElements = contentRef.current.querySelectorAll('[data-type="html-inline"], [data-type="special-code-inline"]');
+    inlineHtmlElements.forEach((html) => {
+      const htmlElement = html as HTMLElement;
+      htmlElement.style.display = 'inline';
+      // Color will be handled by CSS (dark mode detection)
+      htmlElement.style.fontSize = '1.125rem';
     });
 
     // Mathematical expressions are now styled with CSS-only approach
@@ -198,8 +174,7 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
           prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:p-1 prose-a:-m-1 prose-a:rounded
           prose-strong:text-slate-900 dark:prose-strong:text-slate-100 prose-strong:font-semibold
           prose-em:text-slate-700 dark:prose-em:text-slate-300
-          prose-blockquote:border-l-blue-600 dark:prose-blockquote:border-l-blue-400 
-          prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-slate-800/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:text-sm md:prose-blockquote:text-base
+          prose-blockquote:border-l prose-blockquote:border-l-gray-300 dark:prose-blockquote:border-l-gray-600 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:text-sm md:prose-blockquote:text-base
           prose-ul:list-disc prose-ul:pl-4 md:prose-ul:pl-6 prose-ul:my-4
           prose-ol:list-decimal prose-ol:pl-4 md:prose-ol:pl-6 prose-ol:my-4
           prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-li:my-1 prose-li:leading-relaxed prose-li:text-sm md:prose-li:text-base
@@ -251,161 +226,176 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
           animation: fadeIn 0.2s ease-in-out;
         }
 
-        /* Code Block Styling */
+        /* Code Block Styling - Clean Academic Style */
         :global(.prose pre) {
-          background: #1e1e1e !important;
-          border: 1px solid #333 !important;
-          border-radius: 12px !important;
-          padding: 1.25rem !important;
-          margin: 1rem 0 !important;
+          background: transparent !important;
+          border: none !important;
+          border-radius: 0 !important;
+          padding: 0.75rem 0 !important;
+          margin: 1rem auto !important;
           overflow-x: auto !important;
           position: relative !important;
-        }
-        :global(.prose pre::before) {
-          content: 'CODE' !important;
-          position: absolute !important;
-          top: 0.5rem !important;
-          right: 1rem !important;
-          font-size: 0.75rem !important;
-          font-weight: 700 !important;
-          letter-spacing: 0.05em !important;
-          color: #fff !important;
-          background: #3b82f6 !important;
-          padding: 0.25rem 0.5rem !important;
-          border-radius: 4px !important;
-          text-transform: uppercase !important;
+          display: block !important;
+          text-align: center !important;
         }
         :global(.prose pre code) {
-          color: #fff !important;
+          color: #111111 !important;
           background: transparent !important;
           padding: 0 !important;
           border: none !important;
           font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-          font-size: 0.875rem !important;
+          font-size: 1.125rem !important;
+          display: inline-block !important;
+          text-align: center !important;
         }
         
-        /* Code Block Styling - Light Mode */
-        @media (prefers-color-scheme: light) {
-          :global(.prose pre) {
-            background: #f7f9fc !important;
-            border: 1px solid #e2e8f0 !important;
-          }
-          :global(.prose pre::before) {
-            background: #3b82f6 !important;
-            color: #fff !important;
-          }
-          :global(.prose pre code) {
-            color: #1e293b !important;
-          }
+        /* Dark Mode Code Blocks */
+        :global(.dark .prose pre),
+        :global(.dark .prose pre code) {
+          color: #e5e7eb !important;
         }
 
-        /* Blockquote Styling */
+        /* Blockquote Styling - Clean Academic Style */
         :global(.prose blockquote) {
-          border-left: 4px solid #6366f1 !important;
-          background: linear-gradient(to right, rgba(99, 102, 241, 0.08), transparent) !important;
-          padding: 1rem 1.5rem !important;
-          margin: 1rem 0 !important;
-          border-radius: 0 8px 8px 0 !important;
+          border-left: 1px solid #d1d5db !important;
+          background: transparent !important;
+          padding: 0.5rem 0 0.5rem 1rem !important;
+          margin: 1rem auto !important;
+          border-radius: 0 !important;
           font-style: italic !important;
+          color: #111111 !important;
+          display: block !important;
+          text-align: center !important;
+          max-width: 800px !important;
+          font-size: 1.125rem !important;
+        }
+        :global(.dark .prose blockquote) {
+          border-left-color: #4b5563 !important;
+          color: #e5e7eb !important;
         }
 
-        /* Math Block Styling */
+        /* Math Block Styling - Clean Academic Style */
         :global(.prose [data-type="math-block"]) {
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1)) !important;
-          border: 2px solid #8b5cf6 !important;
-          border-radius: 12px !important;
-          padding: 1.25rem !important;
-          margin: 1rem 0 !important;
+          background: transparent !important;
+          border: none !important;
+          border-radius: 0 !important;
+          padding: 0.75rem 0 !important;
+          margin: 1rem auto !important;
           position: relative !important;
-          overflow: hidden !important;
-        }
-        :global(.prose [data-type="math-block"]::before) {
-          content: 'MATH' !important;
-          position: absolute !important;
-          top: 0.5rem !important;
-          right: 1rem !important;
-          font-size: 0.75rem !important;
-          font-weight: 700 !important;
-          letter-spacing: 0.05em !important;
-          color: #fff !important;
-          background: #8b5cf6 !important;
-          padding: 0.25rem 0.5rem !important;
-          border-radius: 4px !important;
-          text-transform: uppercase !important;
+          overflow: visible !important;
+          display: block !important;
+          text-align: center !important;
+          max-width: 800px !important;
         }
         :global(.prose [data-type="math-block"] > *) {
           font-family: 'Georgia', 'Times New Roman', serif !important;
+          color: #111111 !important;
+          font-size: 1.125rem !important;
+        }
+        :global(.dark .prose [data-type="math-block"] > *) {
+          color: #e5e7eb !important;
         }
 
-        /* Math Block - Light Mode */
-        @media (prefers-color-scheme: light) {
-          :global(.prose [data-type="math-block"]) {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.15)) !important;
-            border: 2px solid #8b5cf6 !important;
-          }
-          :global(.prose [data-type="math-block"] > *) {
-            color: #1e293b !important;
-          }
-        }
-
-        /* Special Code Block (HTML) Styling */
+        /* Special Code Block (HTML) Styling - Clean Academic Style */
         :global(.prose pre[data-type="special-code"]) {
-          background: #1e1e1e !important;
-          border: 2px solid #10b981 !important;
-          border-radius: 12px !important;
-          padding: 1.25rem !important;
-          margin: 1rem 0 !important;
+          background: transparent !important;
+          border: none !important;
+          border-radius: 0 !important;
+          padding: 0.75rem 0 !important;
+          margin: 1rem auto !important;
           position: relative !important;
-        }
-        :global(.prose pre[data-type="special-code"]::before) {
-          content: 'HTML' !important;
-          position: absolute !important;
-          top: 0.5rem !important;
-          right: 1rem !important;
-          font-size: 0.75rem !important;
-          font-weight: 700 !important;
-          letter-spacing: 0.05em !important;
-          color: #fff !important;
-          background: #10b981 !important;
-          padding: 0.25rem 0.5rem !important;
-          border-radius: 4px !important;
-          text-transform: uppercase !important;
+          display: block !important;
+          text-align: center !important;
         }
         :global(.prose pre[data-type="special-code"] code) {
-          color: #fff !important;
+          color: #111111 !important;
           font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-          font-size: 0.875rem !important;
+          font-size: 1.125rem !important;
+          display: inline-block !important;
+          text-align: center !important;
+        }
+        :global(.dark .prose pre[data-type="special-code"] code) {
+          color: #e5e7eb !important;
         }
 
-        /* Special Code Block - Light Mode */
-        @media (prefers-color-scheme: light) {
-          :global(.prose pre[data-type="special-code"]) {
-            background: #f0fdf4 !important;
-            border: 2px solid #10b981 !important;
-          }
-          :global(.prose pre[data-type="special-code"] code) {
-            color: #065f46 !important;
-          }
+        /* Inline Code Styling - Only for highlighted text */
+        :global(.prose code:not(pre code)) {
+          color: #111111 !important;
+          background: transparent !important;
+          padding: 0 !important;
+          border: none !important;
+          font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+          font-size: 1.125rem !important;
+          display: inline !important;
+          word-wrap: break-word !important;
+          word-break: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+        :global(.dark .prose code:not(pre code)) {
+          color: #e5e7eb !important;
         }
 
-        /* Table Responsive Styling - Mobile Scroll */
+        /* Inline Math Styling - Only for highlighted text */
+        :global(.prose span[data-type="math-inline"]),
+        :global(.prose span[data-type="math"]),
+        :global(.prose .math-inline) {
+          color: #111111 !important;
+          font-family: 'Georgia', 'Times New Roman', serif !important;
+          font-size: 1.125rem !important;
+          display: inline !important;
+          white-space: nowrap !important;
+        }
+        :global(.dark .prose span[data-type="math-inline"]),
+        :global(.dark .prose span[data-type="math"]),
+        :global(.dark .prose .math-inline) {
+          color: #e5e7eb !important;
+        }
+
+        /* Inline HTML/Special Code Styling - Only for highlighted text */
+        :global(.prose span[data-type="html-inline"]),
+        :global(.prose span[data-type="special-code-inline"]) {
+          color: #111111 !important;
+          font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+          font-size: 1.125rem !important;
+          display: inline !important;
+          word-wrap: break-word !important;
+          word-break: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+        :global(.dark .prose span[data-type="html-inline"]),
+        :global(.dark .prose span[data-type="special-code-inline"]) {
+          color: #e5e7eb !important;
+        }
+
+        /* Table Responsive Styling - Prevent Cell Overflow */
         :global(.prose table) {
           display: block !important;
           width: 100% !important;
           overflow-x: auto !important;
           -webkit-overflow-scrolling: touch !important;
+          border-collapse: collapse !important;
         }
         :global(.prose table thead),
         :global(.prose table tbody),
         :global(.prose table tr) {
           display: table !important;
           width: 100% !important;
-          table-layout: fixed !important;
+          table-layout: auto !important;
         }
         :global(.prose table td),
         :global(.prose table th) {
-          min-width: 100px !important;
-          white-space: nowrap !important;
+          padding: 0.75rem 1rem !important;
+          word-wrap: break-word !important;
+          word-break: break-word !important;
+          overflow-wrap: break-word !important;
+          white-space: normal !important;
+          vertical-align: top !important;
+          border: 1px solid #d1d5db !important;
+          max-width: 0 !important;
+        }
+        :global(.dark .prose table td),
+        :global(.dark .prose table th) {
+          border-color: #4b5563 !important;
         }
         /* Hide scrollbar for cleaner look but keep functionality */
         :global(.prose table)::-webkit-scrollbar {

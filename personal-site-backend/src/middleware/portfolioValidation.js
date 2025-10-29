@@ -75,8 +75,8 @@ const portfolioValidation = [
     .optional()
     .isString()
     .withMessage('Image must be a string')
-    .isLength({ max: 1000 })
-    .withMessage('Image URL too long'),
+    .isLength({ max: 10000000 })
+    .withMessage('Image URL/data is too large. Consider using a smaller image or external URL.'),
   
 ];
 
@@ -145,8 +145,8 @@ const updatePortfolioValidation = [
     .optional()
     .isString()
     .withMessage('Image must be a string')
-    .isLength({ max: 1000 })
-    .withMessage('Image URL too long'),
+    .isLength({ max: 10000000 })
+    .withMessage('Image URL/data is too large. Consider using a smaller image or external URL.'),
   
 ];
 

@@ -37,7 +37,7 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
           y: -4,
           transition: { duration: 0.3 },
         }}
-        className="group overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300"
+        className="group overflow-hidden rounded-xl backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col"
         style={{
           backgroundColor: 'var(--card)',
           borderColor: 'var(--border)',
@@ -58,12 +58,12 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-1">
         <h3 className="mb-3 text-xl font-bold transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
           {project.title}
         </h3>
 
-        <p className="mb-4 text-gray-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+        <p className="mb-4 text-gray-600 dark:text-slate-400 leading-relaxed line-clamp-3 min-h-[3.5rem] md:min-h-[4.5rem]">
           {project.description}
         </p>
 
@@ -95,7 +95,7 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 mt-auto">
           {/* Preview Button */}
         <button
           onClick={(e) => {

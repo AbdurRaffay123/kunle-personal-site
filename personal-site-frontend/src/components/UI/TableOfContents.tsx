@@ -60,38 +60,60 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         }
       }
 
-      // Calculate scroll margin with reasonable padding
+      // Calculate scroll margin with reasonable padding (matches NotesHtmlRenderer)
       const scrollMargin = headerHeight + 16; // 16px breathing room
 
-      // Apply scroll margin immediately
-      element.style.scrollMarginTop = `${scrollMargin}px`;
+      // Apply scroll margin immediately - use !important to override any CSS
       element.style.setProperty('scroll-margin-top', `${scrollMargin}px`, 'important');
+      
+      // Also update inline style as backup
+      element.style.scrollMarginTop = `${scrollMargin}px`;
 
       // Small delay to ensure CSS is applied, then scroll
       setTimeout(() => {
-        element!.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
-        });
+        // First, get the absolute position of the element in the document
+        const rect = element!.getBoundingClientRect();
+        const currentScrollY = window.pageYOffset || window.scrollY;
+        const elementAbsoluteTop = rect.top + currentScrollY;
+        
+        // Calculate target scroll position: element position minus scroll margin
+        const targetScrollPosition = Math.max(0, elementAbsoluteTop - scrollMargin);
 
-        // Verify scroll worked after a delay
-        setTimeout(() => {
-          const rect = element!.getBoundingClientRect();
-          const expectedTop = scrollMargin;
-          const actualTop = rect.top;
-          const difference = Math.abs(actualTop - expectedTop);
+        // Check if we need to scroll down or up
+        const needsToScrollDown = targetScrollPosition > currentScrollY;
+        
+        if (needsToScrollDown || Math.abs(targetScrollPosition - currentScrollY) > 10) {
+          // Scroll to the calculated position
+          window.scrollTo({
+            top: targetScrollPosition,
+            behavior: 'smooth'
+          });
 
-          if (difference > 20) {
-            // Manual adjustment if needed
-            const scrollTop = window.pageYOffset || window.scrollY;
-            const targetScroll = scrollTop + actualTop - expectedTop;
-            window.scrollTo({
-              top: targetScroll,
-              behavior: 'smooth'
-            });
-          }
-        }, 300);
+          // Verify scroll worked after a delay
+          setTimeout(() => {
+            const newRect = element!.getBoundingClientRect();
+            const newScrollY = window.pageYOffset || window.scrollY;
+            const expectedTop = scrollMargin;
+            const actualTop = newRect.top;
+            const difference = Math.abs(actualTop - expectedTop);
+
+            // If still not correct, make final adjustment
+            if (difference > 20) {
+              const finalAdjustment = newScrollY + actualTop - expectedTop;
+              window.scrollTo({
+                top: Math.max(0, finalAdjustment),
+                behavior: 'smooth'
+              });
+            }
+          }, 300);
+        } else {
+          // Element is already in correct position, just use scrollIntoView
+          element!.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+        }
       }, 50);
 
       setActiveHeading(text);

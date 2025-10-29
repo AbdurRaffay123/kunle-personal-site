@@ -78,8 +78,15 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
       // ALWAYS set the ID
       element.id = uniqueId;
       
-      // Set scroll margin for all screen sizes
-      const scrollMargin = '100px';
+      // Set responsive scroll margin based on screen size (matches TableOfContents logic)
+      const getScrollMargin = () => {
+        const width = window.innerWidth;
+        if (width >= 1024) return 90 + 16; // desktop: 106px
+        if (width >= 768) return 75 + 16;  // tablet: 91px
+        return 65 + 16; // mobile: 81px
+      };
+      
+      const scrollMargin = `${getScrollMargin()}px`;
       element.style.scrollMarginTop = scrollMargin;
       element.style.setProperty('scroll-margin-top', scrollMargin, 'important');
       
@@ -89,6 +96,33 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
         tagName: element.tagName
       });
     });
+
+    // Function to update scroll margins for all headings
+    const updateScrollMargins = () => {
+      const getScrollMargin = () => {
+        const width = window.innerWidth;
+        if (width >= 1024) return 90 + 16; // desktop: 106px
+        if (width >= 768) return 75 + 16;  // tablet: 91px
+        return 65 + 16; // mobile: 81px
+      };
+      
+      const scrollMargin = `${getScrollMargin()}px`;
+      headings.forEach((heading) => {
+        const element = heading as HTMLElement;
+        element.style.setProperty('scroll-margin-top', scrollMargin, 'important');
+        element.style.scrollMarginTop = scrollMargin;
+      });
+    };
+
+    // Initial scroll margin setup
+    updateScrollMargins();
+
+    // Update scroll margins on resize
+    const handleResize = () => {
+      updateScrollMargins();
+    };
+    
+    window.addEventListener('resize', handleResize);
 
     // Notify that headings are ready
     const event = new CustomEvent('headingsReady', {
@@ -100,6 +134,10 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
     window.dispatchEvent(event);
     
     setIsHydrated(true);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, [sanitizedContent]);
 
   return (
@@ -118,50 +156,17 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
 
-      {/* Emergency CSS for scroll behavior */}
+      {/* CSS for smooth scroll behavior - values set inline by JS for accuracy */}
       <style jsx global>{`
-        /* NUCLEAR OPTION: Apply to ALL headings regardless of class */
-        h1, h2, h3, h4, h5, h6 {
-          scroll-margin-top: 100px !important;
-        }
-        
-        /* Apply to ANY element with ID */
-        [id] {
-          scroll-margin-top: 100px !important;
-        }
-        
-        /* Global scroll behavior */
+        /* Ensure smooth scrolling */
         html {
           scroll-behavior: smooth;
-          scroll-padding-top: 100px !important;
         }
         
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
-          h1, h2, h3, h4, h5, h6, [id] {
-            scroll-margin-top: 90px !important;
-          }
-          html {
-            scroll-padding-top: 90px !important;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          h1, h2, h3, h4, h5, h6, [id] {
-            scroll-margin-top: 80px !important;
-          }
-          html {
-            scroll-padding-top: 80px !important;
-          }
-        }
-        
-        @media (max-width: 640px) {
-          h1, h2, h3, h4, h5, h6, [id] {
-            scroll-margin-top: 70px !important;
-          }
-          html {
-            scroll-padding-top: 70px !important;
-          }
+        /* Inline styles set by JavaScript will take precedence */
+        /* This is just a fallback */
+        .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+          scroll-margin-top: 80px;
         }
       `}</style>
     </>

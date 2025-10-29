@@ -80,7 +80,8 @@ const validateBlogUpdate = [
 router.get('/', blogController.getBlogs);   
 router.get('/slug/:slug', blogController.getBlogBySlug);                      // GET /api/blogs/slug/:slug
 router.get('/:id', blogController.getBlogById);                             // GET /api/blogs/:id
-router.post('/:id/like', blogController.likeBlog);                          // POST /api/blogs/:id/like
+router.post('/:id/like', blogController.toggleLikeBlog);                     // POST /api/blogs/:id/like (toggle like/unlike)
+router.get('/:id/like-status', blogController.getBlogLikeStatus);           // GET /api/blogs/:id/like-status
 
 // Protected routes (auth required)
 router.use(authMiddleware);

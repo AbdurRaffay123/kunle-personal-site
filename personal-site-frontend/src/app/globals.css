@@ -435,6 +435,8 @@ body {
   border-radius: 0.25rem;
 }
 
+
+
 /* Universal theme transition */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -443,4 +445,37 @@ body {
 /* Disable transitions for elements that shouldn't have them */
 *:not([class*="transition"]):not([class*="animate"]) {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Ensure all headings have consistent scroll margin */
+.prose h1,
+.prose h2, 
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  scroll-margin-top: 80px !important;
+}
+
+/* Responsive scroll margins */
+@media (max-width: 768px) {
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    scroll-margin-top: 70px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    scroll-margin-top: 60px !important;
+  }
 }

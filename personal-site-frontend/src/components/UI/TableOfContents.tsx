@@ -1,11 +1,10 @@
 /**
- * Table of Contents Component - Redesigned for reliability
- * Simple, clean implementation that works on all devices
+ * Table of Contents Component - Optimized scroll navigation
  */
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from "react";
 
 interface Heading {
   id: string;
@@ -18,166 +17,129 @@ interface TableOfContentsProps {
 }
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {
-  const [activeHeading, setActiveHeading] = useState<string>('');
+  const [activeHeading, setActiveHeading] = useState<string>("");
 
-  // Simple intersection observer for active heading tracking
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const headingText = entry.target.textContent?.trim() || '';
-            setActiveHeading(headingText);
-          }
-        });
-      },
-      {
-        rootMargin: '-100px 0px -50% 0px',
-        threshold: 0.1,
+  // Enhanced scroll function with accurate header height detection
+  const scrollToHeading = useCallback((id: string, text: string) => {
+    const screenWidth = window.innerWidth;
+
+    // Find element by ID or text
+    let element = document.getElementById(id);
+    
+    if (!element) {
+      // Fallback: find by text
+      const allHeadings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+      const matchingHeading = allHeadings.find(heading => 
+        heading.textContent?.trim().toLowerCase() === text.toLowerCase()
+      );
+      if (matchingHeading) {
+        element = matchingHeading as HTMLElement;
+        // Set ID if found by text
+        if (!element.id) {
+          element.id = id;
+        }
       }
-    );
+    }
 
-    // Function to observe headings
-    const observeHeadings = () => {
-      const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      console.log('🔍 TOC: Observing', allHeadings.length, 'headings');
-      allHeadings.forEach((heading) => {
-        const text = heading.textContent?.trim() || '';
-        const id = heading.id;
-        console.log('🔍 TOC: Found heading:', `"${text}"`, 'ID:', `"${id}"`);
-        observer.observe(heading);
-      });
-    };
+    if (element) {
+      // Dynamically measure actual header height
+      const header = document.querySelector('header[class*="fixed"]');
+      let headerHeight = 80; // safe default
+      
+      if (header) {
+        const headerRect = header.getBoundingClientRect();
+        headerHeight = headerRect.height;
+      } else {
+        // Fallback based on screen size
+        if (screenWidth >= 1024) {
+          headerHeight = 90; // desktop
+        } else if (screenWidth >= 768) {
+          headerHeight = 75; // tablet
+        } else {
+          headerHeight = 65; // mobile
+        }
+      }
 
-    // Initial observation after delay
-    const timeoutId = setTimeout(observeHeadings, 200);
+      // Calculate scroll margin with reasonable padding
+      const scrollMargin = headerHeight + 16; // 16px breathing room
 
-    // Listen for headings ready event from NotesHtmlRenderer
-    const handleHeadingsReady = () => {
-      console.log('🔍 TOC: Headings ready event received');
-      observeHeadings();
-    };
+      // Apply scroll margin immediately
+      element.style.scrollMarginTop = `${scrollMargin}px`;
+      element.style.setProperty('scroll-margin-top', `${scrollMargin}px`, 'important');
 
-    window.addEventListener('headingsReady', handleHeadingsReady);
+      // Small delay to ensure CSS is applied, then scroll
+      setTimeout(() => {
+        element!.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
 
-    return () => {
-      clearTimeout(timeoutId);
-      observer.disconnect();
-      window.removeEventListener('headingsReady', handleHeadingsReady);
-    };
+        // Verify scroll worked after a delay
+        setTimeout(() => {
+          const rect = element!.getBoundingClientRect();
+          const expectedTop = scrollMargin;
+          const actualTop = rect.top;
+          const difference = Math.abs(actualTop - expectedTop);
+
+          if (difference > 20) {
+            // Manual adjustment if needed
+            const scrollTop = window.pageYOffset || window.scrollY;
+            const targetScroll = scrollTop + actualTop - expectedTop;
+            window.scrollTo({
+              top: targetScroll,
+              behavior: 'smooth'
+            });
+          }
+        }, 300);
+      }, 50);
+
+      setActiveHeading(text);
+      
+      // Update URL without scrolling
+      try {
+        window.history.replaceState(null, '', `#${id}`);
+      } catch (error) {
+        // Silently fail
+      }
+    }
   }, []);
 
-  // Alternative scroll method using manual calculation
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, text: string, id: string) => {
-    console.log('🔍 TOC Click:', { text, id });
-    e.preventDefault();
-    
-    // Function to attempt scrolling
-    const attemptScroll = () => {
-      // Find the target element
-      const targetElement = document.getElementById(id);
-      console.log('🔍 Target element found:', targetElement);
-      
-      if (!targetElement) {
-        console.log('🔍 Element not found by ID, trying text search...');
-        // Fallback: find by text content
-        const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        console.log('🔍 Found headings:', allHeadings.length);
-        
-        for (const heading of Array.from(allHeadings)) {
-          console.log('🔍 Checking heading:', heading.textContent?.trim(), 'vs', text.trim());
-          if (heading.textContent?.trim() === text.trim()) {
-            console.log('🔍 Found by text, scrolling...');
-            scrollToElement(heading as HTMLElement);
-            setActiveHeading(text);
-            return;
-          }
-        }
-        console.log('🔍 No heading found by text either');
-        return;
-      }
-      
-      console.log('🔍 Scrolling to element...');
-      // Use our custom scroll method
-      scrollToElement(targetElement);
-      setActiveHeading(text);
-    };
-    
-    // Try immediately
-    attemptScroll();
-    
-    // Also try after a delay in case DOM isn't ready
-    setTimeout(attemptScroll, 100);
-  };
-
-  // Custom scroll function that works reliably
-  const scrollToElement = (element: HTMLElement) => {
-    console.log('🔍 ScrollToElement called for:', element);
-    
-    // Get element position
-    const rect = element.getBoundingClientRect();
-    const elementTop = rect.top + window.pageYOffset;
-    
-    console.log('🔍 Element position:', {
-      rect: rect,
-      elementTop: elementTop,
-      currentScrollY: window.pageYOffset
-    });
-    
-    // Calculate scroll position with offset for navbar
-    const offsetTop = 100; // Account for navbar height
-    const scrollTo = elementTop - offsetTop;
-    
-    console.log('🔍 Scroll calculation:', {
-      offsetTop: offsetTop,
-      scrollTo: scrollTo,
-      finalScrollTo: Math.max(0, scrollTo)
-    });
-    
-    // Smooth scroll to calculated position
-    window.scrollTo({
-      top: Math.max(0, scrollTo),
-      behavior: 'smooth'
-    });
-    
-    console.log('🔍 Scroll command executed');
-  };
+  const handleClick = useCallback((id: string, text: string) => {
+    scrollToHeading(id, text);
+  }, [scrollToHeading]);
 
   if (headings.length === 0) {
     return null;
   }
 
   return (
-    <div className="rounded-lg border p-4 md:p-5 lg:p-6 lg:sticky lg:top-24 max-h-[400px] md:max-h-none overflow-y-auto" 
-         style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
-      
-      <h3 className="mb-4 text-sm md:text-base lg:text-lg font-semibold sticky top-0 bg-[var(--card)] pb-2" 
-          style={{ color: 'var(--nav-text)' }}>
+    <div 
+      className="rounded-lg border p-4 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 max-h-[500px] overflow-y-auto"
+    >
+      <h3 className="mb-4 text-lg font-semibold sticky top-0 bg-white dark:bg-gray-900 pb-2 z-10">
         Table of Contents
       </h3>
-      
+
       <nav>
-        <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
+        <ul className="space-y-2 text-sm">
           {headings.map((heading, index) => {
             const isActive = activeHeading === heading.text;
             const paddingLeft = `${(heading.level - 1) * 0.75}rem`;
-            
+
             return (
               <li key={`${heading.id}-${index}`} style={{ paddingLeft }}>
-                <a
-                  href={`#${heading.id}`}
-                  onClick={(e) => handleClick(e, heading.text, heading.id)}
-                  className={`block transition-all duration-200 p-1 -m-1 rounded-md cursor-pointer ${
+                <button
+                  type="button"
+                  onClick={() => handleClick(heading.id, heading.text)}
+                  className={`block w-full text-left p-2 rounded-md transition-all ${
                     isActive
-                      ? 'font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                      : 'hover:underline hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? "font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                      : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
                   }`}
-                  style={{
-                    color: isActive ? undefined : 'var(--text-secondary)'
-                  }}
                 >
                   {heading.text}
-                </a>
+                </button>
               </li>
             );
           })}
@@ -186,4 +148,3 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     </div>
   );
 }
-

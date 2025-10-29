@@ -27,14 +27,25 @@ export default function HtmlRenderer({ content, className = "" }: HtmlRendererPr
   useEffect(() => {
     if (!contentRef.current) return;
 
+    // Get responsive scroll margin based on screen size
+    const getScrollMargin = () => {
+      if (window.innerWidth >= 1280) return '100px';
+      if (window.innerWidth >= 1024) return '90px';
+      if (window.innerWidth >= 768) return '80px';
+      return '60px';
+    };
+
     const headings = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
     headings.forEach((heading) => {
-      const text = heading.textContent || '';
+      const text = heading.textContent?.trim() || (heading as HTMLElement).innerText?.trim() || '';
       const id = slugify(text);
       if (id && !heading.id) {
         heading.id = id;
-        // Add scroll margin for better positioning when jumping to section
-        (heading as HTMLElement).style.scrollMarginTop = '100px';
+        // Add responsive scroll margin for better positioning when jumping to section
+        // Ensure scroll-margin-top is set for reliability
+        const scrollMargin = getScrollMargin();
+        (heading as HTMLElement).style.scrollMarginTop = scrollMargin;
+        (heading as HTMLElement).style.setProperty('scroll-margin-top', scrollMargin, 'important');
       }
     });
   }, [sanitizedContent]);

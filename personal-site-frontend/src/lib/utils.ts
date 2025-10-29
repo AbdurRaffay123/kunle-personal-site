@@ -52,12 +52,16 @@ export function truncate(text: string, length: number): string {
 /**
  * Slugify a string
  */
+/**
+ * Enhanced slugify function that generates valid CSS IDs
+ */
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
+    .replace(/^\d/, 'heading-$&'); // FIX: Ensure doesn't start with number
 }
 
 /**
@@ -73,7 +77,9 @@ export function extractHeadings(html: string): { id: string; text: string; level
   while ((match = headingRegex.exec(html)) !== null) {
     const level = parseInt(match[1]);
     // Strip any HTML tags from the heading text
-    const text = match[2].replace(/<[^>]*>/g, '').trim();
+    let text = match[2].replace(/<[^>]*>/g, '');
+    // Normalize whitespace to match what textContent returns
+    text = text.replace(/\s+/g, ' ').trim();
     const id = slugify(text);
     
     if (text) {

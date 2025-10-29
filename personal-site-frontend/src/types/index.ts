@@ -33,7 +33,6 @@ export interface BlogMeta {
   image?: string;
   slug?: string;
   tags?: string[];
-  likes?: number;
   content?: string;
   fileType?: string;
   fileUrl?: string;

@@ -14,7 +14,6 @@ import { formatDate, extractHeadings } from "@/lib/utils";
 import { generateSlug } from "@/lib/slug";
 import Link from "next/link";
 import BackButton from "@/components/UI/BackButton";
-import LikeButton from "@/components/UI/LikeButton";
 import type { Metadata } from "next";
 
 interface BlogPageProps {
@@ -171,14 +170,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
             <dd className="text-blue-700 dark:text-blue-400 text-xs md:text-sm">{blog.category}</dd>
           </div>
         )}
-        {blog.likes && blog.likes > 0 && (
-          <div>
-            <dt className="font-medium text-xs md:text-sm" style={{ color: 'var(--nav-text)' }}>
-              Likes
-            </dt>
-            <dd className="text-red-600 dark:text-red-400 text-xs md:text-sm">{blog.likes}</dd>
-          </div>
-        )}
       </dl>
     </div>
   );
@@ -218,8 +209,8 @@ export default async function BlogPage({ params }: BlogPageProps) {
         </p>
       )}
 
-      {/* Tags and Like Button */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      {/* Tags */}
+      <div className="mb-6">
         {blog.tags && blog.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {blog.tags.map((tag) => (
@@ -229,12 +220,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
             ))}
           </div>
         )}
-        
-        <LikeButton 
-          blogId={blog._id} 
-          initialLikes={blog.likes || 0}
-          className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-        />
       </div>
 
       {/* Content */}

@@ -52,14 +52,6 @@ export const getBlogBySlug = async (slug: string) => {
   return response.data.data.blog;
 };
 
-// Like a blog
-export const likeBlog = async (id: string) => {
-  const response = await instance.post(`${API_BASE_URL}/${id}/like`, {}, {
-    withCredentials: true,
-  });
-  return response.data;
-};
-
 // Update a blog
 export const updateBlog = async (id: string, data: Partial<BlogData>) => {
   const response = await instance.put(`${API_BASE_URL}/${id}`, data, {

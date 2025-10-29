@@ -181,85 +181,11 @@ const getBlogBySlug = async (slug) => {
   }
 };
 
-/**
- * Toggle like for a blog (like/unlike)
- * @param {string} blogId - Blog ID
- * @param {string} ip - Client IP address
- * @returns {Object} - Like result with count and user status
- */
-const toggleLikeBlog = async (blogId, ip) => {
-  try {
-    const blog = await Blog.findById(blogId);
-    
-    if (!blog) {
-      throw new Error('Blog not found');
-    }
-
-    // Import like service
-    const likeService = require('./likeService');
-    
-    // Toggle like using IP-based tracking
-    const result = likeService.toggleLike(blogId, ip);
-    
-    // Update database with new count
-    await Blog.findByIdAndUpdate(
-      blogId,
-      { likes: result.newCount },
-      { new: true }
-    );
-
-    return {
-      likes: result.newCount,
-      userLiked: result.userLiked,
-      action: result.action
-    };
-  } catch (error) {
-    if (error.name === 'CastError') {
-      throw new Error('Invalid blog ID');
-    }
-    throw error;
-  }
-};
-
-/**
- * Get like status for a blog
- * @param {string} blogId - Blog ID
- * @param {string} ip - Client IP address
- * @returns {Object} - Like status
- */
-const getBlogLikeStatus = async (blogId, ip) => {
-  try {
-    const blog = await Blog.findById(blogId);
-    
-    if (!blog) {
-      throw new Error('Blog not found');
-    }
-
-    // Import like service
-    const likeService = require('./likeService');
-    
-    // Get like statistics
-    const stats = likeService.getLikeStats(blogId, ip);
-    
-    return {
-      likes: stats.totalLikes,
-      userLiked: stats.userLiked
-    };
-  } catch (error) {
-    if (error.name === 'CastError') {
-      throw new Error('Invalid blog ID');
-    }
-    throw error;
-  }
-};
-
 module.exports = {
   createBlog,
   getAllBlogs,
   getBlogById,
   getBlogBySlug,
-  toggleLikeBlog,
-  getBlogLikeStatus,
   updateBlog,
   deleteBlog,
   getBlogStats

@@ -38,11 +38,6 @@ const blogSchema = new mongoose.Schema({
     trim: true,
     lowercase: true
   },
-  // Add likes count
-  likes: {
-    type: Number,
-    default: 0
-  },
   // Add tags for better categorization
   tags: [{
     type: String,

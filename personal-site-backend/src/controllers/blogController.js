@@ -244,97 +244,11 @@ const getBlogBySlug = async (req, res) => {
   }
 };
 
-/**
- * Toggle like for a blog (like/unlike)
- */
-const toggleLikeBlog = async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    // Import like service to get client IP
-    const likeService = require('../services/likeService');
-    const clientIP = likeService.getClientIP(req);
-    
-    // Check cooldown period
-    if (likeService.isInCooldown(clientIP)) {
-      return res.status(429).json({
-        success: false,
-        message: 'Please wait before liking again (5 minute cooldown)'
-      });
-    }
-    
-    const result = await blogService.toggleLikeBlog(id, clientIP);
-    
-    // Set cooldown for this IP
-    likeService.setCooldown(clientIP);
-    
-    res.status(200).json({
-      success: true,
-      message: `Blog ${result.action} successfully`,
-      data: { 
-        likes: result.likes,
-        userLiked: result.userLiked,
-        action: result.action
-      }
-    });
-
-  } catch (error) {
-    if (error.message === 'Blog not found') {
-      return res.status(404).json({
-        success: false,
-        message: error.message
-      });
-    }
-
-    console.error('Error toggling blog like:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-};
-
-/**
- * Get like status for a blog
- */
-const getBlogLikeStatus = async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    // Import like service to get client IP
-    const likeService = require('../services/likeService');
-    const clientIP = likeService.getClientIP(req);
-    
-    const result = await blogService.getBlogLikeStatus(id, clientIP);
-    
-    res.status(200).json({
-      success: true,
-      data: result
-    });
-
-  } catch (error) {
-    if (error.message === 'Blog not found') {
-      return res.status(404).json({
-        success: false,
-        message: error.message
-      });
-    }
-
-    console.error('Error getting blog like status:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-};
-
 module.exports = {
   createBlog,
   getBlogs,
   getBlogById,
   getBlogBySlug,
-  toggleLikeBlog,
-  getBlogLikeStatus,
   updateBlog,
   deleteBlog,
   getBlogStats

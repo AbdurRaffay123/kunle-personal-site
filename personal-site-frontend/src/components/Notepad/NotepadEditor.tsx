@@ -26,6 +26,13 @@ import toast from 'react-hot-toast';
 import { useCallback, useEffect } from 'react';
 import MathBlock from './extensions/MathBlock';
 import SpecialCodeBlock from './extensions/SpecialCodeBlock';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
+import Superscript from '@tiptap/extension-superscript';
+import Subscript from '@tiptap/extension-subscript';
+import BubbleMenu from '@tiptap/extension-bubble-menu';
+import Document from '@tiptap/extension-document';
+import Youtube from '@tiptap/extension-youtube';
 
 interface NotepadEditorProps {
   content?: string;
@@ -41,86 +48,76 @@ export function NotepadEditor({
   
   const editor = useEditor({
     extensions: [
+      Document,
       StarterKit,
       Image.configure({
-        HTMLAttributes: {
-          class: 'max-w-md h-auto rounded-lg mx-auto block',
-        },
+        HTMLAttributes: { class: 'max-w-md h-auto rounded-lg mx-auto block' },
       }),
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-blue-600 hover:text-blue-800 underline',
-        },
+        HTMLAttributes: { class: 'text-blue-600 hover:text-blue-800 underline' },
       }),
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      Color,
-      TextStyle,
+      Table.configure({ resizable: true }),
+      TableRow, TableHeader, TableCell,
+      TaskList, TaskItem,
+      Superscript, Subscript,
       Underline,
-      Highlight.configure({
-        multicolor: true,
-      }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      Placeholder.configure({
-      placeholder,
-    }),
-    MathBlock,
-    SpecialCodeBlock,
-  ],
-  content,
-  immediatelyRender: false, // Fix SSR hydration issues
-  onCreate: ({ editor }) => {
-    // Store the initial scroll position to prevent auto-scroll on toolbar clicks
-    const editorElement = editor.view.dom;
-    if (editorElement) {
-      (editorElement as HTMLElement).style.scrollBehavior = 'smooth';
-    }
-  },
-  onUpdate: ({ editor }) => {
-    const html = editor.getHTML();
-    onChange?.(html);
-  },
-    editorProps: {
-      attributes: {
-        class: 'prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
-      },
-      handleDrop: (view, event, slice, moved) => {
-        if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
-          const file = event.dataTransfer.files[0];
-          
-          // Check if it's an image file
-          if (file.type.startsWith('image/')) {
-            event.preventDefault();
-            handleImageUpload(file);
-            return true;
-          }
-        }
-        return false;
-      },
-      handlePaste: (view, event, slice) => {
-        const items = Array.from(event.clipboardData?.items || []);
-        
-        for (const item of items) {
-          if (item.type.startsWith('image/')) {
-            event.preventDefault();
-            const file = item.getAsFile();
-            if (file) {
-              handleImageUpload(file);
-            }
-            return true;
-          }
-        }
-        return false;
-      },
+      Highlight.configure({ multicolor: true }),
+      Color, TextStyle,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      BubbleMenu, // Bubble menu (toolbar can be added separately)
+      Placeholder.configure({ placeholder }),
+      MathBlock,
+      SpecialCodeBlock,
+      Youtube,
+    ],
+    content,
+    immediatelyRender: false, // Fix SSR hydration issues
+    onCreate: ({ editor }) => {
+      // Store the initial scroll position to prevent auto-scroll on toolbar clicks
+      const editorElement = editor.view.dom;
+      if (editorElement) {
+        (editorElement as HTMLElement).style.scrollBehavior = 'smooth';
+      }
     },
-  });
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      onChange?.(html);
+    },
+      editorProps: {
+        attributes: {
+          class: 'prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
+        },
+        handleDrop: (view, event, slice, moved) => {
+          if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+            const file = event.dataTransfer.files[0];
+            
+            // Check if it's an image file
+            if (file.type.startsWith('image/')) {
+              event.preventDefault();
+              handleImageUpload(file);
+              return true;
+            }
+          }
+          return false;
+        },
+        handlePaste: (view, event, slice) => {
+          const items = Array.from(event.clipboardData?.items || []);
+          
+          for (const item of items) {
+            if (item.type.startsWith('image/')) {
+              event.preventDefault();
+              const file = item.getAsFile();
+              if (file) {
+                handleImageUpload(file);
+              }
+              return true;
+            }
+          }
+          return false;
+        },
+      },
+    });
 
   const handleImageUpload = useCallback(async (file: File) => {
     try {
@@ -157,10 +154,13 @@ export function NotepadEditor({
         if (editorElement) {
           const lists = editorElement.querySelectorAll('ul, ol');
           lists.forEach(list => {
+            // Skip task lists for generic styling; they have custom layout
+            if ((list as HTMLElement).getAttribute('data-type') === 'taskList') {
+              return;
+            }
             (list as HTMLElement).style.listStyleType = list.tagName === 'UL' ? 'disc' : 'decimal';
             (list as HTMLElement).style.paddingLeft = '1.5rem';
             (list as HTMLElement).style.margin = '1rem 0';
-            
             const items = list.querySelectorAll('li');
             items.forEach(li => {
               (li as HTMLElement).style.margin = '0.25rem 0';
@@ -199,7 +199,7 @@ export function NotepadEditor({
   }
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm" style={{ backgroundColor: 'var(--card)' }}>
+    <div className="notion-editor-container mx-auto max-w-6xl px-0 sm:px-1 py-8 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
       <style dangerouslySetInnerHTML={{
         __html: `
           .ProseMirror {
@@ -279,9 +279,9 @@ export function NotepadEditor({
           
           /* Blockquote Styling - Clean Academic Style */
           .ProseMirror blockquote {
-            border-left: 1px solid #d1d5db !important;
+            border-left: 4px solid #1e40af !important;
             background: transparent !important;
-            padding: 0.5rem 0 0.5rem 1rem !important;
+            padding: 0.5rem 0 0.5rem 1.5rem !important;
             margin: 1rem auto !important;
             border-radius: 0 !important;
             color: #111111 !important;
@@ -294,6 +294,7 @@ export function NotepadEditor({
           }
           .ProseMirror.dark blockquote {
             border-left-color: #4b5563 !important;
+            border-left-width: 4px !important;
             color: #e5e7eb !important;
           }
           
@@ -394,6 +395,49 @@ export function NotepadEditor({
           .ProseMirror.dark span[data-type="html-inline"],
           .ProseMirror.dark span[data-type="special-code-inline"] {
             color: #e5e7eb !important;
+          }
+          .ProseMirror ul[data-type="taskList"] {
+            list-style: none !important;
+            padding-left: 0 !important;
+            margin: 1rem 0 !important;
+          }
+          .ProseMirror ul[data-type="taskList"] li {
+            list-style: none !important;
+            margin: 0.5rem 0 !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            line-height: 1.6 !important;
+          }
+          .ProseMirror ul[data-type="taskList"] li > label {
+            display: flex !important;
+            align-items: flex-start !important;
+            flex-shrink: 0 !important;
+            margin-right: 0.5rem !important;
+            margin-top: 0.2em !important;
+            cursor: pointer !important;
+            user-select: none !important;
+          }
+          .ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] {
+            width: 1.125rem !important;
+            height: 1.125rem !important;
+            margin: 0 !important;
+            cursor: pointer !important;
+            flex-shrink: 0 !important;
+          }
+          .ProseMirror ul[data-type="taskList"] li > div {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            display: inline !important;
+          }
+          .ProseMirror ul[data-type="taskList"] li > div > p {
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline !important;
+            line-height: 1.6 !important;
+          }
+          .ProseMirror ul[data-type="taskList"] li > div > p + p {
+            margin-top: 0.5rem !important;
+            display: block !important;
           }
         `
       }} />

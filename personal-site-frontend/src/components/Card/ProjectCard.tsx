@@ -59,12 +59,11 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
 
       {/* Content */}
       <div className="p-6 flex flex-col flex-1">
-        <h3 className="mb-3 text-xl font-bold transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
+        <h3 className="mb-1 text-xl font-bold transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
           {project.title}
         </h3>
-
-        <p className="mb-4 text-gray-600 dark:text-slate-400 leading-relaxed line-clamp-3 min-h-[3.5rem] md:min-h-[4.5rem]">
-          {project.description}
+        <p className="mb-4 text-gray-600 dark:text-slate-400 leading-relaxed overflow-hidden">
+         {truncateWords(project.description, 45)}
         </p>
 
         {/* Tech Stack */}
@@ -148,4 +147,10 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
     />
     </>
   );
+}
+
+function truncateWords(str: string, numWords: number = 38): string {
+  const words = str.split(' ');
+  if (words.length <= numWords) return str;
+  return words.slice(0, numWords).join(' ') + '...';
 }

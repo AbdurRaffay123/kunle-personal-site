@@ -67,12 +67,11 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
 
       {/* Content */}
       <div className="p-6 flex flex-col flex-1">
-        <h2 className="text-xl font-bold mb-3 transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
+        <h2 className="text-xl font-bold mb-1 transition-colors line-clamp-2" style={{ color: 'var(--nav-text)' }}>
           {research.title}
         </h2>
-        
-        <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3 leading-relaxed min-h-[3.5rem] md:min-h-[4.5rem]">
-          {research.description}
+        <p className="text-slate-600 dark:text-slate-400 mb-4 leading-relaxed overflow-hidden">
+          {truncateWords(research.description, 45)}
         </p>
 
         {/* Tags */}
@@ -152,3 +151,9 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ research, index = 0 }) => {
 };
 
 export default ResearchCard;
+
+function truncateWords(str: string, numWords: number = 38): string {
+  const words = str.split(' ');
+  if (words.length <= numWords) return str;
+  return words.slice(0, numWords).join(' ') + '...';
+}

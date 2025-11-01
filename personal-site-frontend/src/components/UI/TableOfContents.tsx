@@ -43,14 +43,17 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     return () => observer.disconnect();
   }, [headings]);
 
-  // Simple scroll handler - same pattern as content.tsx
-  const handleTOCClick = (headingId: string) => {
+  // Scroll handler for TOC clicks
+  const handleTOCClick = (e: React.MouseEvent<HTMLButtonElement>, headingId: string) => {
+    e.preventDefault();
     const element = document.getElementById(headingId);
     if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start',
-        inline: 'nearest'
+      const yOffset = -100; // Offset for header
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
       });
       setActiveId(headingId);
     }
@@ -59,25 +62,25 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   if (headings.length === 0) return null;
 
   return (
-    <div className="rounded-lg border p-4 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 max-h-[500px] overflow-y-auto">
-      <h3 className="mb-4 text-lg font-semibold sticky top-0 bg-white dark:bg-gray-900 pb-2 z-10">
+    <div className="sticky top-24 z-10 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+      <h3 className="mb-4 text-lg font-semibold pb-2 text-black dark:text-white">
         Table of Contents
       </h3>
       <nav>
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-2 text-sm list-disc pl-5">
           {headings.map((heading, index) => {
             const paddingLeft = `${(heading.level - 1) * 0.75}rem`;
             const isActive = activeId === heading.id;
             
             return (
-              <li key={`${heading.id}-${index}`} style={{ paddingLeft }}>
+              <li key={`${heading.id}-${index}`} style={{ paddingLeft, listStyleType: 'disc' }}>
                 <button
                   type="button"
-                  onClick={() => handleTOCClick(heading.id)}
+                  onClick={(e) => handleTOCClick(e, heading.id)}
                   className={`block w-full text-left p-2 rounded-md transition-all ${
                     isActive
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? 'bg-white dark:bg-gray-700 text-black dark:text-blue-400 font-medium shadow-sm'
+                      : 'text-black dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700'
                   }`}
                 >
                   {heading.text}

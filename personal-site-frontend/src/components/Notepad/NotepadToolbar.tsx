@@ -28,7 +28,10 @@ import {
   Palette,
   Highlighter,
   Sigma,
-  Terminal
+  Terminal,
+  CheckSquare,
+  Subscript as SubscriptIcon,
+  Superscript as SuperscriptIcon
 } from 'lucide-react';
 import { useState } from 'react';
 import { ImageInsertModal } from './ImageInsertModal';
@@ -112,6 +115,22 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           <Underline className="w-4 h-4" />
         </ToolbarButton>
 
+        {/* Super/Subscript */}
+        <ToolbarButton
+          onClick={() => (editor.chain().focus() as any).toggleSuperscript().run()}
+          isActive={editor.isActive('superscript')}
+          title="Superscript"
+        >
+          <SuperscriptIcon className="w-4 h-4" />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => (editor.chain().focus() as any).toggleSubscript().run()}
+          isActive={editor.isActive('subscript')}
+          title="Subscript"
+        >
+          <SubscriptIcon className="w-4 h-4" />
+        </ToolbarButton>
+
         <Separator />
 
         {/* Headings */}
@@ -158,6 +177,15 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           <ListOrdered className="w-4 h-4" />
         </ToolbarButton>
 
+        {/* Todo List */}
+        <ToolbarButton
+          onClick={() => (editor.chain().focus() as any).toggleTaskList().run()}
+          isActive={editor.isActive('taskList')}
+          title="To‑do List"
+        >
+          <CheckSquare className="w-4 h-4" />
+        </ToolbarButton>
+
         <Separator />
 
         {/* Block Elements */}
@@ -183,7 +211,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         <ToolbarButton
           onClick={() => (editor.chain().focus() as any).toggleMathBlock().run()}
           isActive={editor.isActive('mathBlock')}
-          title="Mark as Mathematical Expression (will be highlighted specially)"
+          title="Block Equation (Math)"
         >
           <Sigma className="w-4 h-4" />
         </ToolbarButton>

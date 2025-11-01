@@ -68,22 +68,21 @@ export default function SimplePreviewModal({ isOpen, onClose, item }: SimplePrev
               <div className="text-white text-6xl">🚀</div>
             </div>
             
-            {/* Type Badge */}
-            <div className="absolute top-4 left-4">
-              <span className="px-3 py-1 text-sm font-semibold rounded-full backdrop-blur-sm bg-blue-600/90 text-white">
-                {item.type === 'project' ? 'Project' : 'Research'}
-              </span>
-            </div>
+            {/* Removed Type Badge on image */}
           </div>
 
           {/* Content Section */}
           <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+            {/* Title */}
+            <h2 className="text-2xl lg:text-3xl font-bold mb-2 text-gray-900 dark:text-white">
               {item.title}
             </h2>
-            
-            <p className="text-gray-600 dark:text-slate-400 mb-6 leading-relaxed">
-              {item.description}
+            {/* Badge below title */}
+            <span className="inline-block uppercase font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-3 py-1 text-xs tracking-wider mb-4 ml-1">
+              {item.type === 'project' ? 'PROJECT' : 'RESEARCH'}
+            </span>
+            <p className="text-gray-600 dark:text-slate-400 mb-6 leading-relaxed overflow-hidden">
+              {truncateWords(item.description, 45)}
             </p>
 
             {/* Technologies/Tags */}
@@ -126,4 +125,11 @@ export default function SimplePreviewModal({ isOpen, onClose, item }: SimplePrev
       </div>
     </div>
   );
+}
+
+// Helper function addition
+function truncateWords(str: string, numWords: number = 38): string {
+  const words = str.split(' ');
+  if (words.length <= numWords) return str;
+  return words.slice(0, numWords).join(' ') + '...';
 }

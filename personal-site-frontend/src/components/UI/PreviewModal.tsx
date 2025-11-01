@@ -93,12 +93,7 @@ export default function PreviewModal({ isOpen, onClose, item }: PreviewModalProp
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
             
-            {/* Type Badge */}
-            <div className="absolute top-3 left-3">
-              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-sm">
-                {item.type === 'project' ? 'Project' : 'Research'}
-              </span>
-            </div>
+            {/* Removed Type Badge on image */}
           </div>
 
           {/* Content Section - Full width on mobile, half width on desktop */}
@@ -126,13 +121,17 @@ export default function PreviewModal({ isOpen, onClose, item }: PreviewModalProp
             </button>
             
             {/* Title */}
-            <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">
-              {item.title}
-            </h3>
-
-            {/* Description */}
-            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 md:line-clamp-4 leading-relaxed">
-              {item.description}
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-2xl lg:text-3xl font-bold mb-2 text-gray-900 dark:text-white">
+                {item.title}
+              </h2>
+            </div>
+            {/* Moved Type Badge Below Title */}
+            <span className="inline-block uppercase font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-3 py-1 text-xs tracking-wider mb-4 ml-1">
+              {item.type === 'project' ? 'PROJECT' : 'RESEARCH'}
+            </span>
+            <p className="text-gray-600 dark:text-slate-400 mb-6 leading-relaxed overflow-hidden">
+              {truncateWords(item.description, 45)}
             </p>
 
             {/* Technologies/Tags */}
@@ -184,4 +183,10 @@ export default function PreviewModal({ isOpen, onClose, item }: PreviewModalProp
       </div>
     </div>
   );
+}
+
+function truncateWords(str: string, numWords: number = 38): string {
+  const words = str.split(' ');
+  if (words.length <= numWords) return str;
+  return words.slice(0, numWords).join(' ') + '...';
 }

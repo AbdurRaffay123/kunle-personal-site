@@ -14,7 +14,6 @@ interface TableOfContentsProps {
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
-  console.log({headings},'headings')
 
   // Track active heading - only observe article headings
   useEffect(() => {

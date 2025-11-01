@@ -16,6 +16,7 @@ import { generateMetadata as genMeta } from "@/components/SEO/SEO";
 import Link from "next/link";
 import BackButton from "@/components/UI/BackButton";
 import type { Metadata } from "next";
+import TableOfContentsClient from "@/components/UI/TableOfContentsClient";
 
 interface NotePageProps {
   params: Promise<{ id: string }>;
@@ -178,9 +179,8 @@ export default async function NotePage({ params }: NotePageProps) {
   );
 
   // Table of Contents content
-  const toc = headings.length > 0 ? (
-    <TableOfContents headings={headings} />
-  ) : null;
+  const toc = <TableOfContentsClient />;
+  console.log({toc},'rrrrrrrrrrrrrrr')
 
   // Main content
   const main = (

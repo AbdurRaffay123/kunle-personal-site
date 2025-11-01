@@ -12,70 +12,32 @@ interface ResponsiveThreeColumnProps {
   toc: ReactNode;
 }
 
-export default function ResponsiveThreeColumn({
-  main,
-  metadata,
-  toc,
-}: ResponsiveThreeColumnProps) {
+export default function ResponsiveThreeColumn({ main, metadata, toc }: ResponsiveThreeColumnProps) {
   return (
     <Container className="py-6 md:py-8 lg:py-12">
-      {/* Mobile Layout: Single Column Stack */}
-      <div className="flex flex-col space-y-6 md:hidden">
-        {/* Metadata - First on mobile */}
-        <aside className="order-1">
-          {metadata}
-        </aside>
-
-        {/* Table of Contents - Second on mobile */}
-        <aside className="order-2">
-          {toc}
-        </aside>
-
-        {/* Main Content - Last on mobile */}
-        <article className="order-3">
+      {/* One grid for all breakpoints */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-12 lg:gap-8">
+        {/* Main */}
+        <article
+          className={`/* mobile: after sidebar */ /* tablet: right side */ /* desktop: left side */ order-2 md:order-2 md:col-span-7 lg:order-1 lg:col-span-8`}
+        >
           {main}
         </article>
-      </div>
 
-      {/* Tablet Layout: Two Columns */}
-      <div className="hidden md:grid md:grid-cols-12 md:gap-6 lg:hidden">
-        {/* Sidebar Column - First on tablet */}
-        <aside className="md:col-span-5 space-y-4 order-1">
+        {/* Sidebar (Metadata + TOC together) */}
+        <aside
+          className={`/* mobile: first */ /* tablet: left column */ /* desktop: right column */ order-1 space-y-6 md:order-1 md:col-span-5 lg:order-2 lg:col-span-4`}
+        >
           {/* Metadata */}
-          <div>
+          <div
+            className="rounded-lg border p-4 md:p-5 lg:p-6"
+            style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}
+          >
             {metadata}
           </div>
 
           {/* Table of Contents */}
-          <div>
-            {toc}
-          </div>
-        </aside>
-
-        {/* Main Content - Second on tablet */}
-        <div className="md:col-span-7 order-2">
-          {main}
-        </div>
-      </div>
-
-      {/* Desktop Layout: Three Columns */}
-      <div className="hidden lg:grid lg:grid-cols-12 lg:gap-8">
-        {/* Main Content */}
-        <div className="lg:col-span-8">
-          {main}
-        </div>
-
-        {/* Right Sidebar Column */}
-        <aside className="lg:col-span-4 space-y-6">
-          {/* Metadata - First */}
-          <div>
-            {metadata}
-          </div>
-
-          {/* Table of Contents - Second */}
-          <div>
-            {toc}
-          </div>
+          <div>{toc}</div>
         </aside>
       </div>
     </Container>

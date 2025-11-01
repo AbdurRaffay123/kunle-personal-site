@@ -1,10 +1,6 @@
-/**
- * Enhanced HTML Content Renderer with Valid ID Assignment
- */
-
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
 import { slugify } from '@/lib/utils';
 
@@ -15,37 +11,25 @@ interface NotesHtmlRendererProps {
 
 export default function NotesHtmlRenderer({ content, className = "" }: NotesHtmlRendererProps) {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  // Sanitize HTML
-  const sanitizedContent = DOMPurify.sanitize(content, {
-    ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['target', 'rel', 'style', 'class', 'id', 'data-language'],
-  });
-
-  // FIXED: Enhanced heading ID assignment with valid IDs
-  useEffect(() => {
-    if (!contentRef.current) return;
-
-    console.log('🔍 NotesHtmlRenderer: Starting heading ID assignment');
+  
+  // Process HTML and add IDs BEFORE rendering
+  const { sanitizedContent, headings } = useMemo(() => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
     
-    // Get all headings
-    const headings = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    console.log('🔍 Found headings:', headings.length);
-
-    // Method 1: Direct ID assignment with VALID IDs
-    headings.forEach((heading, index) => {
+    const headingElements = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    const headingsData: Array<{id: string, text: string, level: number}> = [];
+    const usedIds = new Set<string>();
+    
+    headingElements.forEach((heading, index) => {
       const element = heading as HTMLElement;
       
-      // Get text content (strip HTML tags)
       let text = element.textContent?.trim() || '';
       text = text.replace(/\s+/g, ' ').trim();
       
-      // Generate VALID ID - ensure it doesn't start with a number
       let id = '';
       if (text) {
         id = slugify(text);
-        // FIX: Ensure ID doesn't start with a number
         if (/^\d/.test(id)) {
           id = `heading-${id}`;
         }
@@ -53,92 +37,71 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
         id = `heading-${index}`;
       }
       
-      // Ensure uniqueness with safe query
-      let isUnique = false;
+      // Ensure uniqueness
       let uniqueId = id;
       let counter = 1;
-      
-      while (!isUnique) {
-        try {
-          // Use try-catch for safe querySelector
-          const existing = contentRef.current?.querySelector(`[id="${uniqueId}"]`);
-          if (!existing || existing === element) {
-            isUnique = true;
-          } else {
-            uniqueId = `${id}-${counter}`;
-            counter++;
-          }
-        } catch (error) {
-          // If querySelector fails, use a safe fallback
-          uniqueId = `heading-${index}-${Date.now()}`;
-          isUnique = true;
-        }
+      while (usedIds.has(uniqueId)) {
+        uniqueId = `${id}-${counter}`;
+        counter++;
       }
+      usedIds.add(uniqueId);
       
-      // ALWAYS set the ID
       element.id = uniqueId;
       
-      // Set responsive scroll margin based on screen size (matches TableOfContents logic)
-      const getScrollMargin = () => {
-        const width = window.innerWidth;
-        if (width >= 1024) return 90 + 16; // desktop: 106px
-        if (width >= 768) return 75 + 16;  // tablet: 91px
-        return 65 + 16; // mobile: 81px
-      };
-      
-      const scrollMargin = `${getScrollMargin()}px`;
-      element.style.scrollMarginTop = scrollMargin;
-      element.style.setProperty('scroll-margin-top', scrollMargin, 'important');
-      
-      console.log('🔍 Assigned ID to heading:', {
-        text: text.substring(0, 50),
-        id: uniqueId,
-        tagName: element.tagName
-      });
+      const level = parseInt(element.tagName.substring(1));
+      headingsData.push({ id: uniqueId, text: text, level: level });
     });
+    
+    const processedHTML = doc.body.innerHTML;
+    const sanitized = DOMPurify.sanitize(processedHTML, {
+      ADD_TAGS: ['iframe'],
+      ADD_ATTR: ['target', 'rel', 'style', 'class', 'id', 'data-language'],
+    });
+    
+    return { sanitizedContent: sanitized, headings: headingsData };
+  }, [content]);
 
-    // Function to update scroll margins for all headings
-    const updateScrollMargins = () => {
+  // Apply scroll margins and broadcast after render
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const applyScrollMargins = () => {
       const getScrollMargin = () => {
         const width = window.innerWidth;
-        if (width >= 1024) return 90 + 16; // desktop: 106px
-        if (width >= 768) return 75 + 16;  // tablet: 91px
-        return 65 + 16; // mobile: 81px
+        if (width >= 1024) return 106;
+        if (width >= 768) return 91;
+        return 81;
       };
       
-      const scrollMargin = `${getScrollMargin()}px`;
+      const scrollMargin = getScrollMargin();
+      
       headings.forEach((heading) => {
-        const element = heading as HTMLElement;
-        element.style.setProperty('scroll-margin-top', scrollMargin, 'important');
-        element.style.scrollMarginTop = scrollMargin;
+        const element = document.getElementById(heading.id);
+        if (element) {
+          element.style.scrollMarginTop = `${scrollMargin}px`;
+        }
       });
     };
 
-    // Initial scroll margin setup
-    updateScrollMargins();
+    applyScrollMargins();
 
-    // Update scroll margins on resize
-    const handleResize = () => {
-      updateScrollMargins();
-    };
-    
+    const handleResize = () => applyScrollMargins();
     window.addEventListener('resize', handleResize);
 
-    // Notify that headings are ready
+    // Broadcast headings
     const event = new CustomEvent('headingsReady', {
       detail: { 
         headingsCount: headings.length,
+        headings: headings,
         timestamp: Date.now() 
       }
     });
     window.dispatchEvent(event);
     
-    setIsHydrated(true);
-    
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [sanitizedContent]);
+  }, [headings]);
 
   return (
     <>
@@ -155,18 +118,9 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
           ${className}`}
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
-
-      {/* CSS for smooth scroll behavior - values set inline by JS for accuracy */}
       <style jsx global>{`
-        /* Ensure smooth scrolling */
         html {
           scroll-behavior: smooth;
-        }
-        
-        /* Inline styles set by JavaScript will take precedence */
-        /* This is just a fallback */
-        .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-          scroll-margin-top: 80px;
         }
       `}</style>
     </>

@@ -131,7 +131,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className="font-sans antialiased"
+        className="font-sans antialiased overflow-y-auto"
         style={{
           backgroundColor: 'var(--background)',
           color: 'var(--foreground)',

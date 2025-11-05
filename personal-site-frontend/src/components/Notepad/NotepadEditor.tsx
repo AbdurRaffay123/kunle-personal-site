@@ -1,6 +1,6 @@
 /**
  * Notepad Editor Component - FIXED VERSION
- * 
+ *
  * Main Tiptap editor with image support, drag-and-drop, and paste functionality
  * FIXES:
  * 1. Inline code mark works properly (select text and apply code formatting)
@@ -10,35 +10,35 @@
 
 "use client";
 
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import CodeBlock from '@tiptap/extension-code-block';
-import Code from '@tiptap/extension-code';
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import { Table } from '@tiptap/extension-table';
-import { TableRow } from '@tiptap/extension-table-row';
-import { TableCell } from '@tiptap/extension-table-cell';
-import { TableHeader } from '@tiptap/extension-table-header';
-import { Color } from '@tiptap/extension-color';
-import { TextStyle } from '@tiptap/extension-text-style';
-import { Underline } from '@tiptap/extension-underline';
-import { Highlight } from '@tiptap/extension-highlight';
-import { TextAlign } from '@tiptap/extension-text-align';
-import { Placeholder } from '@tiptap/extension-placeholder';
-import { NotepadToolbar } from './NotepadToolbar';
-import { notepadService } from '@/services/notepadService';
-import toast from 'react-hot-toast';
-import { useCallback, useEffect } from 'react';
-import MathBlock from './extensions/MathBlock';
-import SpecialCodeBlock from './extensions/SpecialCodeBlock';
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
-import Superscript from '@tiptap/extension-superscript';
-import Subscript from '@tiptap/extension-subscript';
-import BubbleMenu from '@tiptap/extension-bubble-menu';
-import Document from '@tiptap/extension-document';
-import Youtube from '@tiptap/extension-youtube';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import CodeBlock from "@tiptap/extension-code-block";
+import Code from "@tiptap/extension-code";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import { Table } from "@tiptap/extension-table";
+import { TableRow } from "@tiptap/extension-table-row";
+import { TableCell } from "@tiptap/extension-table-cell";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { Color } from "@tiptap/extension-color";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { Underline } from "@tiptap/extension-underline";
+import { Highlight } from "@tiptap/extension-highlight";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { Placeholder } from "@tiptap/extension-placeholder";
+import { NotepadToolbar } from "./NotepadToolbar";
+import { notepadService } from "@/services/notepadService";
+import toast from "react-hot-toast";
+import { useCallback, useEffect } from "react";
+import MathBlock from "./extensions/MathBlock";
+import SpecialCodeBlock from "./extensions/SpecialCodeBlock";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import Superscript from "@tiptap/extension-superscript";
+import Subscript from "@tiptap/extension-subscript";
+import BubbleMenu from "@tiptap/extension-bubble-menu";
+import Document from "@tiptap/extension-document";
+import Youtube from "@tiptap/extension-youtube";
 
 interface NotepadEditorProps {
   content?: string;
@@ -46,12 +46,11 @@ interface NotepadEditorProps {
   placeholder?: string;
 }
 
-export function NotepadEditor({ 
-  content = '', 
-  onChange, 
-  placeholder = 'Start writing your note…' 
+export function NotepadEditor({
+  content = "",
+  onChange,
+  placeholder = "Start writing your note…",
 }: NotepadEditorProps) {
-  
   const editor = useEditor({
     extensions: [
       Document,
@@ -65,22 +64,27 @@ export function NotepadEditor({
       // Add CodeBlock separately for multi-line code blocks
       CodeBlock,
       Image.configure({
-        HTMLAttributes: { class: 'max-w-md h-auto rounded-lg mx-auto block' },
+        HTMLAttributes: { class: "max-w-md h-auto rounded-lg mx-auto block" },
       }),
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: { class: 'text-blue-600 hover:text-blue-800 underline' },
+        HTMLAttributes: { class: "text-blue-600 hover:text-blue-800 underline" },
       }),
       Table.configure({ resizable: true }),
-      TableRow, TableHeader, TableCell,
-      TaskList, TaskItem,
-      Superscript, Subscript,
+      TableRow,
+      TableHeader,
+      TableCell,
+      TaskList,
+      TaskItem,
+      Superscript,
+      Subscript,
       Underline,
       Highlight.configure({ multicolor: true }),
-      Color, TextStyle,
-      TextAlign.configure({ 
-        types: ['heading', 'paragraph'],
-        alignments: ['left', 'center', 'right', 'justify'],
+      Color,
+      TextStyle,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+        alignments: ["left", "center", "right", "justify"],
       }),
       BubbleMenu,
       Placeholder.configure({ placeholder }),
@@ -93,7 +97,7 @@ export function NotepadEditor({
     onCreate: ({ editor }) => {
       const editorElement = editor.view.dom;
       if (editorElement) {
-        (editorElement as HTMLElement).style.scrollBehavior = 'smooth';
+        (editorElement as HTMLElement).style.scrollBehavior = "smooth";
       }
     },
     onUpdate: ({ editor }) => {
@@ -102,13 +106,19 @@ export function NotepadEditor({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
+        class:
+          "prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4",
       },
       handleDrop: (view, event, slice, moved) => {
-        if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+        if (
+          !moved &&
+          event.dataTransfer &&
+          event.dataTransfer.files &&
+          event.dataTransfer.files[0]
+        ) {
           const file = event.dataTransfer.files[0];
-          
-          if (file.type.startsWith('image/')) {
+
+          if (file.type.startsWith("image/")) {
             event.preventDefault();
             handleImageUpload(file);
             return true;
@@ -118,9 +128,9 @@ export function NotepadEditor({
       },
       handlePaste: (view, event, slice) => {
         const items = Array.from(event.clipboardData?.items || []);
-        
+
         for (const item of items) {
-          if (item.type.startsWith('image/')) {
+          if (item.type.startsWith("image/")) {
             event.preventDefault();
             const file = item.getAsFile();
             if (file) {
@@ -134,20 +144,23 @@ export function NotepadEditor({
     },
   });
 
-  const handleImageUpload = useCallback(async (file: File) => {
-    try {
-      const result = await notepadService.uploadImage(file);
-      if (result.success && result.url) {
-        const alt = prompt('Enter alt text for the image (for accessibility):') || 'Image';
-        editor?.chain().focus().setImage({ src: result.url, alt }).run();
-        toast.success('Image inserted successfully');
-      } else {
-        toast.error(result.error || 'Failed to upload image');
+  const handleImageUpload = useCallback(
+    async (file: File) => {
+      try {
+        const result = await notepadService.uploadImage(file);
+        if (result.success && result.url) {
+          const alt = prompt("Enter alt text for the image (for accessibility):") || "Image";
+          editor?.chain().focus().setImage({ src: result.url, alt }).run();
+          toast.success("Image inserted successfully");
+        } else {
+          toast.error(result.error || "Failed to upload image");
+        }
+      } catch (error) {
+        toast.error("Failed to process image");
       }
-    } catch (error) {
-      toast.error('Failed to process image');
-    }
-  }, [editor]);
+    },
+    [editor],
+  );
 
   useEffect(() => {
     if (editor && content !== undefined) {
@@ -161,44 +174,44 @@ export function NotepadEditor({
   useEffect(() => {
     if (editor) {
       const applyListStyles = () => {
-        const editorElement = document.querySelector('.ProseMirror');
+        const editorElement = document.querySelector(".ProseMirror");
         if (editorElement) {
-          const lists = editorElement.querySelectorAll('ul, ol');
-          lists.forEach(list => {
-            if ((list as HTMLElement).getAttribute('data-type') === 'taskList') {
+          const lists = editorElement.querySelectorAll("ul, ol");
+          lists.forEach((list) => {
+            if ((list as HTMLElement).getAttribute("data-type") === "taskList") {
               return;
             }
-            (list as HTMLElement).style.listStyleType = list.tagName === 'UL' ? 'disc' : 'decimal';
-            (list as HTMLElement).style.paddingLeft = '1.5rem';
-            (list as HTMLElement).style.margin = '1rem 0';
-            const items = list.querySelectorAll('li');
-            items.forEach(li => {
-              (li as HTMLElement).style.margin = '0.25rem 0';
-              (li as HTMLElement).style.lineHeight = '1.6';
-              (li as HTMLElement).style.color = 'rgb(51 65 85)';
+            (list as HTMLElement).style.listStyleType = list.tagName === "UL" ? "disc" : "decimal";
+            (list as HTMLElement).style.paddingLeft = "1.5rem";
+            (list as HTMLElement).style.margin = "1rem 0";
+            const items = list.querySelectorAll("li");
+            items.forEach((li) => {
+              (li as HTMLElement).style.margin = "0.25rem 0";
+              (li as HTMLElement).style.lineHeight = "1.6";
+              (li as HTMLElement).style.color = "rgb(51 65 85)";
             });
           });
         }
       };
 
       applyListStyles();
-      editor.on('update', applyListStyles);
-      editor.on('selectionUpdate', applyListStyles);
+      editor.on("update", applyListStyles);
+      editor.on("selectionUpdate", applyListStyles);
 
       return () => {
-        editor.off('update', applyListStyles);
-        editor.off('selectionUpdate', applyListStyles);
+        editor.off("update", applyListStyles);
+        editor.off("selectionUpdate", applyListStyles);
       };
     }
   }, [editor]);
 
   if (!editor) {
     return (
-      <div className="border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800">
+      <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
         <div className="p-4">
           <div className="animate-pulse">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            <div className="mb-2 h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700"></div>
+            <div className="h-4 w-1/2 rounded bg-slate-200 dark:bg-slate-700"></div>
           </div>
         </div>
       </div>
@@ -206,9 +219,10 @@ export function NotepadEditor({
   }
 
   return (
-    <div className="notion-editor-container mx-auto max-w-6xl px-0 sm:px-1 py-8 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
-      <style dangerouslySetInnerHTML={{
-        __html: `
+    <div className="notion-editor-container mx-auto max-w-6xl rounded-xl border border-slate-200 bg-white px-0 py-8 shadow-lg sm:px-1 dark:border-slate-700 dark:bg-slate-900">
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           .ProseMirror {
             color: var(--foreground) !important;
             background-color: var(--card) !important;
@@ -250,7 +264,8 @@ export function NotepadEditor({
             word-wrap: break-word !important;
             font-weight: 500 !important;
           }
-          .ProseMirror.dark code:not(pre code) {
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror code:not(pre code) {
             color: #60a5fa !important;
             background: rgba(96, 165, 250, 0.1) !important;
           }
@@ -279,11 +294,13 @@ export function NotepadEditor({
             word-wrap: break-word !important;
             line-height: 1.6 !important;
           }
-          .ProseMirror.dark pre {
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror pre {
             background: #1f2937 !important;
             border-color: #374151 !important;
           }
-          .ProseMirror.dark pre code {
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror pre code {
             color: #e5e7eb !important;
           }
           
@@ -300,7 +317,8 @@ export function NotepadEditor({
             display: block !important;
             font-size: 1.125rem !important;
           }
-          .ProseMirror.dark blockquote {
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror blockquote {
             border-left-color: #4b5563 !important;
             color: #e5e7eb !important;
           }
@@ -321,37 +339,44 @@ export function NotepadEditor({
             font-family: 'Georgia', 'Times New Roman', serif !important;
             font-size: 1.125rem !important;
           }
-          .ProseMirror.dark div[data-type="math-block"] > * {
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror div[data-type="math-block"] > * {
             color: #e5e7eb !important;
           }
           
-          /* Special Code Block Styling */
-          /* Special Code Block Styling */
+          /* Special Code Block Styling (Dark "Pro" Theme - Text Wrapping) */
           .ProseMirror pre[data-type="special-code"] {
-            background: #f0f9ff !important;
-            border: 1px solid #bae6fd !important;
+            background: #1f2937 !important; /* Dark background */
+            border: 1px solid #374151 !important; /* Dark border */
             border-radius: 6px !important;
             margin: 1.5rem 0 !important;
             padding: 1rem !important;
             position: relative !important;
             display: block !important;
-            overflow-x: auto !important;
             text-align: left !important;
           }
           .ProseMirror pre[data-type="special-code"] code {
-            color: #0c4a6e !important;
+            color: #e5e7eb !important; /* Light text */
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
             font-size: 0.875rem !important;
             display: block !important;
-            white-space: pre !important;
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
             line-height: 1.6 !important;
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
           }
-          .ProseMirror.dark pre[data-type="special-code"] {
-            background: #1e3a5f !important;
-            border-color: #2563eb !important;
+          
+          /* Keep the dark mode styles for the special block consistent */
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror pre[data-type="special-code"] {
+            background: #1f2937 !important;
+            border-color: #374151 !important;
           }
-          .ProseMirror.dark pre[data-type="special-code"] code {
-            color: #93c5fd !important;
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror pre[data-type="special-code"] code {
+            color: #e5e7eb !important;
           }
           
           /* Table Styling */
@@ -372,8 +397,9 @@ export function NotepadEditor({
             border: 1px solid #d1d5db !important;
             max-width: 0 !important;
           }
-          .ProseMirror.dark table td,
-          .ProseMirror.dark table th {
+          /* --- FIXED SELECTOR --- */
+          .dark .ProseMirror table td,
+          .dark .ProseMirror table th {
             border-color: #4b5563 !important;
           }
           
@@ -421,43 +447,56 @@ export function NotepadEditor({
             margin-top: 0.5rem !important;
             display: block !important;
           }
-        `
-      }} />
-      <div className="sticky top-0 z-50 bg-[var(--card)] border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        `,
+        }}
+      />
+      <div className="sticky top-0 z-50 border-b border-slate-200 bg-[var(--card)] shadow-sm dark:border-slate-700">
         <NotepadToolbar editor={editor} />
       </div>
       <div className="relative">
-        <EditorContent 
-          editor={editor} 
-          className="min-h-[400px] focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-opacity-50 rounded-b-lg overflow-auto max-h-[calc(100vh-300px)]"
-          style={{ scrollBehavior: 'auto' }}
+        <EditorContent
+          editor={editor}
+          className="focus-within:ring-opacity-50 max-h-[calc(100vh-300px)] min-h-[400px] overflow-auto rounded-b-lg focus-within:ring-2 focus-within:ring-blue-500"
+          style={{ scrollBehavior: "auto" }}
         />
-        
-        <div 
-          className="absolute inset-0 bg-blue-50 dark:bg-blue-900/20 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-b-lg flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200"
+
+        <div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-b-lg border-2 border-dashed border-blue-300 bg-blue-50 opacity-0 transition-opacity duration-200 dark:border-blue-600 dark:bg-blue-900/20"
           onDragOver={(e) => {
             e.preventDefault();
-            e.currentTarget.classList.remove('opacity-0');
-            e.currentTarget.classList.add('opacity-100');
+            e.currentTarget.classList.remove("opacity-0");
+            e.currentTarget.classList.add("opacity-100");
           }}
           onDragLeave={(e) => {
             e.preventDefault();
-            e.currentTarget.classList.remove('opacity-100');
-            e.currentTarget.classList.add('opacity-0');
+            e.currentTarget.classList.remove("opacity-100");
+            e.currentTarget.classList.add("opacity-0");
           }}
           onDrop={(e) => {
             e.preventDefault();
-            e.currentTarget.classList.remove('opacity-100');
-            e.currentTarget.classList.add('opacity-0');
+            e.currentTarget.classList.remove("opacity-100");
+            e.currentTarget.classList.add("opacity-0");
           }}
         >
           <div className="text-center">
-            <div className="text-blue-600 dark:text-blue-400 mb-2">
-              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            <div className="mb-2 text-blue-600 dark:text-blue-400">
+              <svg
+                className="mx-auto h-12 w-12"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
               </svg>
             </div>
-            <p className="text-blue-600 dark:text-blue-400 font-medium">Drop image here to insert</p>
+            <p className="font-medium text-blue-600 dark:text-blue-400">
+              Drop image here to insert
+            </p>
           </div>
         </div>
       </div>

@@ -11,7 +11,8 @@ import { Editor } from '@tiptap/react';
 import { 
   Bold, 
   Italic, 
-  Underline, 
+  Underline,
+  Strikethrough,
   List, 
   ListOrdered, 
   Quote, 
@@ -114,6 +115,14 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           title="Underline"
         >
           <Underline className="w-4 h-4" />
+        </ToolbarButton>
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          isActive={editor.isActive('strike')}
+          title="Strikethrough"
+        >
+          <Strikethrough className="w-4 h-4" />
         </ToolbarButton>
 
         {/* Inline Code Button - NEW */}

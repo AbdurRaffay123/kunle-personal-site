@@ -31,7 +31,8 @@ import {
   Terminal,
   CheckSquare,
   Subscript as SubscriptIcon,
-  Superscript as SuperscriptIcon
+  Superscript as SuperscriptIcon,
+  FileCode
 } from 'lucide-react';
 import { useState } from 'react';
 import { ImageInsertModal } from './ImageInsertModal';
@@ -113,6 +114,15 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           title="Underline"
         >
           <Underline className="w-4 h-4" />
+        </ToolbarButton>
+
+        {/* Inline Code Button - NEW */}
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          isActive={editor.isActive('code')}
+          title="Inline Code (select text to format as code)"
+        >
+          <Code className="w-4 h-4" />
         </ToolbarButton>
 
         {/* Super/Subscript */}
@@ -197,12 +207,13 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           <Quote className="w-4 h-4" />
         </ToolbarButton>
 
+        {/* Code Block Button - UPDATED with different icon */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           isActive={editor.isActive('codeBlock')}
-          title="Code Block"
+          title="Code Block (multi-line code)"
         >
-          <Code className="w-4 h-4" />
+          <FileCode className="w-4 h-4" />
         </ToolbarButton>
 
         <Separator />

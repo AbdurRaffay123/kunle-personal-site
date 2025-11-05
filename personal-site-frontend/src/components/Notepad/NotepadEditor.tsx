@@ -1,13 +1,19 @@
 /**
- * Notepad Editor Component
+ * Notepad Editor Component - FIXED VERSION
  * 
  * Main Tiptap editor with image support, drag-and-drop, and paste functionality
+ * FIXES:
+ * 1. Inline code mark works properly (select text and apply code formatting)
+ * 2. Code blocks use Tiptap's default styling
+ * 3. Text alignment preserved for all other elements
  */
 
 "use client";
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import CodeBlock from '@tiptap/extension-code-block';
+import Code from '@tiptap/extension-code';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import { Table } from '@tiptap/extension-table';
@@ -49,7 +55,15 @@ export function NotepadEditor({
   const editor = useEditor({
     extensions: [
       Document,
-      StarterKit,
+      StarterKit.configure({
+        // Disable code and codeBlock from StarterKit - we'll add them separately
+        code: false,
+        codeBlock: false,
+      }),
+      // Add Code mark separately for inline code (select text and apply)
+      Code,
+      // Add CodeBlock separately for multi-line code blocks
+      CodeBlock,
       Image.configure({
         HTMLAttributes: { class: 'max-w-md h-auto rounded-lg mx-auto block' },
       }),
@@ -64,17 +78,19 @@ export function NotepadEditor({
       Underline,
       Highlight.configure({ multicolor: true }),
       Color, TextStyle,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      BubbleMenu, // Bubble menu (toolbar can be added separately)
+      TextAlign.configure({ 
+        types: ['heading', 'paragraph'],
+        alignments: ['left', 'center', 'right', 'justify'],
+      }),
+      BubbleMenu,
       Placeholder.configure({ placeholder }),
       MathBlock,
       SpecialCodeBlock,
       Youtube,
     ],
     content,
-    immediatelyRender: false, // Fix SSR hydration issues
+    immediatelyRender: false,
     onCreate: ({ editor }) => {
-      // Store the initial scroll position to prevent auto-scroll on toolbar clicks
       const editorElement = editor.view.dom;
       if (editorElement) {
         (editorElement as HTMLElement).style.scrollBehavior = 'smooth';
@@ -84,46 +100,44 @@ export function NotepadEditor({
       const html = editor.getHTML();
       onChange?.(html);
     },
-      editorProps: {
-        attributes: {
-          class: 'prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
-        },
-        handleDrop: (view, event, slice, moved) => {
-          if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
-            const file = event.dataTransfer.files[0];
-            
-            // Check if it's an image file
-            if (file.type.startsWith('image/')) {
-              event.preventDefault();
-              handleImageUpload(file);
-              return true;
-            }
-          }
-          return false;
-        },
-        handlePaste: (view, event, slice) => {
-          const items = Array.from(event.clipboardData?.items || []);
-          
-          for (const item of items) {
-            if (item.type.startsWith('image/')) {
-              event.preventDefault();
-              const file = item.getAsFile();
-              if (file) {
-                handleImageUpload(file);
-              }
-              return true;
-            }
-          }
-          return false;
-        },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
       },
-    });
+      handleDrop: (view, event, slice, moved) => {
+        if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+          const file = event.dataTransfer.files[0];
+          
+          if (file.type.startsWith('image/')) {
+            event.preventDefault();
+            handleImageUpload(file);
+            return true;
+          }
+        }
+        return false;
+      },
+      handlePaste: (view, event, slice) => {
+        const items = Array.from(event.clipboardData?.items || []);
+        
+        for (const item of items) {
+          if (item.type.startsWith('image/')) {
+            event.preventDefault();
+            const file = item.getAsFile();
+            if (file) {
+              handleImageUpload(file);
+            }
+            return true;
+          }
+        }
+        return false;
+      },
+    },
+  });
 
   const handleImageUpload = useCallback(async (file: File) => {
     try {
       const result = await notepadService.uploadImage(file);
       if (result.success && result.url) {
-        // Prompt for alt text
         const alt = prompt('Enter alt text for the image (for accessibility):') || 'Image';
         editor?.chain().focus().setImage({ src: result.url, alt }).run();
         toast.success('Image inserted successfully');
@@ -135,18 +149,15 @@ export function NotepadEditor({
     }
   }, [editor]);
 
-  // Update editor content when content prop changes
   useEffect(() => {
     if (editor && content !== undefined) {
       const currentContent = editor.getHTML();
-      // Only update if content is different to avoid unnecessary re-renders
       if (currentContent !== content) {
         editor.commands.setContent(content);
       }
     }
   }, [editor, content]);
 
-  // Apply list styles after editor is created
   useEffect(() => {
     if (editor) {
       const applyListStyles = () => {
@@ -154,7 +165,6 @@ export function NotepadEditor({
         if (editorElement) {
           const lists = editorElement.querySelectorAll('ul, ol');
           lists.forEach(list => {
-            // Skip task lists for generic styling; they have custom layout
             if ((list as HTMLElement).getAttribute('data-type') === 'taskList') {
               return;
             }
@@ -171,10 +181,7 @@ export function NotepadEditor({
         }
       };
 
-      // Apply styles immediately
       applyListStyles();
-
-      // Apply styles on update
       editor.on('update', applyListStyles);
       editor.on('selectionUpdate', applyListStyles);
 
@@ -206,6 +213,8 @@ export function NotepadEditor({
             color: var(--foreground) !important;
             background-color: var(--card) !important;
           }
+          
+          /* Lists */
           .ProseMirror ul {
             list-style-type: disc !important;
             padding-left: 1.5rem !important;
@@ -221,95 +230,91 @@ export function NotepadEditor({
             line-height: 1.6 !important;
             color: var(--foreground) !important;
           }
-          .ProseMirror h1, .ProseMirror h2, .ProseMirror h3, .ProseMirror h4, .ProseMirror h5, .ProseMirror h6 {
+          
+          /* Typography colors - preserve alignment */
+          .ProseMirror h1, .ProseMirror h2, .ProseMirror h3, 
+          .ProseMirror h4, .ProseMirror h5, .ProseMirror h6,
+          .ProseMirror p, .ProseMirror strong, .ProseMirror em {
             color: var(--foreground) !important;
-          }
-          .ProseMirror p {
-            color: var(--foreground) !important;
-          }
-          .ProseMirror strong {
-            color: var(--foreground) !important;
-          }
-          .ProseMirror em {
-            color: var(--foreground) !important;
-          }
-          /* Inline Code Styling - Only for highlighted text */
-          .ProseMirror code:not(pre code) {
-            color: #111111 !important;
-            background: transparent !important;
-            padding: 0 !important;
-            border: none !important;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-            font-size: 1.125rem !important;
-            display: inline !important;
-            word-wrap: break-word !important;
-            word-break: break-word !important;
-            overflow-wrap: break-word !important;
-          }
-          .ProseMirror.dark code:not(pre code) {
-            color: #e5e7eb !important;
-          }
-          /* Code Block Styling - Clean Academic Style */
-          .ProseMirror pre {
-            background: transparent !important;
-            border: none !important;
-            border-radius: 0 !important;
-            padding: 0.75rem 0 !important;
-            margin: 1rem auto !important;
-            overflow-x: auto !important;
-            position: relative !important;
-            display: block !important;
-            text-align: center !important;
-          }
-          .ProseMirror pre code {
-            color: #111111 !important;
-            background: transparent !important;
-            padding: 0 !important;
-            border: none !important;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-            font-size: 1.125rem !important;
-            display: inline-block !important;
-            text-align: center !important;
           }
           
-          .ProseMirror.dark pre,
+          /* Inline Code Styling - For selected text */
+          .ProseMirror code:not(pre code) {
+            color: #e11d48 !important;
+            background: rgba(251, 113, 133, 0.1) !important;
+            padding: 0.2em 0.4em !important;
+            border-radius: 3px !important;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+            font-size: 0.9em !important;
+            display: inline !important;
+            word-wrap: break-word !important;
+            font-weight: 500 !important;
+          }
+          .ProseMirror.dark code:not(pre code) {
+            color: #60a5fa !important;
+            background: rgba(96, 165, 250, 0.1) !important;
+          }
+          
+          /* Code Block Styling - Multi-line code (wraps text, no overflow) */
+          .ProseMirror pre {
+            background: #f5f5f5 !important;
+            border: 1px solid #e5e5e5 !important;
+            border-radius: 6px !important;
+            margin: 1rem 0 !important;
+            padding: 1rem !important;
+            position: relative !important;
+            display: block !important;
+            text-align: left !important;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+          }
+          .ProseMirror pre code {
+            color: #374151 !important;
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            font-family: inherit !important;
+            font-size: 0.875rem !important;
+            display: block !important;
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            line-height: 1.6 !important;
+          }
+          .ProseMirror.dark pre {
+            background: #1f2937 !important;
+            border-color: #374151 !important;
+          }
           .ProseMirror.dark pre code {
             color: #e5e7eb !important;
           }
           
-          /* Blockquote Styling - Clean Academic Style */
+          /* Blockquote Styling - Preserve alignment */
           .ProseMirror blockquote {
             border-left: 4px solid #1e40af !important;
             background: transparent !important;
             padding: 0.5rem 0 0.5rem 1.5rem !important;
-            margin: 1rem auto !important;
+            margin: 1rem 0 !important;
             border-radius: 0 !important;
             color: #111111 !important;
             position: relative !important;
             font-style: italic !important;
             display: block !important;
-            text-align: center !important;
-            max-width: 800px !important;
             font-size: 1.125rem !important;
           }
           .ProseMirror.dark blockquote {
             border-left-color: #4b5563 !important;
-            border-left-width: 4px !important;
             color: #e5e7eb !important;
           }
           
-          /* Math Block Styling - Clean Academic Style */
+          /* Math Block Styling - Preserve alignment */
           .ProseMirror div[data-type="math-block"] {
             background: transparent !important;
             border: none !important;
             border-radius: 0 !important;
             padding: 0.75rem 0 !important;
-            margin: 1rem auto !important;
+            margin: 1rem 0 !important;
             position: relative !important;
             overflow: visible !important;
             display: block !important;
-            text-align: center !important;
-            max-width: 800px !important;
           }
           .ProseMirror div[data-type="math-block"] > * {
             color: #111111 !important;
@@ -320,29 +325,36 @@ export function NotepadEditor({
             color: #e5e7eb !important;
           }
           
-          /* Special Code Block (HTML) Styling - Clean Academic Style */
+          /* Special Code Block Styling */
+          /* Special Code Block Styling */
           .ProseMirror pre[data-type="special-code"] {
-            background: transparent !important;
-            border: none !important;
-            border-radius: 0 !important;
-            padding: 0.75rem 0 !important;
-            margin: 1rem auto !important;
+            background: #f0f9ff !important;
+            border: 1px solid #bae6fd !important;
+            border-radius: 6px !important;
+            margin: 1.5rem 0 !important;
+            padding: 1rem !important;
             position: relative !important;
             display: block !important;
-            text-align: center !important;
+            overflow-x: auto !important;
+            text-align: left !important;
           }
           .ProseMirror pre[data-type="special-code"] code {
-            color: #111111 !important;
+            color: #0c4a6e !important;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-            font-size: 1.125rem !important;
-            display: inline-block !important;
-            text-align: center !important;
+            font-size: 0.875rem !important;
+            display: block !important;
+            white-space: pre !important;
+            line-height: 1.6 !important;
+          }
+          .ProseMirror.dark pre[data-type="special-code"] {
+            background: #1e3a5f !important;
+            border-color: #2563eb !important;
           }
           .ProseMirror.dark pre[data-type="special-code"] code {
-            color: #e5e7eb !important;
+            color: #93c5fd !important;
           }
           
-          /* Table Styling - Prevent Cell Overflow */
+          /* Table Styling */
           .ProseMirror table {
             border-collapse: collapse !important;
             width: 100% !important;
@@ -365,37 +377,7 @@ export function NotepadEditor({
             border-color: #4b5563 !important;
           }
           
-          /* Inline Math Styling - Only for highlighted text */
-          .ProseMirror span[data-type="math-inline"],
-          .ProseMirror span[data-type="math"],
-          .ProseMirror .math-inline {
-            color: #111111 !important;
-            font-family: 'Georgia', 'Times New Roman', serif !important;
-            font-size: 1.125rem !important;
-            display: inline !important;
-            white-space: nowrap !important;
-          }
-          .ProseMirror.dark span[data-type="math-inline"],
-          .ProseMirror.dark span[data-type="math"],
-          .ProseMirror.dark .math-inline {
-            color: #e5e7eb !important;
-          }
-          
-          /* Inline HTML/Special Code Styling - Only for highlighted text */
-          .ProseMirror span[data-type="html-inline"],
-          .ProseMirror span[data-type="special-code-inline"] {
-            color: #111111 !important;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
-            font-size: 1.125rem !important;
-            display: inline !important;
-            word-wrap: break-word !important;
-            word-break: break-word !important;
-            overflow-wrap: break-word !important;
-          }
-          .ProseMirror.dark span[data-type="html-inline"],
-          .ProseMirror.dark span[data-type="special-code-inline"] {
-            color: #e5e7eb !important;
-          }
+          /* Task Lists */
           .ProseMirror ul[data-type="taskList"] {
             list-style: none !important;
             padding-left: 0 !important;
@@ -451,7 +433,6 @@ export function NotepadEditor({
           style={{ scrollBehavior: 'auto' }}
         />
         
-        {/* Drag and drop overlay */}
         <div 
           className="absolute inset-0 bg-blue-50 dark:bg-blue-900/20 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-b-lg flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200"
           onDragOver={(e) => {

@@ -11,7 +11,8 @@ import { Editor } from '@tiptap/react';
 import { 
   Bold, 
   Italic, 
-  Underline, 
+  Underline,
+  Strikethrough,
   List, 
   ListOrdered, 
   Quote, 
@@ -31,7 +32,8 @@ import {
   Terminal,
   CheckSquare,
   Subscript as SubscriptIcon,
-  Superscript as SuperscriptIcon
+  Superscript as SuperscriptIcon,
+  FileCode
 } from 'lucide-react';
 import { useState } from 'react';
 import { ImageInsertModal } from './ImageInsertModal';
@@ -113,6 +115,23 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           title="Underline"
         >
           <Underline className="w-4 h-4" />
+        </ToolbarButton>
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          isActive={editor.isActive('strike')}
+          title="Strikethrough"
+        >
+          <Strikethrough className="w-4 h-4" />
+        </ToolbarButton>
+
+        {/* Inline Code Button - NEW */}
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          isActive={editor.isActive('code')}
+          title="Inline Code (select text to format as code)"
+        >
+          <Code className="w-4 h-4" />
         </ToolbarButton>
 
         {/* Super/Subscript */}
@@ -197,12 +216,13 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           <Quote className="w-4 h-4" />
         </ToolbarButton>
 
+        {/* Code Block Button - UPDATED with different icon */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           isActive={editor.isActive('codeBlock')}
-          title="Code Block"
+          title="Code Block (multi-line code)"
         >
-          <Code className="w-4 h-4" />
+          <FileCode className="w-4 h-4" />
         </ToolbarButton>
 
         <Separator />
@@ -261,43 +281,65 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
         <Separator />
 
-        {/* Colors */}
+        {/* Text Color - Improved with real-time updates */}
         <div className="flex items-center gap-1">
           <input
             type="color"
             onChange={(e) => {
               e.stopPropagation();
-              editor.chain().setColor(e.target.value).run();
+              editor.chain().focus().setColor(e.target.value).run();
+            }}
+            onInput={(e) => {
+              // Update color in real-time as user drags the color picker
+              const value = (e.target as HTMLInputElement).value;
+              editor.chain().focus().setColor(value).run();
             }}
             value={editor.getAttributes('textStyle').color || '#000000'}
             className="w-8 h-8 border border-slate-300 dark:border-slate-600 rounded cursor-pointer"
             title="Text Color"
           />
           <ToolbarButton
-            onClick={() => editor.chain().unsetColor().run()}
+            onClick={() => editor.chain().focus().unsetColor().run()}
+            isActive={!!editor.getAttributes('textStyle').color}
             title="Remove Text Color"
           >
             <Palette className="w-4 h-4" />
           </ToolbarButton>
         </div>
 
+        {/* Highlight - Toggle Button with Color Picker */}
         <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={() => {
+              if (editor.isActive('highlight')) {
+                // If highlighted, remove it
+                editor.chain().focus().unsetHighlight().run();
+              } else {
+                // If not highlighted, apply default highlight
+                editor.chain().focus().toggleHighlight({ color: '#ffff00' }).run();
+              }
+            }}
+            isActive={editor.isActive('highlight')}
+            title="Toggle Highlight"
+          >
+            <Highlighter className="w-4 h-4" />
+          </ToolbarButton>
           <input
             type="color"
             onChange={(e) => {
               e.stopPropagation();
-              editor.chain().setHighlight({ color: e.target.value }).run();
+              if (editor.isActive('highlight')) {
+                // Update existing highlight color
+                editor.chain().focus().setHighlight({ color: e.target.value }).run();
+              } else {
+                // Apply new highlight with selected color
+                editor.chain().focus().toggleHighlight({ color: e.target.value }).run();
+              }
             }}
             value={editor.getAttributes('highlight').color || '#ffff00'}
             className="w-8 h-8 border border-slate-300 dark:border-slate-600 rounded cursor-pointer"
-            title="Highlight Color"
+            title="Change Highlight Color"
           />
-          <ToolbarButton
-            onClick={() => editor.chain().unsetHighlight().run()}
-            title="Remove Highlight"
-          >
-            <Highlighter className="w-4 h-4" />
-          </ToolbarButton>
         </div>
 
         <Separator />

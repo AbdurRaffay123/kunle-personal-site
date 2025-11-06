@@ -107,7 +107,7 @@ export function NotepadEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4 notepad-content",
+          "prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-1 notepad-content",
       },
       handleDrop: (view, event, slice, moved) => {
         if (
@@ -219,18 +219,40 @@ export function NotepadEditor({
   }
 
   return (
-    <div className="notion-editor-container mx-auto max-w-6xl rounded-xl border border-slate-200 bg-white px-0 py-8 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+    <div className="notion-editor-container mx-auto max-w-6xl rounded-xl bg-white px-0 dark:bg-slate-900" style={{ boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)' }}>
       <style
         dangerouslySetInnerHTML={{
           __html: `
-          .ProseMirror {
-            color: var(--foreground) !important;
-            background-color: var(--card) !important;
+          /* Force white background in light mode, slate-900 in dark mode */
+          .notion-editor-container {
+            background-color: white !important;
           }
-          /* Contenteditable div margins */
+          .dark .notion-editor-container {
+            background-color: rgb(15 23 42) !important;
+          }
+          
+          .ProseMirror {
+            color: black !important;
+            background-color: white !important;
+            outline: none !important;
+            box-shadow: none !important;
+          }
+          .dark .ProseMirror {
+            color: white !important;
+            background-color: rgb(15 23 42) !important;
+          }
+          /* Remove focus ring from editor content wrapper */
+          .ProseMirror:focus,
+          .ProseMirror:focus-visible,
+          .ProseMirror:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+            ring: none !important;
+          }
+          /* Contenteditable div margins - 4px spacing */
           .ProseMirror.notepad-content {
-            margin-left: 0.5rem !important;
-            margin-right: 0.5rem !important;
+            margin-left: 11rem !important;  /* 4px */
+            margin-right: 11rem !important; /* 4px */
           }
           
           /* Lists */
@@ -466,13 +488,13 @@ export function NotepadEditor({
         `,
         }}
       />
-      <div className="sticky top-0 z-50 border-b border-slate-200 bg-[var(--card)] shadow-sm dark:border-slate-700">
+      <div className="sticky top-0 z-50 bg-white dark:bg-slate-900 rounded-t-xl">
         <NotepadToolbar editor={editor} />
       </div>
       <div className="relative">
         <EditorContent
           editor={editor}
-          className="focus-within:ring-opacity-50 max-h-[calc(100vh-300px)] min-h-[400px] overflow-auto rounded-b-lg focus-within:ring-2 focus-within:ring-blue-500"
+          className="max-h-[calc(100vh-300px)] min-h-[400px] overflow-auto rounded-b-lg"
           style={{ scrollBehavior: "auto" }}
         />
 

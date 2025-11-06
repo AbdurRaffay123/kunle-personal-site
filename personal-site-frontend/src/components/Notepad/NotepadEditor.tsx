@@ -107,7 +107,7 @@ export function NotepadEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4",
+          "prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4 notepad-content",
       },
       handleDrop: (view, event, slice, moved) => {
         if (
@@ -219,13 +219,18 @@ export function NotepadEditor({
   }
 
   return (
-    <div className="notion-editor-container mx-auto max-w-6xl rounded-xl border border-slate-200 bg-white px-0 py-8 shadow-lg sm:px-1 dark:border-slate-700 dark:bg-slate-900">
+    <div className="notion-editor-container mx-auto max-w-6xl rounded-xl border border-slate-200 bg-white px-0 py-8 shadow-lg dark:border-slate-700 dark:bg-slate-900">
       <style
         dangerouslySetInnerHTML={{
           __html: `
           .ProseMirror {
             color: var(--foreground) !important;
             background-color: var(--card) !important;
+          }
+          /* Contenteditable div margins */
+          .ProseMirror.notepad-content {
+            margin-left: 0.5rem !important;
+            margin-right: 0.5rem !important;
           }
           
           /* Lists */
@@ -323,7 +328,7 @@ export function NotepadEditor({
             color: #e5e7eb !important;
           }
           
-          /* Math Block Styling - Preserve alignment */
+          /* Math Block Styling - Center aligned */
           .ProseMirror div[data-type="math-block"] {
             background: transparent !important;
             border: none !important;
@@ -333,6 +338,7 @@ export function NotepadEditor({
             position: relative !important;
             overflow: visible !important;
             display: block !important;
+            text-align: center !important;
           }
           .ProseMirror div[data-type="math-block"] > * {
             color: #111111 !important;
@@ -446,6 +452,16 @@ export function NotepadEditor({
           .ProseMirror ul[data-type="taskList"] li > div > p + p {
             margin-top: 0.5rem !important;
             display: block !important;
+          }
+          /* Strikethrough for checked to-do items */
+          .ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div,
+          .ProseMirror ul[data-type="taskList"] li:has(input[type="checkbox"]:checked) > div {
+            text-decoration: line-through !important;
+            opacity: 0.7 !important;
+          }
+          .ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div > p,
+          .ProseMirror ul[data-type="taskList"] li:has(input[type="checkbox"]:checked) > div > p {
+            text-decoration: line-through !important;
           }
         `,
         }}

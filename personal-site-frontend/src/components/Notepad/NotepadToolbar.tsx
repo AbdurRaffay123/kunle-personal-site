@@ -76,9 +76,8 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
       className={`p-2 rounded-md transition-colors ${
         isActive
           ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-          : 'hover:bg-slate-100 dark:hover:bg-slate-700'
+          : 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-      style={{ color: isActive ? undefined : 'var(--foreground)' }}
       aria-label={title}
     >
       {children}
@@ -91,7 +90,82 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-1 p-3" style={{ backgroundColor: 'var(--card)' }}>
+      <div className="notepad-toolbar-wrapper flex flex-wrap items-center gap-0.5 p-3 bg-white dark:bg-slate-900 rounded-t-xl">
+        <style dangerouslySetInnerHTML={{ __html: `
+          /* Light mode styles */
+          .notepad-toolbar-wrapper {
+            background-color: white !important;
+            color: black !important;
+          }
+          .notepad-toolbar-wrapper button,
+          .notepad-toolbar-wrapper svg,
+          .notepad-toolbar-wrapper select,
+          .notepad-toolbar-wrapper input {
+            color: black !important;
+          }
+          .notepad-toolbar-wrapper button svg {
+            stroke: black !important;
+          }
+          /* Light mode hover - light gray */
+          .notepad-toolbar-wrapper button:hover {
+            background-color: rgb(241 245 249) !important; /* slate-100 */
+          }
+          /* Light mode active - blue */
+          .notepad-toolbar-wrapper button.bg-blue-100 {
+            background-color: rgb(219 234 254) !important; /* blue-100 */
+          }
+          .notepad-toolbar-wrapper button.bg-blue-100 svg {
+            stroke: rgb(29 78 216) !important; /* blue-700 */
+          }
+          
+          /* Dark mode styles */
+          .dark .notepad-toolbar-wrapper {
+            background-color: rgb(15 23 42) !important;
+            color: white !important;
+          }
+          .dark .notepad-toolbar-wrapper button,
+          .dark .notepad-toolbar-wrapper svg,
+          .dark .notepad-toolbar-wrapper select,
+          .dark .notepad-toolbar-wrapper input {
+            color: white !important;
+          }
+          .dark .notepad-toolbar-wrapper button svg {
+            stroke: white !important;
+          }
+          /* Dark mode hover - darker gray */
+          .dark .notepad-toolbar-wrapper button:hover {
+            background-color: rgb(51 65 85) !important; /* slate-700 */
+          }
+          /* Dark mode active - dark blue */
+          .dark .notepad-toolbar-wrapper button.bg-blue-100 {
+            background-color: rgb(30 58 138) !important; /* blue-900 */
+          }
+          .dark .notepad-toolbar-wrapper button.bg-blue-100 svg {
+            stroke: rgb(147 197 253) !important; /* blue-300 */
+          }
+          
+          /* Select dropdown - light mode */
+          .notepad-toolbar-wrapper select {
+            background-color: white !important;
+            color: black !important;
+            border-color: rgb(203 213 225) !important; /* slate-300 */
+          }
+          .notepad-toolbar-wrapper select option {
+            background-color: white !important;
+            color: black !important;
+          }
+          
+          /* Select dropdown - dark mode */
+          .dark .notepad-toolbar-wrapper select {
+            background-color: rgb(15 23 42) !important; /* slate-900 */
+            color: white !important;
+            border-color: rgb(71 85 105) !important; /* slate-600 */
+          }
+          .dark .notepad-toolbar-wrapper select option {
+            background-color: rgb(15 23 42) !important;
+            color: white !important;
+          }
+        `}} />
         {/* Text Formatting */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -164,8 +238,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
               editor.chain().toggleHeading({ level: parseInt(level) as 1 | 2 | 3 | 4 | 5 | 6 }).run();
             }
           }}
-          className="px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded"
-          style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+          className="px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
           title="Text Style"
         >
           <option value="paragraph">Paragraph</option>

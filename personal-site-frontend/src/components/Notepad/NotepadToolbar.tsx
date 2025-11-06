@@ -96,6 +96,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           .notepad-toolbar-wrapper {
             background-color: white !important;
             color: black !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
           }
           .notepad-toolbar-wrapper button,
           .notepad-toolbar-wrapper svg,
@@ -122,6 +123,7 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
           .dark .notepad-toolbar-wrapper {
             background-color: rgb(15 23 42) !important;
             color: white !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
           }
           .dark .notepad-toolbar-wrapper button,
           .dark .notepad-toolbar-wrapper svg,

@@ -488,7 +488,7 @@ export function NotepadEditor({
         `,
         }}
       />
-      <div className="sticky top-0 z-50 bg-white dark:bg-slate-900 rounded-t-xl " style={{ borderBottomWidth: '1px' }}>
+      <div className="sticky top-0 z-50 bg-white dark:bg-slate-900 rounded-t-xl">
         <NotepadToolbar editor={editor} />
       </div>
       <div className="relative">

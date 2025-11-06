@@ -485,6 +485,43 @@ export function NotepadEditor({
           .ProseMirror ul[data-type="taskList"] li:has(input[type="checkbox"]:checked) > div > p {
             text-decoration: line-through !important;
           }
+          
+          /* Custom Scrollbar - Light Mode */
+          .ProseMirror::-webkit-scrollbar {
+            width: 12px;
+          }
+          .ProseMirror::-webkit-scrollbar-track {
+            background: white;
+          }
+          .ProseMirror::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            border: 3px solid white;
+          }
+          .ProseMirror::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.2);
+          }
+          
+          /* Custom Scrollbar - Dark Mode */
+          .dark .ProseMirror::-webkit-scrollbar-track {
+            background: rgb(15 23 42);
+          }
+          .dark .ProseMirror::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgb(15 23 42);
+          }
+          .dark .ProseMirror::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+          }
+          
+          /* Firefox scrollbar */
+          .ProseMirror {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.1) white;
+          }
+          .dark .ProseMirror {
+            scrollbar-color: rgba(255, 255, 255, 0.2) rgb(15 23 42);
+          }
         `,
         }}
       />

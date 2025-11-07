@@ -33,7 +33,9 @@ import {
   CheckSquare,
   Subscript as SubscriptIcon,
   Superscript as SuperscriptIcon,
-  FileCode
+  FileCode,
+  Maximize,
+  Minimize
 } from 'lucide-react';
 import { useState } from 'react';
 import { ImageInsertModal } from './ImageInsertModal';
@@ -41,9 +43,11 @@ import { TableInsertModal } from './TableInsertModal';
 
 interface NotepadToolbarProps {
   editor: Editor | null;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
 }
 
-export function NotepadToolbar({ editor }: NotepadToolbarProps) {
+export function NotepadToolbar({ editor, isFullscreen = false, onToggleFullscreen }: NotepadToolbarProps) {
   const [showImageModal, setShowImageModal] = useState(false);
   const [showTableModal, setShowTableModal] = useState(false);
 
@@ -90,7 +94,9 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
 
   return (
     <>
-      <div className="notepad-toolbar-wrapper flex flex-wrap items-center gap-0.5 p-3 bg-white dark:bg-slate-900 rounded-t-xl">
+      <div className={`notepad-toolbar-wrapper flex flex-wrap items-center p-2 bg-white dark:bg-slate-900 rounded-t-xl ${
+        isFullscreen ? 'justify-center gap-1' : 'justify-center'
+      }`}>
         <style dangerouslySetInnerHTML={{ __html: `
           /* Light mode styles */
           .notepad-toolbar-wrapper {
@@ -465,6 +471,23 @@ export function NotepadToolbar({ editor }: NotepadToolbarProps) {
         >
           <Redo className="w-4 h-4" />
         </ToolbarButton>
+
+        <Separator />
+
+        {/* Fullscreen Toggle Button */}
+        {onToggleFullscreen && (
+          <ToolbarButton
+            onClick={onToggleFullscreen}
+            isActive={isFullscreen}
+            title={isFullscreen ? "Exit Fullscreen (ESC)" : "Enter Fullscreen"}
+          >
+            {isFullscreen ? (
+              <Minimize className="w-4 h-4" />
+            ) : (
+              <Maximize className="w-4 h-4" />
+            )}
+          </ToolbarButton>
+        )}
       </div>
 
       {/* Image Insert Modal */}

@@ -29,7 +29,7 @@ import { Placeholder } from "@tiptap/extension-placeholder";
 import { NotepadToolbar } from "./NotepadToolbar";
 import { notepadService } from "@/services/notepadService";
 import toast from "react-hot-toast";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MathBlock from "./extensions/MathBlock";
 import SpecialCodeBlock from "./extensions/SpecialCodeBlock";
 import TaskList from "@tiptap/extension-task-list";
@@ -51,6 +51,9 @@ export function NotepadEditor({
   onChange,
   placeholder = "Start writing your note…",
 }: NotepadEditorProps) {
+  // Fullscreen state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   const editor = useEditor({
     extensions: [
       Document,
@@ -205,6 +208,28 @@ export function NotepadEditor({
     }
   }, [editor]);
 
+  // Fullscreen keyboard handler (ESC to exit)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    if (isFullscreen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Prevent body scroll when fullscreen
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen]);
+
   if (!editor) {
     return (
       <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
@@ -219,7 +244,14 @@ export function NotepadEditor({
   }
 
   return (
-    <div className="notion-editor-container mx-auto max-w-6xl rounded-xl bg-white px-0 dark:bg-slate-900" style={{ boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)' }}>
+    <div 
+      className={`notion-editor-container mx-auto bg-white px-0 dark:bg-slate-900 transition-all duration-300 ${
+        isFullscreen 
+          ? 'fixed inset-0 z-9999 max-w-none rounded-none m-0 h-screen' 
+          : 'max-w-6xl rounded-xl'
+      }`}
+      style={{ boxShadow: isFullscreen ? 'none' : '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)' }}
+    >
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -522,16 +554,45 @@ export function NotepadEditor({
           .dark .ProseMirror {
             scrollbar-color: rgba(255, 255, 255, 0.2) rgb(15 23 42);
           }
+          
+          /* Fullscreen mode styles */
+          .notion-editor-container.fullscreen-active {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            z-index: 9999 !important;
+          }
+          
+          /* Adjust editor content in fullscreen */
+          .fullscreen-editor-content .ProseMirror {
+            max-height: calc(100vh - 60px) !important;
+            height: calc(100vh - 60px) !important;
+          }
         `,
         }}
       />
       <div className="sticky top-0 z-50 bg-white dark:bg-slate-900 rounded-t-xl">
-        <NotepadToolbar editor={editor} />
+        <NotepadToolbar 
+          editor={editor}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
+        />
       </div>
       <div className="relative">
         <EditorContent
           editor={editor}
-          className="max-h-[calc(100vh-300px)] min-h-[400px] overflow-auto rounded-b-lg"
+          className={`overflow-auto rounded-b-lg ${
+            isFullscreen 
+              ? 'max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]' 
+              : 'max-h-[calc(100vh-300px)] min-h-[400px]'
+          }`}
           style={{ scrollBehavior: "auto" }}
         />
 

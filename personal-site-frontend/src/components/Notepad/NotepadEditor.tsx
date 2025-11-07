@@ -363,18 +363,20 @@ export function NotepadEditor({
             color: #e5e7eb !important;
           }
           
-          /* Blockquote Styling - Preserve alignment */
+          /* Blockquote Styling - Compact single-line style */
           .ProseMirror blockquote {
             border-left: 4px solid #1e40af !important;
             background: transparent !important;
-            padding: 0.5rem 0 0.5rem 1.5rem !important;
-            margin: 1rem 0 !important;
+            padding: 0.25rem 0 0.25rem 1rem !important;
+            margin: 0.5rem 0 !important;
             border-radius: 0 !important;
             color: #111111 !important;
             position: relative !important;
             font-style: italic !important;
             display: block !important;
-            font-size: 1.125rem !important;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            min-height: auto !important;
           }
           /* --- FIXED SELECTOR --- */
           .dark .ProseMirror blockquote {

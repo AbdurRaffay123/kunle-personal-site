@@ -119,6 +119,34 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // Handle activity item click - redirect to appropriate page
+  const handleActivityClick = (activity: ActivityItem) => {
+    const { type, postId } = activity;
+    
+    switch (type) {
+      case 'blog':
+        router.push('/admin/dashboard/blogs');
+        break;
+      case 'note':
+        router.push('/admin/dashboard/notes');
+        break;
+      case 'project':
+      case 'research':
+        router.push('/admin/dashboard/portfolio');
+        break;
+      case 'comment':
+        // Redirect to the post type where the comment was made
+        if (activity.postType === 'blog') {
+          router.push('/admin/dashboard/blogs');
+        } else {
+          router.push('/admin/dashboard/portfolio');
+        }
+        break;
+      default:
+        console.log('Unknown activity type:', type);
+    }
+  };
+
   // Format time ago
   const formatTimeAgo = (dateString: string) => {
     // Use a fixed reference date to prevent hydration mismatch
@@ -265,7 +293,12 @@ export default function AdminDashboardPage() {
           ) : activities.length > 0 ? (
             <div className="space-y-3">
               {activities.map((activity, index) => (
-                <div key={activity.id || index} className="flex items-start justify-between p-4 rounded-lg hover:shadow-md transition-all duration-300 group cursor-pointer" style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}>
+                <div 
+                  key={activity.id || index} 
+                  onClick={() => handleActivityClick(activity)}
+                  className="flex items-start justify-between p-4 rounded-lg hover:shadow-md transition-all duration-300 group cursor-pointer" 
+                  style={{ backgroundColor: 'var(--admin-quick-action-card-bg)' }}
+                >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>

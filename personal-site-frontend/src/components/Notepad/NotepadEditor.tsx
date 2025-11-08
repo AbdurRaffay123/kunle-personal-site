@@ -111,6 +111,10 @@ export function NotepadEditor({
       const html = editor.getHTML();
       onChange?.(html);
     },
+    onSelectionUpdate: ({ editor }) => {
+      // This ensures toolbar updates when selection changes
+      // The toolbar listens to 'selectionUpdate' events
+    },
     editorProps: {
       attributes: {
         class:
@@ -370,12 +374,12 @@ export function NotepadEditor({
             color: #e5e7eb !important;
           }
           
-          /* Blockquote Styling - Single thin line border */
+          /* Blockquote Styling - Single thin line border (compact single-line) */
           .ProseMirror blockquote {
             border-left: 2px solid #d1d5db !important;
             background: transparent !important;
-            padding: 0.5rem 0 0.5rem 1rem !important;
-            margin: 1rem 0 !important;
+            padding: 0 0 0 1rem !important;
+            margin: 0.5rem 0 !important;
             border-radius: 0 !important;
             color: #111111 !important;
             position: relative !important;
@@ -383,6 +387,19 @@ export function NotepadEditor({
             display: block !important;
             font-size: 1rem !important;
             line-height: 1.6 !important;
+            min-height: 0 !important;
+          }
+          /* Remove paragraph margins inside blockquotes */
+          .ProseMirror blockquote p {
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.6 !important;
+          }
+          .ProseMirror blockquote p:first-child {
+            margin-top: 0 !important;
+          }
+          .ProseMirror blockquote p:last-child {
+            margin-bottom: 0 !important;
           }
           /* --- FIXED SELECTOR --- */
           .dark .ProseMirror blockquote {

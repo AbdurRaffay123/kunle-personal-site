@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef , useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import AdminLayout from "@/components/Admin/AdminLayout";
@@ -218,32 +218,31 @@ export default function AdminNotesPage() {
     setEditorContent('');
   };
 
-  // Auto-save functionality
-  const autoSave = async (content: string) => {
-    if (!currentNote || !content.trim() || currentNote._id.startsWith('temp-')) return;
+  // Auto-save functionality - Optimized with useCallback
+  const autoSave = useCallback(async (content: string, noteId: string, noteTitle: string) => {
+    if (!content.trim() || noteId.startsWith('temp-')) return;
     
-    setIsAutoSaving(true);
     try {
       // Actually save to backend
-      await updateNote(currentNote._id, { content });
-      console.log('Auto-saved content for note:', currentNote.title);
+      await updateNote(noteId, { content });
+      console.log('Auto-saved content for note:', noteTitle);
     } catch (error) {
       console.error('Auto-save failed:', error);
-    } finally {
-      setIsAutoSaving(false);
     }
-  };
+  }, []);
 
-  // Debounced auto-save effect
+  // Debounced auto-save effect - Increased delay to reduce frequency
   useEffect(() => {
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
 
-    if (editorContent && isEditorMode) {
+    if (editorContent && isEditorMode && currentNote) {
+      setIsAutoSaving(true);
       autoSaveTimeoutRef.current = setTimeout(() => {
-        autoSave(editorContent);
-      }, 2000); // Auto-save after 2 seconds of inactivity
+        autoSave(editorContent, currentNote._id, currentNote.title);
+        setIsAutoSaving(false);
+      }, 3000); // Auto-save after 3 seconds of inactivity (increased from 2s)
     }
 
     return () => {
@@ -251,7 +250,7 @@ export default function AdminNotesPage() {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [editorContent, isEditorMode]);
+  }, [editorContent, isEditorMode, currentNote, autoSave]);
 
   // Show editor mode if active
   if (isEditorMode && currentNote) {

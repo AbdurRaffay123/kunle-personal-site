@@ -37,7 +37,7 @@ import {
   Maximize,
   Minimize
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, memo, useCallback, useEffect } from 'react';
 import { ImageInsertModal } from './ImageInsertModal';
 import { TableInsertModal } from './TableInsertModal';
 
@@ -47,50 +47,74 @@ interface NotepadToolbarProps {
   onToggleFullscreen?: () => void;
 }
 
+// Memoized ToolbarButton component to prevent unnecessary re-renders
+const ToolbarButton = memo(({ 
+  onClick, 
+  isActive = false, 
+  disabled = false, 
+  children, 
+  title 
+}: {
+  onClick: () => void;
+  isActive?: boolean;
+  disabled?: boolean;
+  children: React.ReactNode;
+  title: string;
+}) => (
+  <button
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    }}
+    onMouseDown={(e) => e.preventDefault()}
+    disabled={disabled}
+    title={title}
+    className={`p-2 rounded-md transition-colors ${
+      isActive
+        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+        : 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700'
+    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+    aria-label={title}
+  >
+    {children}
+  </button>
+));
+
+ToolbarButton.displayName = 'ToolbarButton';
+
+// Memoized Separator component
+const Separator = memo(() => (
+  <div className="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1" />
+));
+
+Separator.displayName = 'Separator';
+
 export function NotepadToolbar({ editor, isFullscreen = false, onToggleFullscreen }: NotepadToolbarProps) {
   const [showImageModal, setShowImageModal] = useState(false);
   const [showTableModal, setShowTableModal] = useState(false);
+  
+  // Force re-render when editor state changes (for active states)
+  const [, forceUpdate] = useState({});
+
+  // Listen to editor updates for active state changes
+  useEffect(() => {
+    if (!editor) return;
+    
+    const handleUpdate = () => forceUpdate({});
+    
+    editor.on('selectionUpdate', handleUpdate);
+    editor.on('transaction', handleUpdate);
+    
+    return () => {
+      editor.off('selectionUpdate', handleUpdate);
+      editor.off('transaction', handleUpdate);
+    };
+  }, [editor]);
 
   if (!editor) {
     return null;
   }
-
-  const ToolbarButton = ({ 
-    onClick, 
-    isActive = false, 
-    disabled = false, 
-    children, 
-    title 
-  }: {
-    onClick: () => void;
-    isActive?: boolean;
-    disabled?: boolean;
-    children: React.ReactNode;
-    title: string;
-  }) => (
-    <button
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onClick();
-      }}
-      onMouseDown={(e) => e.preventDefault()}
-      disabled={disabled}
-      title={title}
-      className={`p-2 rounded-md transition-colors ${
-        isActive
-          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-          : 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-      aria-label={title}
-    >
-      {children}
-    </button>
-  );
-
-  const Separator = () => (
-    <div className="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1" />
-  );
 
   return (
     <>

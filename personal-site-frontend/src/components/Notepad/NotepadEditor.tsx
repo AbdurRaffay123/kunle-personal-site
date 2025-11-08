@@ -63,7 +63,11 @@ export function NotepadEditor({
         codeBlock: false,
       }),
       // Add Code mark separately for inline code (select text and apply)
-      Code,
+      Code.configure({
+        HTMLAttributes: {
+          class: 'inline-code',
+        },
+      }),
       // Add CodeBlock separately for multi-line code blocks
       CodeBlock,
       Image.configure({
@@ -311,22 +315,25 @@ export function NotepadEditor({
             color: var(--foreground) !important;
           }
           
-          /* Inline Code Styling - For selected text */
+          /* Inline Code Styling - Grey color for both modes */
           .ProseMirror code:not(pre code) {
-            color: #e11d48 !important;
-            background: rgba(251, 113, 133, 0.1) !important;
+            color: #6b7280 !important;
+            background: rgba(107, 114, 128, 0.1) !important;
             padding: 0.2em 0.4em !important;
-            border-radius: 3px !important;
+            border-radius: 4px !important;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
             font-size: 0.9em !important;
             display: inline !important;
             word-wrap: break-word !important;
-            font-weight: 500 !important;
+            font-weight: 400 !important;
+            user-select: text !important;
+            pointer-events: auto !important;
+            cursor: text !important;
           }
           /* --- FIXED SELECTOR --- */
           .dark .ProseMirror code:not(pre code) {
-            color: #60a5fa !important;
-            background: rgba(96, 165, 250, 0.1) !important;
+            color: #9ca3af !important;
+            background: rgba(156, 163, 175, 0.15) !important;
           }
           
           /* Code Block Styling - Multi-line code (wraps text, no overflow) */
@@ -363,24 +370,23 @@ export function NotepadEditor({
             color: #e5e7eb !important;
           }
           
-          /* Blockquote Styling - Compact single-line style */
+          /* Blockquote Styling - Single thin line border */
           .ProseMirror blockquote {
-            border-left: 4px solid #1e40af !important;
+            border-left: 2px solid #d1d5db !important;
             background: transparent !important;
-            padding: 0.25rem 0 0.25rem 1rem !important;
-            margin: 0.5rem 0 !important;
+            padding: 0.5rem 0 0.5rem 1rem !important;
+            margin: 1rem 0 !important;
             border-radius: 0 !important;
             color: #111111 !important;
             position: relative !important;
             font-style: italic !important;
             display: block !important;
             font-size: 1rem !important;
-            line-height: 1.5 !important;
-            min-height: auto !important;
+            line-height: 1.6 !important;
           }
           /* --- FIXED SELECTOR --- */
           .dark .ProseMirror blockquote {
-            border-left-color: #4b5563 !important;
+            border-left-color: #6b7280 !important;
             color: #e5e7eb !important;
           }
           

@@ -324,21 +324,22 @@ html, body {
 }
 
 .prose blockquote {
-  border-left: 4px solid #2563EB;
-  padding-left: 1.5em;
+  border-left: 2px solid #d1d5db;
+  background: transparent;
+  padding: 0.5rem 0 0.5rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0;
+  color: #111111;
+  position: relative;
   font-style: italic;
-  margin-top: 1.8em;
-  margin-bottom: 1.8em;
-  color: #64748B;
-  background: #F1F5F9;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
+  display: block;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .dark .prose blockquote {
-  color: #94A3B8;
-  background: #1E293B;
-  border-left-color: #3B82F6;
+  border-left-color: #6b7280;
+  color: #e5e7eb;
 }
 
 .prose img {

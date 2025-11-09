@@ -34,7 +34,7 @@ const defaultAllowedOrigins = [
   'https://kunle-personal-site-frontend.onrender.com',
   'http://localhost:3000',
   'http://localhost:3001',
-  'https://www.olukunleowolabi.com/'
+  'https://www.olukunleowolabi.com'
 ];
 
 // Parse ALLOWED_ORIGINS from environment if provided (comma-separated). Trim entries and filter empty values.

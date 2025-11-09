@@ -1,6 +1,8 @@
+const path = require('path');
 const mongoose = require('mongoose');
 const User = require('../models/User');
-require('dotenv').config();
+// Load .env from project root (two levels up from src/seeders)
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // ============================================
 // IMPORTANT: You can update these via environment variables instead of editing this file.

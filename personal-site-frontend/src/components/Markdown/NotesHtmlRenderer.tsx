@@ -278,12 +278,12 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
           text-decoration: line-through !important;
         }
         
-        /* Blockquote Styling - Single thin line border */
+        /* Blockquote Styling - Single thin line border (compact, matches Notepad) */
         .prose blockquote {
           border-left: 2px solid #d1d5db !important;
           background: transparent !important;
-          padding: 0.5rem 0 0.5rem 1rem !important;
-          margin: 1rem 0 !important;
+          padding: 0 0 0 1rem !important;
+          margin: 0.5rem 0 !important;
           border-radius: 0 !important;
           color: #111111 !important;
           position: relative !important;
@@ -291,6 +291,19 @@ export default function NotesHtmlRenderer({ content, className = "" }: NotesHtml
           display: block !important;
           font-size: 1rem !important;
           line-height: 1.6 !important;
+          min-height: 0 !important;
+        }
+        /* Remove paragraph margins inside blockquotes - each line has its own border */
+        .prose blockquote p {
+          margin: 0 !important;
+          padding: 0 !important;
+          line-height: 1.6 !important;
+        }
+        .prose blockquote p:first-child {
+          margin-top: 0 !important;
+        }
+        .prose blockquote p:last-child {
+          margin-bottom: 0 !important;
         }
         .dark .prose blockquote {
           border-left-color: #6b7280 !important;

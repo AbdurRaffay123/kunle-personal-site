@@ -326,8 +326,8 @@ html, body {
 .prose blockquote {
   border-left: 2px solid #d1d5db;
   background: transparent;
-  padding: 0.5rem 0 0.5rem 1rem;
-  margin: 1rem 0;
+  padding: 0 0 0 1rem;
+  margin: 0.5rem 0;
   border-radius: 0;
   color: #111111;
   position: relative;
@@ -335,6 +335,22 @@ html, body {
   display: block;
   font-size: 1rem;
   line-height: 1.6;
+  min-height: 0;
+}
+
+/* Remove paragraph margins inside blockquotes - each line has its own border */
+.prose blockquote p {
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+.prose blockquote p:first-child {
+  margin-top: 0;
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
 }
 
 .dark .prose blockquote {

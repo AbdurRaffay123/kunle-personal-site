@@ -63,8 +63,8 @@ export default function HtmlRenderer({ content, className = "" }: HtmlRendererPr
           prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:text-slate-900 dark:prose-code:text-slate-100 
           prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
           prose-pre:bg-slate-900 dark:prose-pre:bg-slate-950 prose-pre:text-slate-100
-          prose-blockquote:border-l-2 prose-blockquote:border-l-gray-300 dark:prose-blockquote:border-l-gray-600 
-          prose-blockquote:bg-transparent prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:italic
+        prose-blockquote:border-l-2 prose-blockquote:border-l-gray-300 dark:prose-blockquote:border-l-gray-600 
+        prose-blockquote:bg-transparent prose-blockquote:py-0 prose-blockquote:px-0 prose-blockquote:italic
           prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4
           prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4
           prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-li:my-1 prose-li:leading-relaxed
@@ -78,12 +78,12 @@ export default function HtmlRenderer({ content, className = "" }: HtmlRendererPr
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
       <style jsx global>{`
-        /* Blockquote Styling - Single thin line border (consistent with NotesHtmlRenderer) */
+        /* Blockquote Styling - Single thin line border (compact, matches Notepad) */
         .prose blockquote {
           border-left: 2px solid #d1d5db !important;
           background: transparent !important;
-          padding: 0.5rem 0 0.5rem 1rem !important;
-          margin: 1rem 0 !important;
+          padding: 0 0 0 1rem !important;
+          margin: 0.5rem 0 !important;
           border-radius: 0 !important;
           color: #111111 !important;
           position: relative !important;
@@ -91,6 +91,19 @@ export default function HtmlRenderer({ content, className = "" }: HtmlRendererPr
           display: block !important;
           font-size: 1rem !important;
           line-height: 1.6 !important;
+          min-height: 0 !important;
+        }
+        /* Remove paragraph margins inside blockquotes - each line has its own border */
+        .prose blockquote p {
+          margin: 0 !important;
+          padding: 0 !important;
+          line-height: 1.6 !important;
+        }
+        .prose blockquote p:first-child {
+          margin-top: 0 !important;
+        }
+        .prose blockquote p:last-child {
+          margin-bottom: 0 !important;
         }
         .dark .prose blockquote {
           border-left-color: #6b7280 !important;

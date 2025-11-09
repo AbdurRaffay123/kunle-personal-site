@@ -3,18 +3,17 @@ const User = require('../models/User');
 require('dotenv').config();
 
 // ============================================
-// IMPORTANT: Change these values to update your admin credentials
+// IMPORTANT: You can update these via environment variables instead of editing this file.
+// Set the following in your .env (project root) to override defaults:
+//   ADMIN_EMAIL=your-admin-email@example.com
+//   ADMIN_PASSWORD=YourSecurePasswordHere
+//   OLD_EMAIL=previous-admin-email@example.com   # optional, only if you're changing email
+// The script falls back to the existing constants when env vars are not present.
 // ============================================
-// Your NEW email address (the one you want to use for login)
-const ADMIN_EMAIL = 'admin@blog.co';
-
-// Your NEW password (the one you want to use for login)
-const ADMIN_PASSWORD = 'Hx12890#@12341';
-
-// OPTIONAL: Your OLD email address (only fill this if you're changing your email)
-// If you're only changing your password, leave this empty: const OLD_EMAIL = '';
-// If you're changing your email, put your current/old email here
-const OLD_EMAIL = '';
+// Read credentials from environment with safe defaults and normalize email values.
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@blog.co').toLowerCase().trim();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Hx12890#@12341';
+const OLD_EMAIL = process.env.OLD_EMAIL ? process.env.OLD_EMAIL.toLowerCase().trim() : '';
 // ============================================
 
 const seedAdmin = async () => {

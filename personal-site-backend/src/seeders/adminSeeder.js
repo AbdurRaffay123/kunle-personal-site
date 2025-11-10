@@ -10,7 +10,7 @@ const User = require('../models/User');
 // process.env.MONGODB_URI when connecting.
 // ============================================
 // Your NEW email address (the one you want to use for login)
-const ADMIN_EMAIL = 'admin@blog.co';
+const ADMIN_EMAIL = 'admin@olukunleowolabi.com';
 
 // Your NEW password (the one you want to use for login)
 const ADMIN_PASSWORD = 'Hx12890#@12341';

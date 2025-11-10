@@ -260,10 +260,38 @@ export async function deleteNote(id: string): Promise<{ message: string }> {
 }
 
 export async function getAdminNotes(): Promise<Note[]> {
-  const response = await fetchAPI<{ success: boolean; data: { notes: Note[] } }>("/api/notes", {
-    cache: "no-store",
-  });
-  return response.data.notes;
+  try {
+    const response = await fetchAPI<{ success: boolean; data: { notes: Note[] } }>("/api/notes", {
+      cache: "no-store",
+    });
+    
+    // Check if response has the expected structure
+    if (!response || !response.data || !Array.isArray(response.data.notes)) {
+      console.error('Invalid response structure from /api/notes:', response);
+      throw new APIError('Invalid response structure from server', 500);
+    }
+    
+    return response.data.notes;
+  } catch (error) {
+    // Log detailed error for debugging
+    if (error instanceof APIError) {
+      console.error('API Error in getAdminNotes:', {
+        message: error.message,
+        status: error.status,
+        data: error.data
+      });
+      
+      // If it's a 401, provide a more helpful error message
+      if (error.status === 401) {
+        throw new APIError(
+          'Authentication required. Please log in again.',
+          401,
+          error.data
+        );
+      }
+    }
+    throw error;
+  }
 }
 
 // Contact API

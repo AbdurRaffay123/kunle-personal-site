@@ -51,15 +51,33 @@ export default function AdminNotesPage() {
   // Load notes from backend
   useEffect(() => {
     const loadNotes = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthenticated) {
+        console.log('Not authenticated, skipping notes load');
+        return;
+      }
       
       try {
         setLoading(true);
+        console.log('Loading notes from API...');
         const fetchedNotes = await getAdminNotes();
-        setNotes(fetchedNotes);
-      } catch (error) {
+        console.log('Notes loaded successfully:', fetchedNotes?.length || 0, 'notes');
+        setNotes(fetchedNotes || []);
+      } catch (error: any) {
         console.error('Error loading notes:', error);
-        toast.error('Failed to load notes');
+        
+        // Show more specific error messages
+        if (error?.status === 401) {
+          toast.error('Authentication required. Please log in again.');
+          // Optionally redirect to login
+          // router.push('/admin/login');
+        } else if (error?.message) {
+          toast.error(`Failed to load notes: ${error.message}`);
+        } else {
+          toast.error('Failed to load notes. Please check your connection.');
+        }
+        
+        // Set empty array on error to prevent UI issues
+        setNotes([]);
       } finally {
         setLoading(false);
       }

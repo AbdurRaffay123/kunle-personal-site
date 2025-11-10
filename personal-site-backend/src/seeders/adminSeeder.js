@@ -1,22 +1,20 @@
-const path = require('path');
 const mongoose = require('mongoose');
 const User = require('../models/User');
-// Load .env from project root (two levels up from src/seeders)
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // ============================================
-// IMPORTANT: You can update these via environment variables instead of editing this file.
-// Set the following in your .env (project root) to override defaults:
-//   ADMIN_EMAIL=your-admin-email@example.com
-//   ADMIN_PASSWORD=YourSecurePasswordHere
-//   OLD_EMAIL=previous-admin-email@example.com   # optional, only if you're changing email
-// The script falls back to the existing constants when env vars are not present.
+// IMPORTANT: Seeder uses hard-coded admin credentials below.
+// To update credentials, edit these constants and run `npm run seed:admin`.
+// This file intentionally does NOT load .env or rely on dotenv.
+// MongoDB connection URI must be provided by the environment where you run the seeder
+// (e.g., set MONGODB_URI in your shell or deploy platform). The seeder will use
+// process.env.MONGODB_URI when connecting.
 // ============================================
-// Read credentials from environment with safe defaults and normalize email values.
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@blog.co').toLowerCase().trim();
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Hx12890#@12341';
-const OLD_EMAIL = process.env.OLD_EMAIL ? process.env.OLD_EMAIL.toLowerCase().trim() : '';
+const ADMIN_EMAIL = 'admin@blog.co';
+const ADMIN_PASSWORD = 'Hx12890#@12341';
+const OLD_EMAIL = '';
 // ============================================
+
+// (Credentials are hard-coded above; this file intentionally does not read from .env)
 
 const seedAdmin = async () => {
   try {

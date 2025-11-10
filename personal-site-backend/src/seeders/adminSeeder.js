@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
+require('dotenv').config();
 
 // ============================================
 // IMPORTANT: Seeder uses hard-coded admin credentials below.

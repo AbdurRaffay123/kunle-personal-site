@@ -32,15 +32,26 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       }
     );
 
-    // Observe headings
-    headings.forEach((heading) => {
-      const element = document.getElementById(heading.id);
-      if (element) {
-        observer.observe(element);
-      }
-    });
+    // Small delay to ensure DOM is ready, especially for large heading lists
+    const observeHeadings = () => {
+      headings.forEach((heading) => {
+        const element = document.getElementById(heading.id);
+        if (element) {
+          observer.observe(element);
+        }
+      });
+    };
 
-    return () => observer.disconnect();
+    // Immediate observation for most cases
+    observeHeadings();
+
+    // Fallback observation after a short delay for slower renders
+    const fallbackTimeout = setTimeout(observeHeadings, 100);
+
+    return () => {
+      clearTimeout(fallbackTimeout);
+      observer.disconnect();
+    };
   }, [headings]);
 
   // Scroll handler for TOC clicks

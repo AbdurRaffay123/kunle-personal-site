@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
-require('dotenv').config();
 
 // ============================================
-// IMPORTANT: Change these values to update your admin credentials
+// IMPORTANT: Seeder uses hard-coded admin credentials below.
+// To update credentials, edit these constants and run `npm run seed:admin`.
+// This file intentionally does NOT load .env or rely on dotenv.
+// MongoDB connection URI must be provided by the environment where you run the seeder
+// (e.g., set MONGODB_URI in your shell or deploy platform). The seeder will use
+// process.env.MONGODB_URI when connecting.
 // ============================================
 // Your NEW email address (the one you want to use for login)
-const ADMIN_EMAIL = 'admin@olukunleowolabi.com';
+const ADMIN_EMAIL = 'admin@blog.co';
 
 // Your NEW password (the one you want to use for login)
 const ADMIN_PASSWORD = 'Hx12890#@12341';
@@ -16,6 +20,8 @@ const ADMIN_PASSWORD = 'Hx12890#@12341';
 // If you're changing your email, put your current/old email here
 const OLD_EMAIL = '';
 // ============================================
+
+// (Credentials are hard-coded above; this file intentionally does not read from .env)
 
 const seedAdmin = async () => {
   try {

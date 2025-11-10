@@ -26,12 +26,28 @@ const app = express();
 // Middlewares
 app.use(morgan('combined'));
 // CORS configuration
-const allowedOrigins = [
+// Default list of allowed origins. Can be overridden by setting ALLOWED_ORIGINS in the .env file
+// Format: comma-separated list. Example:
+//   ALLOWED_ORIGINS=https://website-2025-backend-1.onrender.com,https://kunle-personal-site-frontend.onrender.com,http://localhost:3000
+const defaultAllowedOrigins = [
   'https://website-2025-backend-1.onrender.com',
   'https://kunle-personal-site-frontend.onrender.com',
   'http://localhost:3000',
-  'http://localhost:3001'
+  'http://localhost:3001',
+  'https://www.olukunleowolabi.com'
 ];
+
+// Parse ALLOWED_ORIGINS from environment if provided (comma-separated). Trim entries and filter empty values.
+const allowedOrigins = (() => {
+  const env = process.env.ALLOWED_ORIGINS;
+  if (!env) return defaultAllowedOrigins;
+  try {
+    return env.split(',').map(s => s.trim()).filter(Boolean);
+  } catch (e) {
+    console.error('Failed to parse ALLOWED_ORIGINS, falling back to defaults:', e);
+    return defaultAllowedOrigins;
+  }
+})();
 
 // Log allowed origins for debugging
 console.log('Allowed CORS origins:', allowedOrigins);

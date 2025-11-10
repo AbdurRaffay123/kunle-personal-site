@@ -6,7 +6,7 @@ require('dotenv').config();
 // IMPORTANT: Change these values to update your admin credentials
 // ============================================
 // Your NEW email address (the one you want to use for login)
-const ADMIN_EMAIL = 'admin@blog.co';
+const ADMIN_EMAIL = 'admin@olukunleowolabi.com';
 
 // Your NEW password (the one you want to use for login)
 const ADMIN_PASSWORD = 'Hx12890#@12341';

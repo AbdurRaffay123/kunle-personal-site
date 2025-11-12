@@ -33,6 +33,11 @@ export default function AdminCommentsPage() {
 
   // Helper function to fetch post title
   const fetchPostTitle = async (postId: string, postType: string, apiUrl: string): Promise<string> => {
+    // Validate postId format (MongoDB ObjectId is 24 hex characters)
+    if (!postId || postId.length !== 24 || !/^[0-9a-fA-F]{24}$/.test(postId)) {
+      return postId; // Return postId as-is if invalid format
+    }
+
     try {
       let endpoint = '';
       if (postType === 'note') {
@@ -41,17 +46,31 @@ export default function AdminCommentsPage() {
         endpoint = `/api/blogs/${postId}`;
       } else if (postType === 'project') {
         endpoint = `/api/projects/${postId}`;
+      } else {
+        return postId; // Unknown post type
       }
 
-      const response = await fetch(`${apiUrl}${endpoint}`);
+      const response = await fetch(`${apiUrl}${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        // If 404 or other error, silently return the postId (don't log to avoid console spam)
+        return postId;
+      }
+      
       const data = await response.json();
       
-      if (data.success) {
+      if (data.success && data.data) {
         return data.data?.note?.title || data.data?.blog?.title || data.data?.project?.title || postId;
       }
       return postId;
     } catch (error) {
-      console.error(`Error fetching ${postType} title:`, error);
+      // Silently handle errors to avoid console spam
       return postId;
     }
   };

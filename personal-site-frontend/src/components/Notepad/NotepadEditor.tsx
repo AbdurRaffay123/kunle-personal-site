@@ -39,6 +39,7 @@ import Subscript from "@tiptap/extension-subscript";
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import Document from "@tiptap/extension-document";
 import Youtube from "@tiptap/extension-youtube";
+import { useSidebar } from "@/components/Admin/AdminLayout";
 
 interface NotepadEditorProps {
   content?: string;
@@ -53,6 +54,9 @@ export function NotepadEditor({
 }: NotepadEditorProps) {
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // Get sidebar state to hide toolbar when sidebar is open on mobile
+  // If used outside AdminLayout, context will return default { sidebarOpen: false }
+  const { sidebarOpen } = useSidebar();
 
   const editor = useEditor({
     extensions: [
@@ -256,7 +260,7 @@ export function NotepadEditor({
       className={`notion-editor-container mx-auto bg-white px-0 dark:bg-slate-900 transition-all duration-300 ${
         isFullscreen 
           ? 'fixed inset-0 z-9999 max-w-none rounded-none m-0 h-screen' 
-          : 'max-w-6xl rounded-xl'
+          : 'w-full max-w-6xl rounded-xl'
       }`}
       style={{ boxShadow: isFullscreen ? 'none' : '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)' }}
     >
@@ -289,10 +293,28 @@ export function NotepadEditor({
             box-shadow: none !important;
             ring: none !important;
           }
-          /* Contenteditable div margins - 4px spacing */
+          /* Contenteditable div margins - responsive spacing */
           .ProseMirror.notepad-content {
-            margin-left: 11rem !important;  /* 4px */
-            margin-right: 11rem !important; /* 4px */
+            margin-left: 0.25rem !important;
+            margin-right: 0.25rem !important;
+          }
+          @media (min-width: 500px) {
+            .ProseMirror.notepad-content {
+              margin-left: 0.5rem !important;
+              margin-right: 0.5rem !important;
+            }
+          }
+          @media (min-width: 640px) {
+            .ProseMirror.notepad-content {
+              margin-left: 1rem !important;
+              margin-right: 1rem !important;
+            }
+          }
+          @media (min-width: 1024px) {
+            .ProseMirror.notepad-content {
+              margin-left: 11rem !important;
+              margin-right: 11rem !important;
+            }
           }
           
           /* Lists */
@@ -603,7 +625,9 @@ export function NotepadEditor({
         `,
         }}
       />
-      <div className="sticky top-0 z-50 bg-white dark:bg-slate-900 rounded-t-xl">
+      <div className={`sticky top-0 z-50 bg-white dark:bg-slate-900 rounded-t-xl transition-opacity duration-300 ${
+        sidebarOpen ? 'md:opacity-100 opacity-0 pointer-events-none md:pointer-events-auto' : 'opacity-100'
+      }`}>
         <NotepadToolbar 
           editor={editor}
           isFullscreen={isFullscreen}
@@ -616,7 +640,7 @@ export function NotepadEditor({
           className={`overflow-auto rounded-b-lg ${
             isFullscreen 
               ? 'max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]' 
-              : 'max-h-[calc(100vh-300px)] min-h-[400px]'
+              : 'max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-180px)] md:max-h-[calc(100vh-250px)] lg:max-h-[calc(100vh-300px)] min-h-[250px] sm:min-h-[300px] md:min-h-[350px] lg:min-h-[400px]'
           }`}
           style={{ scrollBehavior: "auto" }}
         />

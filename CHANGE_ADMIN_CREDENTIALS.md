@@ -71,7 +71,7 @@ Press `Ctrl + S` (Windows/Linux) or `Cmd + S` (Mac) to save.
 
 **Note:** If you get an error about MongoDB connection, make sure you have a `.env` file with `MONGODB_URI` set, or run:
 ```bash
-MONGODB_URI="your_mongodb_connection_string" npm run seed:admin
+ MONGODB_URI="mongodb+srv://kraffay96_db_user:yWBYIenmNxhRmmgr@kunle-personal-site.t5ykszd.mongodb.net/notes?retryWrites=true&w=majority&appName=Kunle-Personal-site" npm run seed:admin
 ```
 
 ## ✅ Step 5: Check the Result

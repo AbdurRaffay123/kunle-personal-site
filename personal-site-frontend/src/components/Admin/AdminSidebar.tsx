@@ -35,10 +35,10 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile overlay - transparent in light mode, semi-transparent in dark mode */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/0 dark:bg-black/50 z-40 md:hidden"
           onClick={onClose}
         />
       )}

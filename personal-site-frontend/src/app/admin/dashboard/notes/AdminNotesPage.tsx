@@ -51,33 +51,15 @@ export default function AdminNotesPage() {
   // Load notes from backend
   useEffect(() => {
     const loadNotes = async () => {
-      if (!isAuthenticated) {
-        console.log('Not authenticated, skipping notes load');
-        return;
-      }
+      if (!isAuthenticated) return;
       
       try {
         setLoading(true);
-        console.log('Loading notes from API...');
         const fetchedNotes = await getAdminNotes();
-        console.log('Notes loaded successfully:', fetchedNotes?.length || 0, 'notes');
-        setNotes(fetchedNotes || []);
-      } catch (error: any) {
+        setNotes(fetchedNotes);
+      } catch (error) {
         console.error('Error loading notes:', error);
-        
-        // Show more specific error messages
-        if (error?.status === 401) {
-          toast.error('Authentication required. Please log in again.');
-          // Optionally redirect to login
-          // router.push('/admin/login');
-        } else if (error?.message) {
-          toast.error(`Failed to load notes: ${error.message}`);
-        } else {
-          toast.error('Failed to load notes. Please check your connection.');
-        }
-        
-        // Set empty array on error to prevent UI issues
-        setNotes([]);
+        toast.error('Failed to load notes');
       } finally {
         setLoading(false);
       }
@@ -275,7 +257,7 @@ export default function AdminNotesPage() {
     const isEditingExisting = !currentNote._id.startsWith('temp-');
     return (
       <AdminLayout title={isEditingExisting ? "Edit Note Content" : "Create New Note"}>
-        <div className="space-y-6">
+        <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6 w-full">
           {/* Back Button - Navigate to Notes List */}
           <div className="flex justify-start">
             <button
@@ -284,60 +266,66 @@ export default function AdminNotesPage() {
                 setCurrentNote(null);
                 setEditorContent('');
               }}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
+              className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
             >
-              <ArrowLeftIcon className="w-4 h-4 mr-2" />
-              Back to Notes List
+              <ArrowLeftIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back to Notes List</span>
+              <span className="sm:hidden">Back</span>
             </button>
           </div>
           
-          {/* Editor Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          {/* Editor Header - Responsive */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-0">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-slate-900 dark:text-slate-100 truncate">
                 {currentNote.title}
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-0.5 sm:mt-1 truncate">
                 Topic: {currentNote.topic} • {currentNote.tags.length > 0 && `Tags: ${currentNote.tags.join(', ')}`}
               </p>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 md:space-x-3 flex-shrink-0">
               {/* Auto-save indicator */}
               {isAutoSaving && (
-                <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-                  Auto-saving...
+                <div className="flex items-center text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-blue-600 mr-1 sm:mr-2"></div>
+                  <span className="hidden sm:inline">Auto-saving...</span>
                 </div>
               )}
               {!isAutoSaving && editorContent && (
-                <div className="text-sm text-green-600 dark:text-green-400">
-                  ✓ Auto-saved
+                <div className="text-xs sm:text-sm text-green-600 dark:text-green-400">
+                  <span className="hidden sm:inline">✓ Auto-saved</span>
+                  <span className="sm:hidden">✓</span>
                 </div>
               )}
               
               <button
                 onClick={handleEditorCancel}
-                className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+                className="px-1.5 py-1 sm:px-2 sm:py-1.5 md:px-4 md:py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
               >
-                Cancel
+                <span className="hidden sm:inline">Cancel</span>
+                <span className="sm:hidden">✕</span>
               </button>
               <button
                 onClick={handleEditorSave}
-                className="bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:scale-105 text-white px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:scale-105 text-white px-1.5 py-1 sm:px-2 sm:py-1.5 md:px-4 md:py-2 text-xs sm:text-sm rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 cursor-pointer"
               >
-                Save & Finish
+                <span className="hidden sm:inline">Save & Finish</span>
+                <span className="sm:hidden">Save</span>
               </button>
             </div>
           </div>
 
-          {/* Notepad Editor */}
-          <NotepadEditor 
-            content={editorContent}
-            placeholder="Start writing your note content..."
-            onChange={(content) => {
-              setEditorContent(content);
-            }}
-          />
+          {/* Notepad Editor - Full width on mobile, negative margins to extend */}
+          <div className="w-full -mx-1 sm:-mx-2 md:mx-0">
+            <NotepadEditor 
+              content={editorContent}
+              placeholder="Start writing your note content..."
+              onChange={(content) => {
+                setEditorContent(content);
+              }}
+            />
+          </div>
         </div>
       </AdminLayout>
     );

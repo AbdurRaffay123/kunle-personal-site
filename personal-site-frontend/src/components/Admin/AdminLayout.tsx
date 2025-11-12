@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
@@ -14,6 +14,11 @@ interface AdminLayoutProps {
   children: React.ReactNode;
   title: string;
 }
+
+// Context to share sidebar state with child components
+const SidebarContext = createContext<{ sidebarOpen: boolean }>({ sidebarOpen: false });
+
+export const useSidebar = () => useContext(SidebarContext);
 
 export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -45,36 +50,40 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen text-slate-800 dark:text-slate-100" style={{ backgroundColor: 'var(--background)' }}>
-      {/* Sidebar */}
-      <AdminSidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col md:ml-16 lg:ml-64">
-        {/* Header */}
-        <AdminHeader
-          title={title}
-          onMenuClick={() => setSidebarOpen(true)}
+    <SidebarContext.Provider value={{ sidebarOpen }}>
+      <div className="flex min-h-screen text-slate-800 dark:text-slate-100" style={{ backgroundColor: 'var(--background)' }}>
+        {/* Sidebar */}
+        <AdminSidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
         />
 
-        {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </main>
+        {/* Mobile sidebar overlay - transparent in light mode, semi-transparent in dark mode */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/0 dark:bg-black/50 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Main content */}
+        <div className="flex-1 flex flex-col md:ml-16 lg:ml-64">
+          {/* Header - Single header, hidden on mobile when sidebar is open */}
+          {!sidebarOpen && (
+            <AdminHeader
+              title={title}
+              onMenuClick={() => setSidebarOpen(true)}
+            />
+          )}
+
+          {/* Page content */}
+          <main className="flex-1 p-1 sm:p-2 md:p-4 lg:p-6 xl:p-8 overflow-x-hidden">
+            <div className="max-w-7xl mx-auto w-full">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarContext.Provider>
   );
 }
